@@ -1,0 +1,268 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="../template/plantilla.xhtml">
+
+	<ui:define name="content">
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+
+		<h3 class="hardblue TexAlCenter">Registro de componentes del
+			sistema</h3>
+
+		<div class="ContainerIndent">
+
+			<p:panel>
+				<div class="ContainerIndent">
+					<h:form id="formTblC">
+
+						<p:dataTable id="tblC" var="lazyModel"
+							value="#{componenteBean.lazyModel}" paginator="true" rows="10"
+							selectionMode="single"
+							selection="#{componenteBean.selectedComponente}"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							lazy="true" rowKey="#{lazyModel.id_componente}"
+							rowsPerPageTemplate="10,15,20"
+							loadingmessage="Realizando la operación, por favor espere un momento..."
+							emptyMessage="No se encontro registros" reflow="true"
+							widgetVar="w_tblC">
+
+							<p:ajax event="rowSelect" oncomplete="PF('w_dlgMod').show();"
+								update="form2" listener="#{componenteBean.onRowSelect(event)}" />
+
+							<f:facet name="header">
+                                Componentes registrados
+                            </f:facet>
+
+							<p:column headerText="Nombre" filterBy="#{lazyModel.nombre}"
+								filterMatchMode="contains" sortBy="#{lazyModel.nombre}">
+								<h:outputText value="#{lazyModel.nombre}" />
+							</p:column>
+
+							<p:column headerText="Descripción"
+								filterBy="#{lazyModel.descripcion}" filterMatchMode="contains"
+								sortBy="#{lazyModel.descripcion}">
+								<h:outputText value="#{lazyModel.descripcion}" />
+							</p:column>
+
+							<p:column headerText="Tipo">
+								<h:outputText value="#{lazyModel.tipo}" />
+							</p:column>
+
+							<f:facet name="footer">
+								<p:commandButton style="width:150px"
+									icon="fa icon-plus Fs13 white"
+									oncomplete="PF('w_dlgAdd').show();" value="Agregar" />
+
+							</f:facet>
+						</p:dataTable>
+					</h:form>
+				</div>
+			</p:panel>
+
+			<div class="EmptyBox20"></div>
+
+		</div>
+
+
+		<p:dialog id="dlgAdd" header="Agregar un componente"
+			widgetVar="w_dlgAdd" closable="false" modal="true" resizable="false"
+			styleClass="modal-body" showEffect="fade" hideEffect="fade"
+			responsive="true">
+			<h:form id="form1">
+				<div id="divContentCompAdd">
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+
+							<p:outputLabel value="Tipo de Componente: " />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:selectOneMenu id="cmp1" value="#{componenteBean.tipo}"
+								required="true"
+								requiredMessage="Seleccione un tipo de componente">
+								<f:selectItem itemLabel="- Seleccione un tipo -" />
+								<f:selectItem itemValue="Menu" itemLabel="Menú" />
+								<f:selectItem itemValue="Boton" itemLabel="Botón" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+
+							<p:outputLabel value="Nombre: " styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+
+							<p:inputText id="cmpName"
+								value="#{componenteBean.componente.nombre}"
+								styleClass="imput-text-box" required="true" autocomplete="off"
+								requiredMessage="Ingrese un componente"
+								title="Ingrese el nombre del elememto del menú tal como aparece sin espacios en blanco y sin acentos">
+								<p:tooltip id="tf1" for="cmpName" showEvent="focus"
+									hideEvent="blur" />
+								<f:attribute name="message" value="Ingrese un componente" />
+								<f:validator validatorId="RequiredValidator" />
+							</p:inputText>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+
+
+							<p:outputLabel value="Descripción: " />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+
+							<p:inputTextarea rows="3" id="cmpDesc" maxlength="49" autocomplete="off"
+								value="#{componenteBean.componente.descripcion}"
+								styleClass="imput-text-box" required="true"
+								requiredMessage="Ingrese una descripción">
+								<f:attribute name="message" value="Ingrese una descripción" />
+								<f:validator validatorId="RequiredValidator" />
+							</p:inputTextarea>
+						</div>
+					</div>
+
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:commandButton styleClass="btnSave" id="btnSave"
+								value="Guardar"
+								actionListener="#{componenteBean.crearComponente()}"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblC').clearFilters();PF('w_dlgAdd').hide();}"
+								icon="fa fa-save Fs13 white" update="formTblC:tblC,form1,msg" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:commandButton styleClass="btnCancel" id="btnCancel"
+								value="Cancelar" actionListener="#{componenteBean.cancelar()}"
+								oncomplete="PF('w_dlgAdd').hide();PF('w_tblC').clearFilters()"
+								icon="fa fa-times Fs13 white" process="@this"
+								update="formTblC:tblC,form1,msg" />
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+
+		<p:dialog id="dlgMod" header="Modificar un componente"
+			widgetVar="w_dlgMod" closable="false" modal="true" resizable="false"
+			showEffect="fade" hideEffect="fade" styleClass="modal-body"
+			responsive="true">
+
+			<h:form id="form2">
+
+				<div id="divContentCompMod">
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:outputLabel value="Tipo de Componente: " />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:selectOneMenu id="cmp1" value="#{componenteBean.tipo}"
+								required="true"
+								requiredMessage="Seleccione un tipo de componente">
+								<f:selectItem itemLabel="- Seleccione un tipo -" />
+								<f:selectItem itemValue="Menu" itemLabel="Menú" />
+								<f:selectItem itemValue="Boton" itemLabel="Botón" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:outputLabel value="Nombre: " styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:inputText id="cmpName2"
+								value="#{componenteBean.selectedComponente.nombre}"
+								styleClass="imput-text-box" required="true" autocomplete="off"
+								requiredMessage="Ingrese un componente"
+								title="Ingrese el nombre del elememto del menú tal como aparece sin espacios en blanco y sin acentos">
+								<f:attribute name="message" value="Ingrese un componente" />
+								<f:validator validatorId="RequiredValidator" />
+								<p:tooltip id="tf2" for="cmpName2" showEvent="focus"
+									hideEvent="blur" />
+							</p:inputText>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+
+							<p:outputLabel value="Descripción: " />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:inputTextarea rows="3" id="cmpDesc2" maxlength="49"
+								value="#{componenteBean.selectedComponente.descripcion}"
+								styleClass="imput-text-box" required="true" autocomplete="off"
+								requiredMessage="Ingrese una descripción">
+								<f:attribute name="message" value="Ingrese una descripción" />
+								<f:validator validatorId="RequiredValidator" />
+							</p:inputTextarea>
+						</div>
+					</div>
+
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+
+							<p:commandButton styleClass="btnEdit" id="btnEdit"
+								value="Modificar"
+								actionListener="#{componenteBean.editarComponente()}"
+								icon="fa icon-edit-1 Fs15 white"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblC').clearFilters();PF('w_dlgMod').hide();}"
+								update="formTblC:tblC,form2" />
+						</div>
+
+
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+							<p:commandButton styleClass="btnDelete" id="btnDelete"
+								value="Eliminar" icon="fa icon-trash Fs15 white"
+								actionListener="#{componenteBean.eliminarComponente()}"
+								update="formTblC:tblC,form2">
+								<p:confirm message="Desea eliminar el registro?"
+									icon="ui-icon-alert" />
+							</p:commandButton>
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+
+							<p:commandButton styleClass="btnCancel2" id="btnCancel2"
+								value="Cancelar" process="@this"
+								actionListener="#{componenteBean.cancelarSelected()}"
+								oncomplete="PF('w_dlgMod').hide();"
+								icon="fa fa-times Fs15 white" update="formTblC:tblC,form2,msg" />
+
+							<p:confirmDialog global="true" showEffect="fade"
+								hideEffect="fade">
+								<p:commandButton title="YesButton" value="SI"
+									oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblC').clearFilters();PF('w_dlgMod').hide();}"
+									styleClass="ui-confirmdialog-yes" style="margin-left: 50px" />
+								<p:commandButton title="NoButton" value="No"
+									oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblC').clearFilters();PF('w_dlgMod').hide();}"
+									styleClass="ui-confirmdialog-no" />
+							</p:confirmDialog>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+
+</ui:composition>

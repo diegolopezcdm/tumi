@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+	<session-factory>
+		<property name="connection.url">jdbc:mysql://localhost:3306/tumi</property>
+		<property name="connection.username">root</property>
+		<property name="connection.password">password</property>
+		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="dialect">org.hibernate.dialect.MySQLInnoDBDialect</property>
+		<property name="hibernate.show_sql">false</property>
+		<property name="hibernate.format_sql">false</property>
+		<property name="hibernate.c3p0.acquire_increment">1</property>
+		<property name="hibernate.c3p0.min_size">1</property>
+		<property name="hibernate.c3p0.max_size">50</property>
+		<property name="hibernate.c3p0.max_statements">100</property>
+		<property name="hibernate.c3p0.idle_test_period">3000</property>
+		<property name="hibernate.c3p0.timeout">1800</property>
+		<property name="hibernate.c3p0.checkoutTimeout">0</property>
+		<property name="hibernate.c3p0.validate">SELECT 1 FROM DUAL</property>
+		<property name="hibernate.c3p0.unreturnedConnectionTimeout">59</property>
+		<property name="hibernate.c3p0.debugUnreturnedConnectionStackTraces">true</property>
+		<!-- org.hibernate.HibernateException: No CurrentSessionContext configured! -->
+		<property name="hibernate.current_session_context_class">thread</property>
+		<property name="hibernate.temp.use_jdbc_metadata_defaults">false</property>
+		<!-- Mapping Entities -->
+		<mapping class="com.avantia.sv.saen.db.entity.Pais" />
+		<mapping class="com.avantia.sv.saen.db.entity.Cargo" />
+		<mapping class="com.avantia.sv.saen.db.entity.TipoUsuario" />
+		<mapping class="com.avantia.sv.saen.db.entity.TipoMovin" />
+		<mapping class="com.avantia.sv.saen.db.entity.Periodo" />
+		<mapping class="com.avantia.sv.saen.db.entity.Compania" />
+		<mapping class="com.avantia.sv.saen.db.entity.Usuario" />
+		<mapping class="com.avantia.sv.saen.db.entity.Bitacora" />
+		<mapping class="com.avantia.sv.saen.db.entity.CentroCosto" />
+		<mapping class="com.avantia.sv.saen.db.entity.Documento" />
+		<mapping class="com.avantia.sv.saen.db.entity.Empleado" />
+		<mapping class="com.avantia.sv.saen.db.entity.DocumentoEmpleado" />
+		<mapping class="com.avantia.sv.saen.db.entity.Asueto" />
+		<mapping class="com.avantia.sv.saen.db.entity.Movin" />
+		<mapping class="com.avantia.sv.saen.db.entity.Regla" />
+		<mapping class="com.avantia.sv.saen.db.entity.Planilla" />
+		<mapping class="com.avantia.sv.saen.db.entity.DetallePlanilla" />
+		<mapping class="com.avantia.sv.saen.db.entity.EmpleadoMovin" />
+		<mapping class="com.avantia.sv.saen.db.entity.ParametroSistema" />
+		<mapping class="com.avantia.sv.saen.db.entity.UsuarioPais" />
+		<mapping class="com.avantia.sv.saen.db.entity.Rubro" />
+		<mapping class="com.avantia.sv.saen.db.entity.SalarioMinimo" />
+		<mapping class="com.avantia.sv.saen.db.entity.Componente" />
+		<mapping class="com.avantia.sv.saen.db.entity.Permisos" />
+		<mapping class="com.avantia.sv.saen.db.entity.Vacaciones" />
+		<mapping class="com.avantia.sv.saen.db.entity.Asistencia" />
+		<mapping class="com.avantia.sv.saen.db.entity.MovinMovin" />
+		<mapping class="com.avantia.sv.saen.db.entity.TipoHorasExtras" />
+		<mapping class="com.avantia.sv.saen.db.entity.HorasExtras" />
+		
+		<mapping class="com.avantia.sv.saen.db.entity.Anticipo" />
+		<mapping class="com.avantia.sv.saen.db.entity.TipoAnticipo" />
+		
+		<mapping class="com.avantia.sv.saen.db.entity.Suspension" />
+		<mapping class="com.avantia.sv.saen.db.entity.AguinaldoRecibo" />
+		<mapping class="com.avantia.sv.saen.db.entity.Bono14Recibo" />
+		<mapping class="com.avantia.sv.saen.db.entity.HonorarioRecibo" />
+
+	</session-factory>
+</hibernate-configuration>

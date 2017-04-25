@@ -1,0 +1,250 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml">
+	<ui:define name="content">
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+
+		<h3 class="hardblue TexAlCenter">Registro de Vacaciones</h3>
+
+		<div class="ContainerIndent">
+			<p:panel>
+				<div class="ContainerIndent">
+					<h:form id="formTblVacacioness">
+
+						<p:dataTable id="tblVacacioness" var="lazyModel"
+							value="#{vacacionBean.lazyModel}" paginator="true" rows="5"
+							selectionMode="single"
+							selection="#{vacacionBean.selectedVacaciones}"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							lazy="true" rowKey="#{lazyModel.id}"
+							rowsPerPageTemplate="5,10,15"
+							emptyMessage="No se encontro registros" reflow="true"
+							widgetVar="w_tblVacacioness">
+
+							<p:ajax event="rowSelect" oncomplete="PF('w_dlgMod').show();"
+								update="form2"
+								listener="#{vacacionBean.onRowSelect(event)}" />
+
+
+							<f:facet name="header">
+								<h:outputText value="Vacaciones registradas" />
+							</f:facet>
+
+							<p:column headerText="Id" rendered="false">
+								<h:outputText value="#{lazyModel.id}" />
+							</p:column>
+
+							<p:column headerText="Empleado">
+								<h:outputText
+									value="#{lazyModel.empleado.nombre} #{lazyModel.empleado.apellidos}" />
+							</p:column>
+
+							<p:column headerText="Fecha de Inicio"
+								filterBy="#{vacacionBean.fechaInicioFilter}"
+								sortBy="#{lazyModel.fechaInicio}">
+								<f:facet name="filter">
+									<p:calendar pattern="dd-MM-yyyy"
+										value="#{vacacionBean.fechaInicioFilter}">
+										<p:ajax event="dateSelect" update="tblVacacioness"
+											listener="#{vacacionBean.cargarInformacion()}" />
+										<p:ajax event="change" update="tblVacacioness"
+											listener="#{vacacionBean.cargarInformacion()}" />
+									</p:calendar>
+								</f:facet>
+								<h:outputText value="#{lazyModel.fechaInicio}">
+									<f:convertDateTime type="date" pattern="dd-MM-yyyy" />
+								</h:outputText>
+							</p:column>
+
+							<p:column headerText="Fecha Final"
+								filterBy="#{vacacionBean.fechaFinFilter}"
+								sortBy="#{lazyModel.fechaFin}">
+								<f:facet name="filter">
+									<p:calendar pattern="dd-MM-yyyy"
+										value="#{vacacionBean.fechaFinFilter}">
+										<p:ajax event="dateSelect" update="tblVacacioness"
+											listener="#{vacacionBean.cargarInformacion()}" />
+										<p:ajax event="change" update="tblVacacioness"
+											listener="#{vacacionBean.cargarInformacion()}" />
+									</p:calendar>
+								</f:facet>
+								<h:outputText value="#{lazyModel.fechaFin}">
+									<f:convertDateTime type="date" pattern="dd-MM-yyyy" />
+								</h:outputText>
+							</p:column>
+
+							<p:column headerText="Dias Usados"
+								sortBy="#{lazyModel.diasUsados}">
+
+								<h:outputText value="#{lazyModel.diasUsados}" />
+							</p:column>
+
+
+							<f:facet name="footer">
+								<p:panelGrid id="pngButtons" columns="2" layout="grid"
+									styleClass="bottomButtons">
+
+									<p:commandButton style="width:150px" ajax="false"
+										icon="fa icon-left-1 Fs15 white" id="btnEmpMov"
+										action="#{vacacionBean.goEmpleado()}" value="Regresar">
+									</p:commandButton>
+
+									<p:commandButton style="width:150px"
+										icon="fa icon-plus Fs15 white"
+										oncomplete="PF('w_dlgAdd').show();" value="Agregar" />
+
+								</p:panelGrid>
+							</f:facet>
+						</p:dataTable>
+					</h:form>
+				</div>
+			</p:panel>
+
+			<div class="EmptyBox20"></div>
+
+		</div>
+
+
+		<p:dialog id="dlgAdd" header="Agregar un periodo Vacacional"
+			widgetVar="w_dlgAdd" closable="false" modal="true" resizable="false6"
+			showEffect="fade" hideEffect="fade" styleClass="modal-body"
+			responsive="true">
+
+			<h:form id="form1">
+					<div id="divContentVacAdd">
+
+						<div class="ui-g">
+							<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+
+								<p:outputLabel value="Fecha de Inicio: " />
+							</div>
+
+							<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+								<p:calendar id="fechInicio"
+									value="#{vacacionBean.vacaciones.fechaInicio}"
+									pattern="dd/MM/yyyy" />
+							</div>
+						</div>
+
+
+
+						<div class="ui-g">
+							<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+								<p:outputLabel value="Fecha de final " />
+							</div>
+
+							<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+
+								<p:calendar id="fechFin"
+									value="#{vacacionBean.vacaciones.fechaFin}"
+									pattern="dd/MM/yyyy" />
+							</div>
+						</div>
+
+						<div class="ui-g">
+
+							<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+								<p:commandButton styleClass="btnSave" id="btnSave"
+									value="Guardar" actionListener="#{vacacionBean.crear()}"
+									oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblVacacioness').clearFilters();PF('w_dlgAdd').hide();}"
+									icon="fa fa-save Fs15 white"
+									update="formTblVacacioness:tblVacacioness,form1,msg" />
+							</div>
+
+							<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+								<p:commandButton styleClass="btnCancel" id="btnCancel"
+									value="Cancelar" actionListener="#{vacacionBean.cancelar()}"
+									oncomplete="PF('w_dlgAdd').hide();"
+									icon="fa fa-times Fs15 white" process="@this"
+									update="formTblVacacioness:tblVacacioness,form1,msg" />
+							</div>
+						</div>
+
+
+					</div>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog id="dlgMod" header="Modificar un Periodo Vacacional"
+			widgetVar="w_dlgMod" closable="false" modal="true" resizable="false6"
+			showEffect="fade" hideEffect="fade" styleClass="modal-body"
+			responsive="true">
+
+			<h:form id="form2">
+				
+					<div id="divContentVacAdd">
+
+						<div class="ui-g">
+							<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+
+								<p:outputLabel value="Fecha de Inicio: " />
+							</div>
+
+							<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+								<p:calendar id="fechEInicio"
+									value="#{vacacionBean.selectedVacaciones.fechaInicio}"
+									pattern="dd/MM/yyyy" />
+							</div>
+						</div>
+
+						<div class="ui-g">
+							<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+								<p:outputLabel value="Fecha de final " />
+							</div>
+
+							<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+								<p:calendar id="fechEFin"
+									value="#{vacacionBean.selectedVacaciones.fechaFin}"
+									pattern="dd/MM/yyyy" />
+							</div>
+						</div>
+
+						<div class="ui-g">
+							<div class="ui-g-12 ui-md-6 ui-lg-4">
+								<p:commandButton styleClass="btnEdit" id="btnEdit"
+									value="Modificar" actionListener="#{vacacionBean.editar()}"
+									icon="fa icon-edit-1 Fs15 white"
+									oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblVacacioness').clearFilters();PF('w_dlgMod').hide();}"
+									update="formTblVacacioness:tblVacacioness,form2,msg" />
+							</div>
+
+							<div class="ui-g-12 ui-md-6 ui-lg-4">
+
+								<p:commandButton styleClass="btnDelete" id="btnDelete"
+									update="formTblVacacioness:tblVacacioness,form2,msg"
+									value="Eliminar" actionListener="#{vacacionBean.eliminar()}"
+									icon="fa icon-trash Fs15 white">
+									<p:confirm message="Desea eliminar el registro?"
+										icon="ui-icon-alert" />
+								</p:commandButton>
+							</div>
+
+							<div class="ui-g-12 ui-md-6 ui-lg-4">
+								<p:commandButton styleClass="btnCancel2" id="btnCancel2"
+									value="Cancelar" process="@this"
+									actionListener="#{vacacionBean.cancelarSelected()}"
+									oncomplete="PF('w_dlgMod').hide();"
+									icon="fa fa-times Fs15 white"
+									update="formTblVacacioness:tblVacacioness,form2,msg" />
+
+
+								<p:confirmDialog global="true" showEffect="fade"
+									hideEffect="fade">
+									<p:commandButton title="YesButton" value="SI"
+										oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblVacacioness').clearFilters();PF('w_dlgMod').hide();}"
+										styleClass="ui-confirmdialog-yes" style="margin-left: 50px" />
+									<p:commandButton title="NoButton" value="No"
+										oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblVacacioness').clearFilters();PF('w_dlgMod').hide();}"
+										styleClass="ui-confirmdialog-no" />
+								</p:confirmDialog>
+							</div>
+						</div>
+					</div>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>

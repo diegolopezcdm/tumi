@@ -1,0 +1,46 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+
+	<div id="layout-header" class="Unselectable fontRegular">
+		<h:form id="frmTbar" >
+			<a id="layout-logo" href="/tumi/index.xhtml"> <h:graphicImage name="images/LOGO.svg" 
+					styleClass="Fleft" library="sentinel-layout"/> <span
+				class="Fs19 FontTitilliumSemiBoldItalic Fleft"><span
+					class="softblue">Sistema de</span><span class="hardblue">
+						Evaluaciones</span></span>
+			</a>
+			<ul id="sm-topmenu" class="layout-header-widgets white Fs14">
+				<li class="Fleft BordRadHalf TexAlCenter"><i
+					class="icon-user-male"></i>
+					<ul
+						class="layout-header-widgets-submenu BordRad5 shadows white Animated05">
+						<li class="Animated05"><a class="white Unselectable"><i
+								class="icon-user-male Fs26 OvHidden"></i><span class="Fs18"><p:outputLabel
+										style="color:white" value="#{sessionBean.usrName}" /> <br /></span></a></li>
+
+					</ul></li>
+
+
+				<li class="Fleft BordRadHalf TexAlCenter"><i
+					class="icon-power"></i>
+					<ul
+						class="layout-header-widgets-submenu BordRad5 shadows white Animated05">
+						<li class="Animated05"><a class="white Unselectable"><span class="Fs18" ><h:commandLink 
+										action="#{sessionBean.cerrarSesion()}"  style="color:white;text-align:center"
+										value="Cerrar Sesión" /></span></a></li>
+
+					</ul></li>
+			</ul>
+			<ul id="sm-mobiletopmenu" class="layout-header-widgets white Fs14">
+				<li
+					class="Fleft BordRadHalf TexAlCenter Animated05 DisplayOnResponsive"><i
+					class="icon-th-1"></i></li>
+			</ul>
+		</h:form>
+	</div>
+
+</ui:composition>
