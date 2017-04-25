@@ -1,0 +1,246 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml">
+
+	<ui:define name="content">
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+
+		<h3 class="hardblue TexAlCenter">Registro de documentos de
+			empleados</h3>
+
+		<div class="ContainerIndent">
+			<p:panel>
+				<div class="ContainerIndent">
+
+					<h:form id="formTblEmpDoc">
+
+						<p:dataTable id="tblEmpDoc" var="lazyModel"
+							value="#{documentoEmpleadoBean.lazyModel}" paginator="true"
+							rows="10" selectionMode="single"
+							selection="#{documentoEmpleadoBean.selectedDocumentoEmpleado}"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							lazy="true" rowKey="#{lazyModel.id}"
+							rowsPerPageTemplate="10,15,20"
+							emptyMessage="#{documentoEmpleadoBean.mensaje()}" reflow="true"
+							widgetVar="w_tblEmpDoc">
+
+							<p:ajax event="rowSelect" oncomplete="PF('w_dlgMod').show();"
+								update="form2"
+								listener="#{documentoEmpleadoBean.onRowSelect(event)}" />
+
+
+							<f:facet name="header">
+								<h:outputText value="#{documentoEmpleadoBean.empNombre}" />
+							</f:facet>
+
+							<p:column headerText="Id" rendered="false">
+								<h:outputText value="#{lazyModel.id}" />
+							</p:column>
+
+							<p:column headerText="Documento"
+								filterBy="#{lazyModel.documento.nombre}"
+								filterMatchMode="contains"
+								sortBy="#{lazyModel.documento.nombre}">
+								<h:outputText value="#{lazyModel.documento.nombre}" />
+							</p:column>
+
+							<p:column headerText="Codigo" filterBy="#{lazyModel.codigo}"
+								filterMatchMode="contains" sortBy="#{lazyModel.codigo}">
+								<h:outputText value="#{lazyModel.codigo}" />
+							</p:column>
+
+							<f:facet name="footer">
+								<p:panelGrid id="pngButtons" columns="2" layout="grid"
+									styleClass="bottomButtons">
+
+									<p:commandButton style="width:150px" ajax="false"
+										icon="fa icon-left-1 Fs15 white" id="btnEmpMov"
+										action="#{documentoEmpleadoBean.goEmpleado()}"
+										value="Regresar">
+									</p:commandButton>
+
+									<p:commandButton style="width:150px"
+										icon="fa icon-plus Fs15 white"
+										disabled="#{sessionBean.renderizarComponente('BTN_GUARDAR') eq false?true:false}"
+										oncomplete="PF('w_dlgAdd').show();" value="Agregar" />
+
+								</p:panelGrid>
+
+							</f:facet>
+						</p:dataTable>
+					</h:form>
+				</div>
+			</p:panel>
+
+			<div class="EmptyBox20"></div>
+
+		</div>
+
+
+		<p:dialog id="dlgAdd" header="Agregar un documento"
+			widgetVar="w_dlgAdd" closable="false" modal="true" resizable="false"
+			showEffect="fade" hideEffect="fade" styleClass="modal-body"
+			responsive="true">
+
+			<h:form id="form1">
+				<div id="divContentDocAdd">
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 35%">
+							<p:outputLabel value="Documento: " />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:selectOneMenu id="np1" required="true" filter="true"
+								filterMatchMode="startsWith" styleClass="cmbStyle"
+								requiredMessage="Seleccione un documento"
+								value="#{documentoEmpleadoBean.documentoEmpleado.documento}"
+								converter="documentoConverter">
+								<f:selectItem itemValue="#{null}"
+									itemLabel="- Seleccione documento -" />
+								<f:selectItems value="#{documentoEmpleadoBean.listDocumento}"
+									var="movimiento" itemValue="#{movimiento}"
+									itemLabel="#{movimiento.nombre}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 35%">
+							<p:outputLabel value="Código: " styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:inputText id="cnom1"
+								value="#{documentoEmpleadoBean.documentoEmpleado.codigo}"
+								maxlength="40" required="true"
+								requiredMessage="Ingrese un código" styleClass="imput-text-box">
+								<f:attribute name="message" value="Ingrese un nombre" />
+								<f:validator validatorId="RequiredValidator" />
+							</p:inputText>
+						</div>
+					</div>
+
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:commandButton styleClass="btnSave" id="btnSave"
+								value="Guardar"
+								actionListener="#{documentoEmpleadoBean.crear()}"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblEmpDoc').clearFilters();PF('w_dlgAdd').hide();}"
+								icon="fa fa-save Fs15 white"
+								update="formTblEmpDoc:tblEmpDoc,form1,msg" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:commandButton styleClass="btnCancel" id="btnCancel"
+								value="Cancelar"
+								actionListener="#{documentoEmpleadoBean.cancelar()}"
+								oncomplete="PF('w_dlgAdd').hide();"
+								icon="fa fa-times Fs15 white" process="@this"
+								update="formTblEmpDoc:tblEmpDoc,form1,msg" />
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog id="dlgMod" header="Modificar un documento"
+			widgetVar="w_dlgMod" closable="false" modal="true" resizable="false"
+			showEffect="fade" hideEffect="fade" styleClass="modal-body"
+			responsive="true">
+
+			<h:form id="form2">
+				<div id="divContentDocMod">
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 35%">
+
+							<p:outputLabel value="Documento: " />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:selectOneMenu id="np1" required="true" filter="true"
+								filterMatchMode="startsWith" styleClass="cmbStyle"
+								requiredMessage="Seleccione un documento"
+								value="#{documentoEmpleadoBean.selectedDocumentoEmpleado.documento}"
+								converter="documentoConverter">
+								<f:selectItem itemValue="#{null}"
+									itemLabel="- Seleccione documento -" />
+								<f:selectItems
+									value="#{selectedDocumentoEmpleado.listDocumento}"
+									var="movimiento" itemValue="#{movimiento}"
+									itemLabel="#{movimiento.nombre}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 35%">
+
+							<p:outputLabel value="Código: " styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:inputText id="cnom1"
+								value="#{documentoEmpleadoBean.selectedDocumentoEmpleado.codigo}"
+								maxlength="40" required="true"
+								requiredMessage="Ingrese un código" styleClass="imput-text-box">
+								<f:attribute name="message" value="Ingrese un nombre" />
+								<f:validator validatorId="RequiredValidator" />
+							</p:inputText>
+						</div>
+					</div>
+
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+
+							<p:commandButton styleClass="btnEdit" id="btnEdit"
+								value="Modificar"
+								disabled="#{sessionBean.renderizarComponente('BTN_EDITAR') eq false?true:false}"
+								actionListener="#{documentoEmpleadoBean.editar()}"
+								icon="fa icon-edit-1 Fs15 white"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblEmpDoc').clearFilters();PF('w_dlgMod').hide();}"
+								update="formTblEmpDoc:tblEmpDoc,form2,msg" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+
+							<p:commandButton styleClass="btnDelete" id="btnDelete"
+								disabled="#{sessionBean.renderizarComponente('BTN_ELIMINAR') eq false?true:false}"
+								update="formTblEmpDoc:tblEmpDoc,form2,msg" value="Eliminar"
+								actionListener="#{documentoEmpleadoBean.eliminar()}"
+								icon="fa icon-trash Fs15 white">
+								<p:confirm message="Desea eliminar el registro?"
+									icon="ui-icon-alert" />
+							</p:commandButton>
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+							<p:commandButton styleClass="btnCancel2" id="btnCancel2"
+								value="Cancelar" process="@this"
+								actionListener="#{documentoEmpleadoBean.cancelarSelected()}"
+								oncomplete="PF('w_dlgMod').hide();"
+								icon="fa fa-times Fs15 white"
+								update="formTblEmpDoc:tblEmpDoc,form2,msg" />
+
+							<p:confirmDialog global="true" showEffect="fade"
+								hideEffect="fade">
+								<p:commandButton title="YesButton" value="SI"
+									oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblEmpDoc').clearFilters();PF('w_dlgMod').hide();}"
+									styleClass="ui-confirmdialog-yes" style="margin-left: 50px" />
+								<p:commandButton title="NoButton" value="No"
+									oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblEmpDoc').clearFilters();PF('w_dlgMod').hide();}"
+									styleClass="ui-confirmdialog-no" />
+							</p:confirmDialog>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>

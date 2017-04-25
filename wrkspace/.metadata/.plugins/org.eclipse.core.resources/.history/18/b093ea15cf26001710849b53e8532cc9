@@ -1,0 +1,356 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml">
+
+	<ui:define name="content">
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+
+		<h3 class="hardblue TexAlCenter">Registro de compañías</h3>
+
+		<div class="ContainerIndent">
+			<p:panel>
+				<div class="ContainerIndent">
+					<h:form id="formTblCompanias">
+						<p:panel style="text-align:right;border:none">
+
+							<h:commandLink action="#{companiaBean.generarExcel()}">
+								<p:graphicImage id="excel" name="/img/excel.png" width="40" />
+								<p:tooltip id="tfE" for="excel" value="Exportar a Excel"
+									position="top" />
+							</h:commandLink>
+
+							<h:commandLink action="#{companiaBean.generarPdf()}">
+								<p:graphicImage id="pdf" name="/img/pdf.png" width="40" />
+								<p:tooltip id="tfP" for="pdf" value="Exportar a PDF"
+									position="top" />
+							</h:commandLink>
+
+						</p:panel>
+						<p:dataTable id="tblCompanias" var="lazyModel"
+							value="#{companiaBean.lazyModel}" paginator="true" rows="10"
+							selectionMode="single"
+							loadingmessage="Realizando la operación, por favor espere un momento..."
+							selection="#{companiaBean.selectedCompania}"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							lazy="true" rowKey="#{lazyModel.id}"
+							rowsPerPageTemplate="10,15,20"
+							emptyMessage="No se encontro registros" reflow="true"
+							widgetVar="w_tblCompanias">
+
+
+							<p:ajax event="rowSelect" oncomplete="PF('w_dlgMod').show();"
+								update="form2" listener="#{companiaBean.onRowSelect(event)}" />
+
+							<f:facet name="header">
+                               Compañías registradas
+                               
+                            </f:facet>
+
+
+							<p:column headerText="Id" rendered="false">
+								<h:outputText value="#{lazyModel.id}" />
+							</p:column>
+
+							<p:column headerText="Nombre" filterBy="#{lazyModel.nombre}"
+								filterMatchMode="contains" sortBy="#{lazyModel.nombre}">
+								<h:outputText value="#{lazyModel.nombre}" />
+							</p:column>
+
+							<p:column headerText="Teléfono" filterBy="#{lazyModel.telefono}"
+								filterMatchMode="contains" sortBy="#{lazyModel.telefono}">
+								<h:outputText value="#{lazyModel.telefono}" />
+							</p:column>
+
+							<p:column headerText="País" filterBy="#{lazyModel.idPais.nombre}"
+								filterMatchMode="contains" sortBy="#{lazyModel.idPais.nombre}">
+								<h:outputText value="#{lazyModel.idPais.nombre}" />
+							</p:column>
+
+							<p:column headerText="Rubro"
+								filterBy="#{lazyModel.idRubro.rubro}" filterMatchMode="contains"
+								sortBy="#{lazyModel.idRubro.rubro}">
+								<h:outputText value="#{lazyModel.idRubro.rubro}" />
+							</p:column>
+
+							<p:column headerText="Nit" filterBy="#{lazyModel.nit}"
+								filterMatchMode="contains" sortBy="#{lazyModel.nit}">
+								<h:outputText value="#{lazyModel.nit}" />
+							</p:column>
+
+							<f:facet name="footer">
+								<p:commandButton style="width:150px"
+									rendered="#{sessionBean.renderizarComponente('BTN_GUARDAR')}"
+									icon="fa icon-plus Fs15 white"
+									oncomplete="PF('w_dlgAdd').show();" value="Agregar" />
+
+							</f:facet>
+						</p:dataTable>
+					</h:form>
+				</div>
+			</p:panel>
+
+			<div class="EmptyBox20"></div>
+
+		</div>
+
+
+
+		<p:dialog id="dlgAdd" header="Agregar una compañía" closable="false"
+			widgetVar="w_dlgAdd" modal="true" resizable="false6"
+			styleClass="modal-body" showEffect="fade" hideEffect="fade"
+			responsive="true">
+			<h:form id="form1">
+				<div id="divContentPaisAdd">
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 20%">
+
+							<p:outputLabel value="Nombre: " styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-12 ui-lg-1 " />
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:inputText id="compNombre" required="true" autocomplete="off"
+								requiredMessage="Ingrese un nombre" maxlength="40"
+								value="#{companiaBean.compania.nombre}"
+								styleClass="imput-text-box">
+								<f:attribute name="message" value="Ingrese un nombre" />
+								<f:validator validatorId="RequiredValidator" />
+
+							</p:inputText>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 20%">
+
+							<p:outputLabel value="Nit: " styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-12 ui-lg-1 " />
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:inputText id="compNit" required="true" autocomplete="off"
+								requiredMessage="Ingrese el Nit" maxlength="50"
+								value="#{companiaBean.compania.nit}" styleClass="imput-text-box">
+								<f:attribute name="message" value="Ingrese el nit" />
+								<f:validator validatorId="RequiredValidator" />
+							</p:inputText>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 20%">
+							<p:outputLabel value="Teléfono: " styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-12 ui-lg-1 " />
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:inputMask mask="(999)9999-9999" id="compTel" required="true"
+								requiredMessage="Ingrese un teléfono" autocomplete="off"
+								value="#{companiaBean.compania.telefono}"
+								styleClass="imput-text-box">
+							</p:inputMask>
+						</div>
+					</div>
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 20%">
+							<p:outputLabel value="País: " styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-12 ui-lg-1 " />
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:selectOneMenu id="compPais" required="true"
+								requiredMessage="Seleccione un país" styleClass="cmbStyleComp"
+								value="#{companiaBean.compania.idPais}"
+								converter="paisConverter">
+								<f:selectItem itemValue="#{null}"
+									itemLabel="- Seleccione un Pais -" />
+								<f:selectItems value="#{companiaBean.listPais}" var="pais"
+									itemValue="#{pais}" itemLabel="#{pais.nombre}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 20%">
+							<p:outputLabel value="Rubro: " styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-12 ui-lg-1 " />
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:selectOneMenu id="compRubro" required="true"
+								requiredMessage="- Seleccione un rubro -"
+								styleClass="cmbStyleComp"
+								value="#{companiaBean.compania.idRubro}"
+								converter="rubroConverter">
+								<f:selectItem itemValue="#{null}"
+									itemLabel="- Seleccione un Rubro -" />
+								<f:selectItems value="#{companiaBean.listRubro}" var="rubro"
+									itemValue="#{rubro}" itemLabel="#{rubro.rubro}" />
+							</p:selectOneMenu>
+						</div>
+						<div class="ui-g-12 ui-md-12 ui-lg-1 " />
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:commandButton styleClass="btnSave" id="btnSave"
+								value="Guardar" actionListener="#{companiaBean.crearCompania()}"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblCompanias').clearFilters();PF('w_dlgAdd').hide();}"
+								icon="fa fa-save Fs15 white"
+								update="formTblCompanias:tblCompanias,form1,msg" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+
+							<p:commandButton styleClass="btnCancel" id="btnCancel"
+								value="Cancelar" actionListener="#{companiaBean.cancelar()}"
+								oncomplete="PF('w_dlgAdd').hide();" process="@this"
+								update="formTblCompanias:tblCompanias,form1,msg"
+								icon="fa fa-times Fs15 white" />
+						</div>
+					</div>
+
+				</div>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog id="dlgMod" header="Modificar una compañía" closable="false"
+			widgetVar="w_dlgMod" modal="true" resizable="false6"
+			styleClass="modal-body" showEffect="fade" hideEffect="fade"
+			responsive="true">
+			<h:form id="form2">
+				<div id="divContentPaisMod">
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 25%">
+
+							<p:outputLabel value="Nombre: " styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:inputText id="compNombre2" required="true" autocomplete="off"
+								requiredMessage="Ingrese un nombre" maxlength="40"
+								value="#{companiaBean.selectedCompania.nombre}"
+								styleClass="imput-text-box">
+								<f:attribute name="message" value="Ingrese un nombre" />
+								<f:validator validatorId="RequiredValidator" />
+							</p:inputText>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 25%">
+
+							<p:outputLabel value="Nit: " styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:inputText id="compNit2" required="true" autocomplete="off"
+								requiredMessage="Ingrese el Nit" maxlength="50"
+								value="#{companiaBean.selectedCompania.nit}"
+								styleClass="imput-text-box">
+								<f:attribute name="message" value="Ingrese el nit" />
+								<f:validator validatorId="RequiredValidator" />
+							</p:inputText>
+						</div>
+					</div>
+
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 25%">
+							<p:outputLabel value="Teléfono: " styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:inputMask mask="(999)9999-9999" id="compTel2" required="true"
+								requiredMessage="Ingrese un teléfono" autocomplete="off"
+								value="#{companiaBean.selectedCompania.telefono}"
+								styleClass="imput-text-box">
+							</p:inputMask>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 25%">
+
+							<p:outputLabel value="País: " />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:selectOneMenu id="compPais2" required="true"
+								requiredMessage="Seleccione un país" styleClass="cmbStyleComp"
+								value="#{companiaBean.selectedCompania.idPais}"
+								converter="paisConverter">
+								<f:selectItem itemValue="#{null}"
+									itemLabel="- Seleccione un Pais -" />
+								<f:selectItems value="#{companiaBean.listPais}" var="pais"
+									itemValue="#{pais}" itemLabel="#{pais.nombre}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 25%">
+							<p:outputLabel value="Rubro: " styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:selectOneMenu id="compRubro2" required="true"
+								requiredMessage="- Seleccione un rubro -"
+								styleClass="cmbStyleComp"
+								value="#{companiaBean.selectedCompania.idRubro}"
+								converter="rubroConverter">
+								<f:selectItem itemValue="#{null}"
+									itemLabel="- Seleccione un Rubro -" />
+								<f:selectItems value="#{companiaBean.listRubro}" var="rubro"
+									itemValue="#{rubro}" itemLabel="#{rubro.rubro}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+
+
+							<p:commandButton styleClass="btnEdit" id="btnEdit"
+								value="Modificar"
+								disabled="#{sessionBean.renderizarComponente('BTN_EDITAR') eq false?true:false}"
+								actionListener="#{companiaBean.editarCompania()}"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblCompanias').clearFilters();PF('w_dlgMod').hide();}"
+								icon="fa icon-edit-1 Fs15 white"
+								update="formTblCompanias:tblCompanias,form2,msg" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+
+							<p:commandButton styleClass="btnDelete" id="btnDelete"
+								disabled="#{sessionBean.renderizarComponente('BTN_ELIMINAR') eq false?true:false}"
+								value="Eliminar" icon="fa icon-trash Fs15 white"
+								actionListener="#{companiaBean.eliminarCompania()}"
+								update="formTblCompanias:tblCompanias,form2,msg">
+								<p:confirm message="Desea eliminar el registro?"
+									icon="ui-icon-alert" />
+							</p:commandButton>
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+							<p:commandButton styleClass="btnCancel2" id="btnCancel2"
+								value="Cancelar" icon="fa fa-times Fs15 white"
+								oncomplete="PF('w_dlgMod').hide()" process="@this"
+								actionListener="#{companiaBean.cancelarSelected()}"
+								update="formTblCompanias:tblCompanias,form2,msg" />
+
+
+							<p:confirmDialog global="true" showEffect="fade"
+								hideEffect="fade">
+								<p:commandButton title="YesButton" value="SI"
+									oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblCompanias').clearFilters();PF('w_dlgMod').hide();}"
+									styleClass="ui-confirmdialog-yes" style="margin-left: 50px" />
+								<p:commandButton title="NoButton" value="No"
+									oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblCompanias').clearFilters();PF('w_dlgMod').hide();}"
+									styleClass="ui-confirmdialog-no" />
+							</p:confirmDialog>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>

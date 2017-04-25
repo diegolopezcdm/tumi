@@ -1,0 +1,288 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml">
+
+	<ui:define name="content">
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript library="js" name="calendar_es.js" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+
+		<h3 class="hardblue TexAlCenter">Registro de asistencias</h3>
+
+
+		<div class="ContainerIndent">
+
+			<p:panel>
+				<div class="ContainerIndent">
+					<h:form id="formTblAsistencia">
+						<p:panel style="text-align:right;border:none">
+
+							<h:commandLink action="#{asistenciaBean.generarExcel()}">
+								<p:graphicImage id="excel" name="/img/excel.png" width="40" />
+								<p:tooltip id="tfE" for="excel" value="Exportar a Excel"
+									position="top" />
+
+							</h:commandLink>
+
+							<h:commandLink action="#{asistenciaBean.generarPdf()}">
+								<p:graphicImage id="pdf" name="/img/pdf.png" width="40" />
+								<p:tooltip id="tfP" for="pdf" value="Exportar a PDF"
+									position="top" />
+
+							</h:commandLink>
+
+						</p:panel>
+						<p:dataTable id="tblAsistencia" var="lazyModel"
+							value="#{asistenciaBean.lazyModel}" paginator="true" rows="10"
+							selectionMode="single"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							selection="#{asistenciaBean.selectedAsistencia}" lazy="true"
+							rowKey="#{lazyModel.id}" rowsPerPageTemplate="10,15,20"
+							emptyMessage="No se encontraron registros" reflow="true"
+							loadingmessage="Realizando la operación, por favor espere un momento..."
+							widgetVar="w_tblAsistencia">
+
+							<p:ajax event="rowSelect" oncomplete="PF('w_dlgMod').show();"
+								update="form2" listener="#{asistenciaBean.onRowSelect(event)}" />
+
+
+							<f:facet name="header">
+								<p:outputLabel value="#{asistenciaBean.empNombre}"
+									style="color:#FFFFE5;font-weight: bold" />
+							</f:facet>
+
+							<p:column headerText="Id" rendered="false">
+								<h:outputText value="#{lazyModel.id}" />
+							</p:column>
+
+							<p:column headerText="Nombres">
+								<h:outputText value="#{lazyModel.idEmpleado.nombre}" />
+							</p:column>
+
+							<p:column headerText="Apellidos">
+								<h:outputText value=" #{lazyModel.idEmpleado.apellidos}" />
+							</p:column>
+
+							<p:column headerText="Fecha" filterBy="#{asistenciaBean.fecha}"
+								sortBy="#{lazyModel.fecha}">
+								<f:facet name="filter">
+									<p:calendar pattern="dd-MM-yyyy"
+										value="#{asistenciaBean.fecha}">
+										<p:ajax event="dateSelect" update="tblAsistencia"
+											listener="#{asistenciaBean.cargarListaAsistencia()}" />
+										<p:ajax event="change" update="tblAsistencia"
+											listener="#{asistenciaBean.cargarListaAsistencia()}" />
+									</p:calendar>
+								</f:facet>
+								<h:outputText value="#{lazyModel.fecha}">
+									<f:convertDateTime pattern="dd-MM-yyyy" />
+								</h:outputText>
+							</p:column>
+
+							<p:column headerText="Hora entrada">
+								<h:outputText value="#{lazyModel.horaEntrada}" />
+							</p:column>
+
+							<p:column headerText="Hora salida">
+								<h:outputText value="#{lazyModel.horaSalida}" />
+							</p:column>
+
+
+
+							<f:facet name="footer">
+								<p:panelGrid id="pngButtons" columns="2" layout="grid"
+									styleClass="bottomButtons">
+
+									<p:commandButton style="width:150px" ajax="false"
+										icon="fa icon-left-1 Fs15 white" id="btnEmpMov"
+										action="#{asistenciaBean.goEmpleado()}" value="Regresar">
+									</p:commandButton>
+
+									<p:commandButton style="width:150px"
+										icon="fa icon-plus Fs15 white"
+										disabled="#{sessionBean.renderizarComponente('BTN_GUARDAR') eq false?true:false}"				
+										oncomplete="PF('w_dlgAdd').show();" value="Agregar" />
+
+								</p:panelGrid>
+							</f:facet>
+						</p:dataTable>
+					</h:form>
+				</div>
+			</p:panel>
+			<div class="EmptyBox20"></div>
+		</div>
+
+		<p:dialog id="dlgAdd" header="Agregar una asistencia"
+			styleClass="modal-body" widgetVar="w_dlgAdd" closable="false"
+			modal="true" resizable="false" showEffect="fade" hideEffect="fade"
+			responsive="true">
+			<h:form id="form1">
+
+				<div id="divContentAdd">
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 40%">
+
+							<p:outputLabel value="Fecha: " styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:calendar id="fn1" value="#{asistenciaBean.fechaP}" locale="es"
+								required="true" requiredMessage="Ingrese una fecha"
+								pattern="dd-MM-yyyy" />
+						</div>
+					</div>
+
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 40%">
+							<p:outputLabel value="Hora entrada: "
+								styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:calendar id="he1" value="#{asistenciaBean.horaE}" locale="es"
+								required="true" requiredMessage="Ingrese una hora"
+								pattern="HH:mm" timeOnly="true" />
+						</div>
+					</div>
+
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 40%">
+
+							<p:outputLabel value="Hora salida: " styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:calendar id="hs1" value="#{asistenciaBean.horaS}" locale="es"
+								required="true" requiredMessage="Ingrese una hora"
+								pattern="HH:mm" timeOnly="true" />
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+
+							<p:commandButton styleClass="btnSave" id="btnSave"
+								value="Guardar"
+								actionListener="#{asistenciaBean.crearAsistencia()}"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblAsistencia').clearFilters();PF('w_dlgAdd').hide();}"
+								icon="fa fa-save Fs15 white"
+								update="formTblAsistencia:tblAsistencia,form1,msg" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:commandButton styleClass="btnCancel" id="btnCancel"
+								value="Cancelar" actionListener="#{asistenciaBean.cancelar()}"
+								oncomplete="PF('w_dlgAdd').hide();" process="@this"
+								icon="fa fa-times Fs15 white"
+								update="formTblAsistencia:tblAsistencia,form1,msg" />
+
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+
+		<p:dialog id="dlgMod" header="Modificar una asistencia"
+			styleClass="modal-body" widgetVar="w_dlgMod" closable="false"
+			modal="true" resizable="false" showEffect="fade" hideEffect="fade"
+			responsive="true">
+			<h:form id="form2">
+				<div id="divContentMod">
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+
+							<p:outputLabel value="Fecha: " styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:calendar id="fn2" value="#{asistenciaBean.fechaSP}"
+								locale="es" required="true" requiredMessage="Ingrese una fecha"
+								pattern="dd-MM-yyyy" />
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:outputLabel value="Hora entrada: "
+								styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:calendar id="he2" value="#{asistenciaBean.horaSE}" locale="es"
+								required="true" requiredMessage="Ingrese una hora"
+								pattern="HH:mm" timeOnly="true" />
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:outputLabel value="Hora salida: " styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:calendar id="hs2" value="#{asistenciaBean.horaSS}" locale="es"
+								required="true" requiredMessage="Ingrese una hora"
+								pattern="HH:mm" timeOnly="true" />
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+
+							<p:commandButton styleClass="btnEdit" id="btnEdit"
+								disabled="#{sessionBean.renderizarComponente('BTN_EDITAR') eq false?true:false}"
+								value="Modificar"
+								actionListener="#{asistenciaBean.editarAsistencia()}"
+								icon="fa icon-edit-1 Fs15 white"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblAsistencia').clearFilters();PF('w_dlgMod').hide();}"
+								update="formTblAsistencia:tblAsistencia,form2,msg" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+
+							<p:commandButton styleClass="btnDelete" id="btnDelete"
+								disabled="#{sessionBean.renderizarComponente('BTN_ELIMINAR') eq false?true:false}"
+								actionListener="#{asistenciaBean.eliminarAsistencia()}"
+								update="formTblAsistencia:tblAsistencia,form2,msg"
+								value="Eliminar" icon="fa icon-trash Fs15 white">
+								<p:confirm message="Desea eliminar el registro?"
+									icon="ui-icon-alert" />
+							</p:commandButton>
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+							<p:commandButton styleClass="btnCancel2" id="btnCancel2"
+								value="Cancelar"
+								actionListener="#{asistenciaBean.cancelarSelected()}"
+								oncomplete="PF('w_dlgMod').hide();"
+								icon="fa fa-times Fs15 white" process="@this"
+								update="formTblAsistencia:tblAsistencia,form2,msg" />
+
+
+
+							<p:confirmDialog global="true" showEffect="fade"
+								hideEffect="fade">
+								<p:commandButton title="YesButton" value="SI"
+									oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblAsistencia').clearFilters();PF('w_dlgMod').hide();}"
+									styleClass="ui-confirmdialog-yes" style="margin-left: 50px" />
+								<p:commandButton title="NoButton" value="No"
+									oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblAsistencia').clearFilters();PF('w_dlgMod').hide();}"
+									styleClass="ui-confirmdialog-no" />
+							</p:confirmDialog>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+
+	</ui:define>
+
+</ui:composition>

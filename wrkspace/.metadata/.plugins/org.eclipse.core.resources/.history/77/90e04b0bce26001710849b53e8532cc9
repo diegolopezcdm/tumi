@@ -1,0 +1,31 @@
+package com.avantia.sv.saen.ws;
+
+import javax.faces.context.FacesContext;
+import javax.xml.ws.Endpoint;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.avantia.sv.saen.view.bean.AnticipoBean;
+
+public class Publishier {
+	private static final long serialVersionUID = 1L;
+	private static final Logger logger = LoggerFactory.getLogger(Publishier.class);
+
+	static {
+		logger.info("Iniciando publicacion ..... ");
+		publicarWs();
+	}
+
+	public static void publicarWs() {
+		String url = "";
+		try {
+			FacesContext fc = FacesContext.getCurrentInstance();
+			url = fc.getExternalContext().getApplicationContextPath() + "/Greeting";
+			Endpoint.publish(url, new SincronizationInterview());
+		} catch (Exception ex) {
+			logger.error(ex.getMessage(), ex);
+		}
+		logger.debug("URL WS: " + url);
+	}
+}

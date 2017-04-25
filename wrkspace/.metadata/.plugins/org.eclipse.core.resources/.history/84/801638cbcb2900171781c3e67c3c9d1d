@@ -1,0 +1,268 @@
+package com.sv.tumi.view.bean;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
+import javax.faces.context.Flash;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+
+import org.primefaces.event.SelectEvent;
+import org.primefaces.model.LazyDataModel;
+import org.primefaces.model.SortOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
+@ManagedBean
+@ViewScoped
+public class EvaluacionBean implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	private static final Logger logger = LoggerFactory.getLogger(EvaluacionBean.class);
+	private List<Empleado> listEmpleado;
+	private List<Compania> listCompania;
+	private List<Periodo> listPeriodo;
+	private Empleado selectedEmpleado;
+
+	@PostConstruct
+	public void inicializar() {
+		cargarListaEmpleado();
+		cargarListaCompania();
+		cargarListaPeriodo();
+	}
+
+
+	public void cargarListaEmpleado() {
+		EmpleadoDAO eDao = new EmpleadoDAO();
+		lazyModel = new LazyDataModel<Empleado>() {
+			private static final long serialVersionUID = 8885722005055879976L;
+
+			@Override
+			public Empleado getRowData(String rowKey) {
+				int intRowKey = Integer.parseInt(rowKey);
+				for (Empleado e : lazyModel) {
+					if (e.getId() == intRowKey) {
+						return e;
+					}
+				}
+				return null;
+			}
+
+			@Override
+			public Object getRowKey(Empleado e) {
+				return e.getId();
+			}
+
+			@Override
+			public List<Empleado> load(int first, int pageSize, String sortField, SortOrder sortOrder,
+					Map<String, Object> filters) {
+				logger.info("Se ejecuto...");
+				listEmpleado = eDao.findAll(filters, sortField, sortOrder.toString(), first, pageSize);
+				System.out.println("Tamano de la lista filtrada " + listEmpleado.size());
+				return listEmpleado;
+			}
+		};
+		lazyModel.setRowCount(eDao.count().intValue());
+	}
+
+	public void cargarListaCompania() {
+		CompaniaDAO cpDao = new CompaniaDAO();
+		Map<String, Object> filtros = new HashMap<String, Object>();
+		filtros.put("idPais", pais);
+		listCompania = cpDao.findByProperty(filtros);
+	}
+
+	public void cargarListaPeriodo() {
+		PeriodoService pSrv = new PeriodoServiceImpl();
+		listPeriodo = pSrv.listadoPeriodos(null, "id", Order.ASCENDING.toString(), null, null);
+	}
+
+	public void onRowSelect(SelectEvent event) {
+		getSelectedEstado();
+		cargarListaMovin();
+		if (!selectedEmpleado.equals(null)) {
+			despido = false;
+
+		} else {
+			despido = true;
+
+		}
+
+	}
+
+	public void cancelar() {
+		limpiar();
+	}
+
+	public void cancelarSelected() {
+		limpiarSelected();
+
+	}
+
+	public void limpiarSelected() {
+		selectedEmpleado = new Empleado();
+	}
+
+	public void redirecEmpMov() {
+		if (selectedEmpleado.equals(null)) {
+
+		} else {
+
+		}
+	}
+
+	/**
+	 * Separaciï¿½n con procesar despido Hector Santos
+	 */
+	public void ingresarDespido() {
+		FacesMessage msg;
+		EmpleadoMovinService movServ = new EmpleadoMovinServiceImpl();
+		EmpleadoMovinDAO emDAO = new EmpleadoMovinDAO();
+		EmpleadoService empSrv = new EmpleadoServiceImpl();
+		OperacionPlanillaService opSrv = new OperacionPlanillaServiceImpl();
+		String telefono = selectedEmpleado.getTelefono().replace("-", "");
+		selectedEmpleado.setTelefono(telefono);
+		Date fechaSalida = selectedEmpleado.getFechaEgreso();
+		boolean cerrar = true;
+		Calendar c = Calendar.getInstance();
+		try {
+			empSrv.editar(selectedEmpleado);
+			logger.info("se actualizo la fecha de egreso del empleado " + selectedEmpleado.getNombre());
+			flag = true;
+		} catch (Exception ex) {
+			logger.error("Error al actualizar la fecha de egreso " + ex);
+		}
+	}
+
+
+	public void crearEmpleado() {
+		logger.debug("Creando usuario " + empleado);
+		FacesMessage msg;
+		empleado.setIdCentroCosto(centroCosto);
+		empleado.setSexo(sexo);
+		EmpleadoService empSrv = new EmpleadoServiceImpl();
+		selecEstado();
+		String telefono = empleado.getTelefono().replace("-", "");
+		empleado.setTelefono(telefono);
+		boolean result = empSrv.crear(empleado);
+		if (result == true) {
+			msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+					"Empleado creado " + empleado.getNombre() + " " + empleado.getApellidos(), null);
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+			logger.info(
+					"EL empleado " + empleado.getNombre() + " " + empleado.getApellidos() + " se registro con éxito");
+			limpiar();
+			cargarListaEmpleado();
+		} else {
+			msg = new FacesMessage(FacesMessage.SEVERITY_WARN,
+					"El empleado " + empleado.getNombre() + " no se pudo registrar", null);
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+			limpiar();
+			cargarListaEmpleado();
+		}
+	}
+
+	public void editarEmpleado() {
+		logger.debug("Iniciando edicion del empleado" + selectedEmpleado);
+		FacesMessage msg;// selectedEmpleado.getIdCentroCosto
+		EmpleadoService empSrv = new EmpleadoServiceImpl();
+		selecedEstado();
+		String telefono = selectedEmpleado.getTelefono().replace("-", "");
+		selectedEmpleado.setTelefono(telefono);
+		boolean result = empSrv.editar(selectedEmpleado);
+		if (result == true) {
+			msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+					"Empleado actualizado " + selectedEmpleado.getNombre() + " " + selectedEmpleado.getApellidos(),
+					null);
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+			logger.info("EL empleado " + selectedEmpleado.getNombre() + selectedEmpleado.getApellidos()
+					+ " se actualizo con éxito");
+			limpiarSelected();
+			cargarListaEmpleado();
+		} else {
+			msg = new FacesMessage(FacesMessage.SEVERITY_WARN,
+					"El empleado " + selectedEmpleado.getNombre() + " no se pudo actualizar", null);
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+			limpiarSelected();
+			cargarListaEmpleado();
+		}
+	}
+
+	public void eliminarEmpleado() {
+		FacesMessage msg;
+		EmpleadoService empSrv = new EmpleadoServiceImpl();
+		boolean result = empSrv.eliminar(selectedEmpleado.getId());
+		if (result == true) {
+			msg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+					"Empleado eliminado " + selectedEmpleado.getNombre() + " " + selectedEmpleado.getApellidos(), null);
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+			logger.info("EL empleado " + selectedEmpleado.getNombre() + selectedEmpleado.getApellidos()
+					+ " se elimino con éxito");
+			limpiarSelected();
+			cargarListaEmpleado();
+		} else if (result == false) {
+			msg = new FacesMessage(FacesMessage.SEVERITY_WARN,
+					"El empleado " + selectedEmpleado.getNombre() + " no se pudo eliminar", null);
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+			limpiarSelected();
+			cargarListaEmpleado();
+		}
+	}
+
+	public String goEmpleadoMovin() throws IOException {
+		Flash flash = FacesContext.getCurrentInstance().getExternalContext().getFlash();
+		flash.put("selectedEmpl", selectedEmpleado);
+		return "empleado_movimiento.xhtml?faces-redirect=true";
+	}
+
+	public List<Empleado> getListEmpleado() {
+		return listEmpleado;
+	}
+
+	public void setListEmpleado(List<Empleado> listEmpleado) {
+		this.listEmpleado = listEmpleado;
+	}
+
+	public List<Compania> getListCompania() {
+		return listCompania;
+	}
+
+	public void setListCompania(List<Compania> listCompania) {
+		this.listCompania = listCompania;
+	}
+
+	public List<Periodo> getListPeriodo() {
+		return listPeriodo;
+	}
+
+	public void setListPeriodo(List<Periodo> listPeriodo) {
+		this.listPeriodo = listPeriodo;
+	}
+
+
+	public Empleado getSelectedEmpleado() {
+		return selectedEmpleado;
+	}
+
+	public void setSelectedEmpleado(Empleado selectedEmpleado) {
+		this.selectedEmpleado = selectedEmpleado;
+	}
+
+}

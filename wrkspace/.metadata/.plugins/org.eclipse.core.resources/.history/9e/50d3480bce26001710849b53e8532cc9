@@ -1,0 +1,119 @@
+package com.avantia.sv.saen.ws;
+
+public class EmpleadoRegister {
+
+	private String nombre;
+	private String apellido;
+	private String fechaNac;
+	private String direccion;
+	private String direccion1;
+	private String telefono;
+	private String cuentaBanc;
+	private String noDocumento;
+	private double salario;
+	private String sexo;
+	private String nacionalidad;
+	private String codigo;
+
+	private int cargo;
+	private int centroCosto;
+	private int compania;
+	private int periodo;
+	public String getNombre() {
+		return nombre;
+	}
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+	public String getApellido() {
+		return apellido;
+	}
+	public void setApellido(String apellido) {
+		this.apellido = apellido;
+	}
+	public String getFechaNac() {
+		return fechaNac;
+	}
+	public void setFechaNac(String fechaNac) {
+		this.fechaNac = fechaNac;
+	}
+	public String getDireccion() {
+		return direccion;
+	}
+	public void setDireccion(String direccion) {
+		this.direccion = direccion;
+	}
+	public String getDireccion1() {
+		return direccion1;
+	}
+	public void setDireccion1(String direccion1) {
+		this.direccion1 = direccion1;
+	}
+	public String getTelefono() {
+		return telefono;
+	}
+	public void setTelefono(String telefono) {
+		this.telefono = telefono;
+	}
+	public String getCuentaBanc() {
+		return cuentaBanc;
+	}
+	public void setCuentaBanc(String cuentaBanc) {
+		this.cuentaBanc = cuentaBanc;
+	}
+	public String getNoDocumento() {
+		return noDocumento;
+	}
+	public void setNoDocumento(String noDocumento) {
+		this.noDocumento = noDocumento;
+	}
+	public double getSalario() {
+		return salario;
+	}
+	public void setSalario(double salario) {
+		this.salario = salario;
+	}
+	public String getSexo() {
+		return sexo;
+	}
+	public void setSexo(String sexo) {
+		this.sexo = sexo;
+	}
+	public String getNacionalidad() {
+		return nacionalidad;
+	}
+	public void setNacionalidad(String nacionalidad) {
+		this.nacionalidad = nacionalidad;
+	}
+	public String getCodigo() {
+		return codigo;
+	}
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
+	}
+	public int getCargo() {
+		return cargo;
+	}
+	public void setCargo(int cargo) {
+		this.cargo = cargo;
+	}
+	public int getCentroCosto() {
+		return centroCosto;
+	}
+	public void setCentroCosto(int centroCosto) {
+		this.centroCosto = centroCosto;
+	}
+	public int getCompania() {
+		return compania;
+	}
+	public void setCompania(int compania) {
+		this.compania = compania;
+	}
+	public int getPeriodo() {
+		return periodo;
+	}
+	public void setPeriodo(int periodo) {
+		this.periodo = periodo;
+	}
+	
+}

@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://ws.saen.sv.avantia.com" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://ws.saen.sv.avantia.com" xmlns:intf="http://ws.saen.sv.avantia.com" xmlns:tns1="http://entity.db.saen.sv.avantia.com" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema elementFormDefault="qualified" targetNamespace="http://ws.saen.sv.avantia.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://entity.db.saen.sv.avantia.com"/>
+   <element name="getCompanias">
+    <complexType/>
+   </element>
+   <element name="getCompaniasResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getCompaniasReturn" type="tns1:Compania"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getPeriodos">
+    <complexType/>
+   </element>
+   <element name="getPeriodosResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getPeriodosReturn" type="tns1:Periodo"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getCentroCosto">
+    <complexType/>
+   </element>
+   <element name="getCentroCostoResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getCentroCostoReturn" type="tns1:CentroCosto"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getMovin">
+    <complexType/>
+   </element>
+   <element name="getMovinResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getMovinReturn" type="tns1:Movin"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="createEmpledo">
+    <complexType>
+     <sequence>
+      <element name="empleadoRegister" type="impl:EmpleadoRegister"/>
+      <element maxOccurs="unbounded" name="idMovimientos" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <complexType name="EmpleadoRegister">
+    <sequence>
+     <element name="apellido" nillable="true" type="xsd:string"/>
+     <element name="cargo" type="xsd:int"/>
+     <element name="centroCosto" type="xsd:int"/>
+     <element name="codigo" nillable="true" type="xsd:string"/>
+     <element name="compania" type="xsd:int"/>
+     <element name="cuentaBanc" nillable="true" type="xsd:string"/>
+     <element name="direccion" nillable="true" type="xsd:string"/>
+     <element name="direccion1" nillable="true" type="xsd:string"/>
+     <element name="fechaNac" nillable="true" type="xsd:string"/>
+     <element name="nacionalidad" nillable="true" type="xsd:string"/>
+     <element name="noDocumento" nillable="true" type="xsd:string"/>
+     <element name="nombre" nillable="true" type="xsd:string"/>
+     <element name="periodo" type="xsd:int"/>
+     <element name="salario" type="xsd:double"/>
+     <element name="sexo" nillable="true" type="xsd:string"/>
+     <element name="telefono" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <element name="createEmpledoResponse">
+    <complexType>
+     <sequence>
+      <element name="createEmpledoReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getCargos">
+    <complexType/>
+   </element>
+   <element name="getCargosResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getCargosReturn" type="tns1:Cargo"/>
+     </sequence>
+    </complexType>
+   </element>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://entity.db.saen.sv.avantia.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://ws.saen.sv.avantia.com"/>
+   <complexType name="Pais">
+    <sequence>
+     <element name="area" nillable="true" type="xsd:string"/>
+     <element name="id" nillable="true" type="xsd:int"/>
+     <element name="moneda" nillable="true" type="xsd:string"/>
+     <element name="nombre" nillable="true" type="xsd:string"/>
+     <element name="simbolomonetario" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="Rubro">
+    <sequence>
+     <element name="descripcion" nillable="true" type="xsd:string"/>
+     <element name="id" nillable="true" type="xsd:int"/>
+     <element name="rubro" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="Compania">
+    <sequence>
+     <element name="id" nillable="true" type="xsd:int"/>
+     <element name="idPais" nillable="true" type="tns1:Pais"/>
+     <element name="idRubro" nillable="true" type="tns1:Rubro"/>
+     <element name="nit" nillable="true" type="xsd:string"/>
+     <element name="nombre" nillable="true" type="xsd:string"/>
+     <element name="telefono" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="Periodo">
+    <sequence>
+     <element name="descripcion" nillable="true" type="xsd:string"/>
+     <element name="diasEjecucionJob" nillable="true" type="xsd:string"/>
+     <element name="horaEjecucionJob" nillable="true" type="xsd:string"/>
+     <element name="id" nillable="true" type="xsd:int"/>
+     <element name="noDias" nillable="true" type="xsd:int"/>
+     <element name="nombre" nillable="true" type="xsd:string"/>
+     <element name="useJob" nillable="true" type="xsd:int"/>
+    </sequence>
+   </complexType>
+   <complexType name="CentroCosto">
+    <sequence>
+     <element name="descripcion" nillable="true" type="xsd:string"/>
+     <element name="id" nillable="true" type="xsd:int"/>
+     <element name="nombre" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="TipoMovin">
+    <sequence>
+     <element name="descripcion" nillable="true" type="xsd:string"/>
+     <element name="id" nillable="true" type="xsd:int"/>
+     <element name="tipo" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="Movin">
+    <sequence>
+     <element name="descripcion" nillable="true" type="xsd:string"/>
+     <element name="estado" nillable="true" type="xsd:int"/>
+     <element name="fechaCreacion" nillable="true" type="xsd:dateTime"/>
+     <element name="fechaUpdate" nillable="true" type="xsd:dateTime"/>
+     <element name="id" nillable="true" type="xsd:int"/>
+     <element name="idPais" nillable="true" type="tns1:Pais"/>
+     <element name="idPeriodo" nillable="true" type="tns1:Periodo"/>
+     <element name="idTipoMovin" nillable="true" type="tns1:TipoMovin"/>
+     <element name="nombre" nillable="true" type="xsd:string"/>
+     <element name="repeticion" nillable="true" type="xsd:int"/>
+     <element name="requierePagoPatronal" nillable="true" type="xsd:int"/>
+    </sequence>
+   </complexType>
+   <complexType name="Cargo">
+    <sequence>
+     <element name="descripcion" nillable="true" type="xsd:string"/>
+     <element name="id" nillable="true" type="xsd:int"/>
+     <element name="nombre" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="getPeriodosRequest">
+
+      <wsdl:part element="impl:getPeriodos" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getMovinRequest">
+
+      <wsdl:part element="impl:getMovin" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getCompaniasResponse">
+
+      <wsdl:part element="impl:getCompaniasResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="createEmpledoResponse">
+
+      <wsdl:part element="impl:createEmpledoResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getCargosRequest">
+
+      <wsdl:part element="impl:getCargos" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getMovinResponse">
+
+      <wsdl:part element="impl:getMovinResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getCargosResponse">
+
+      <wsdl:part element="impl:getCargosResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getPeriodosResponse">
+
+      <wsdl:part element="impl:getPeriodosResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getCentroCostoRequest">
+
+      <wsdl:part element="impl:getCentroCosto" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getCentroCostoResponse">
+
+      <wsdl:part element="impl:getCentroCostoResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="createEmpledoRequest">
+
+      <wsdl:part element="impl:createEmpledo" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getCompaniasRequest">
+
+      <wsdl:part element="impl:getCompanias" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:portType name="SincronizationInterview">
+
+      <wsdl:operation name="getCompanias">
+
+         <wsdl:input message="impl:getCompaniasRequest" name="getCompaniasRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getCompaniasResponse" name="getCompaniasResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getPeriodos">
+
+         <wsdl:input message="impl:getPeriodosRequest" name="getPeriodosRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getPeriodosResponse" name="getPeriodosResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getCentroCosto">
+
+         <wsdl:input message="impl:getCentroCostoRequest" name="getCentroCostoRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getCentroCostoResponse" name="getCentroCostoResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getMovin">
+
+         <wsdl:input message="impl:getMovinRequest" name="getMovinRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getMovinResponse" name="getMovinResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="createEmpledo">
+
+         <wsdl:input message="impl:createEmpledoRequest" name="createEmpledoRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:createEmpledoResponse" name="createEmpledoResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getCargos">
+
+         <wsdl:input message="impl:getCargosRequest" name="getCargosRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getCargosResponse" name="getCargosResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="SincronizationInterviewSoapBinding" type="impl:SincronizationInterview">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="getCompanias">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getCompaniasRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getCompaniasResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getPeriodos">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getPeriodosRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getPeriodosResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getCentroCosto">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getCentroCostoRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getCentroCostoResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getMovin">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getMovinRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getMovinResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="createEmpledo">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="createEmpledoRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="createEmpledoResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getCargos">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getCargosRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getCargosResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="SincronizationInterviewService">
+
+      <wsdl:port binding="impl:SincronizationInterviewSoapBinding" name="SincronizationInterview">
+
+         <wsdlsoap:address location="http://localhost:8085/saen-web/services/SincronizationInterview"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

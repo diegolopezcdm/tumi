@@ -1,0 +1,542 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml">
+
+	<ui:define name="content">
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript library="js" name="calendar_es.js" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+
+		<h3 class="hardblue TexAlCenter">Registro de movimientos</h3>
+
+		<div class="ContainerIndent">
+			<p:panel>
+				<div class="ContainerIndent">
+
+					<h:form id="formTblMov">
+						<p:panel style="text-align:right;border:none">
+
+							<h:commandLink action="#{movimientoBean.generarExcel()}">
+								<p:graphicImage id="excel" name="/img/excel.png" width="40" />
+								<p:tooltip id="tfE" for="excel" value="Exportar a Excel"
+									position="top" />
+							</h:commandLink>
+
+							<h:commandLink action="#{movimientoBean.generarPdf()}">
+								<p:graphicImage id="pdf" name="/img/pdf.png" width="40" />
+								<p:tooltip id="tfP" for="pdf" value="Exportar a PDF"
+									position="top" />
+							</h:commandLink>
+
+						</p:panel>
+						<p:dataTable id="tblMov" var="lazyModel"
+							value="#{movimientoBean.lazyModel}" paginator="true" rows="10"
+							selectionMode="single"
+							loadingmessage="Realizando la operación, por favor espere un momento..."
+							selection="#{movimientoBean.selectedMovin}"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							lazy="true" rowKey="#{lazyModel.id}"
+							rowsPerPageTemplate="10,15,20"
+							emptyMessage="No se encontro registros" reflow="true"
+							widgetVar="w_tblMov">
+
+							<p:ajax event="rowSelect" oncomplete="PF('w_dlgMod').show();"
+								update="form2" listener="#{movimientoBean.onRowSelect(event)}" />
+
+							<f:facet name="header">
+                                Movimientos registrados
+                            </f:facet>
+
+							<p:column headerText="Id" rendered="false">
+								<h:outputText value="#{lazyModel.id}" />
+							</p:column>
+
+							<p:column headerText="Nombre" filterBy="#{lazyModel.nombre}"
+								filterMatchMode="contains" sortBy="#{lazyModel.nombre}">
+								<h:outputText value="#{lazyModel.nombre}" />
+							</p:column>
+
+							<p:column headerText="Tipo movimiento" filterMatchMode="contains"
+								filterBy="#{lazyModel.idTipoMovin.tipo}"
+								sortBy="#{lazyModel.idTipoMovin.tipo}">
+								<h:outputText value="#{lazyModel.idTipoMovin.tipo}" />
+							</p:column>
+
+							<p:column headerText="Detalles">
+								<div id="colbtn1" style="text-align: center">
+									<p:commandButton update="formInfo" id="btnDetail"
+										styleClass="btnInfo" oncomplete="PF('w_dlgInfo').show()"
+										icon="fa icon-search Fs13.5 white" title="View">
+										<f:setPropertyActionListener value="#{lazyModel}"
+											target="#{movimientoBean.selectedMovin}" />
+										<p:tooltip id="tDet" for="btnDetail"
+											value="Visualizar los detalles del movimiento" position="top" />
+									</p:commandButton>
+								</div>
+							</p:column>
+
+							<p:column headerText="País" filterBy="#{lazyModel.idPais.nombre}"
+								filterMatchMode="contains" sortBy="#{lazyModel.idPais.nombre}">
+								<h:outputText value="#{lazyModel.idPais.nombre}" />
+							</p:column>
+
+							<p:column headerText="Período" filterMatchMode="contains"
+								filterBy="#{lazyModel.idPeriodo.nombre}"
+								sortBy="#{lazyModel.idPeriodo.nombre}">
+								<h:outputText value="#{lazyModel.idPeriodo.nombre}" />
+							</p:column>
+
+							<p:column headerText="Pago patronal"
+								sortBy="#{lazyModel.requierePagoPatronal}">
+								<h:outputText
+									value="#{lazyModel.requierePagoPatronal==1?'Si':'No'}" />
+							</p:column>
+
+							<p:column headerText="Movimiento sobre movimiento">
+								<div id="colbtn2" style="text-align: center">
+									<p:commandButton styleClass="btnInfo" ajax="false"
+										icon="fa  icon-exchange Fs13.5 white" id="btnAsis"
+										action="#{movimientoBean.goMovinSobreMovin()}">
+										<f:setPropertyActionListener value="#{lazyModel}"
+											target="#{movimientoBean.selectedMovin}" />
+										<p:tooltip id="tMv" for="btnAsis"
+											value="Agregar un movimiento al movimiento seleccionado"
+											position="top" />
+									</p:commandButton>
+								</div>
+							</p:column>
+
+							<f:facet name="footer">
+								<p:commandButton style="width:150px"
+									rendered="#{sessionBean.renderizarComponente('BTN_GUARDAR')}"
+									icon="fa icon-plus Fs15 white"
+									oncomplete="PF('w_dlgAdd').show();" value="Agregar" />
+
+							</f:facet>
+						</p:dataTable>
+					</h:form>
+				</div>
+			</p:panel>
+
+			<p:dialog id="dlgInfo" header="Detalles de movimiento"
+				widgetVar="w_dlgInfo" modal="true" resizable="false"
+				closable="false" showEffect="fade" hideEffect="fade"
+				responsive="true">
+				<h:form id="formInfo">
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:outputLabel value="Descripción: " styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:outputLabel id="inf1"
+								value="#{movimientoBean.selectedMovin.descripcion}" />
+						</div>
+					</div>
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:outputLabel value="Fecha de creación: "
+								styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:outputLabel id="inf2"
+								value="#{movimientoBean.selectedMovin.fechaCreacion}">
+								<f:convertDateTime pattern="dd-MM-yyyy" />
+							</p:outputLabel>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:outputLabel value="Fecha de actualización: "
+								styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:outputLabel id="inf3"
+								value="#{movimientoBean.selectedMovin.fechaUpdate}">
+								<f:convertDateTime pattern="dd-MM-yyyy" />
+							</p:outputLabel>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:outputLabel value="Estado: " styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:outputLabel id="inf4"
+								value="#{movimientoBean.selectedMovin.estado==1?'Activo':'Inactivo'}" />
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:outputLabel value="Número de repetición: "
+								styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:outputLabel id="inf5"
+								value="#{movimientoBean.selectedMovin.repeticion}" />
+						</div>
+					</div>
+
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-12 ui-lg-12 " style="text-align: center">
+							<p:commandButton styleClass="btnClose" id="btnClose"
+								value="Cerrar" oncomplete="PF('w_dlgInfo').hide();"
+								icon="fa icon-cancel-circled Fs13 white" />
+						</div>
+					</div>
+				</h:form>
+			</p:dialog>
+
+			<div class="EmptyBox20"></div>
+
+		</div>
+
+		<p:dialog id="dlgAdd" header="Agregar un movimiento"
+			styleClass="disable-scroll movimiento-modal-body"
+			widgetVar="w_dlgAdd" modal="true" resizable="false" closable="false"
+			showEffect="fade" hideEffect="fade" responsive="true">
+
+			<h:form id="form1">
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-2">
+						<p:outputLabel value="País: " styleClass="text-label-left" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<p:selectOneMenu id="pais1" required="true" autoWidth="off"
+							requiredMessage="Seleccione un país" style="width:90%"
+							value="#{movimientoBean.movin.idPais}" converter="paisConverter">
+							<f:selectItem itemValue="#{null}" itemLabel="- Seleccione -" />
+							<f:selectItems value="#{movimientoBean.listPais}" var="pais"
+								itemValue="#{pais}" itemLabel="#{pais.nombre}" />
+						</p:selectOneMenu>
+					</div>
+
+					<div class="ui-g-12 ui-md-6 ui-lg-1" />
+
+					<div class="ui-g-12 ui-md-6 ui-lg-2">
+						<p:outputLabel value="Tipo movimiento: "
+							styleClass="text-label-left" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<p:selectOneMenu id="tm1" required="true" style="width:90%"
+							requiredMessage="Seleccione un movimiento" autoWidth="off"
+							value="#{movimientoBean.movin.idTipoMovin}"
+							converter="tipoMovinConverter">
+							<f:selectItem itemValue="#{null}" itemLabel="- Seleccione -" />
+							<f:selectItems value="#{movimientoBean.listTipoMovin}" var="tmov"
+								itemValue="#{tmov}" itemLabel="#{tmov.tipo}" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-2">
+						<p:outputLabel value="Período: " styleClass="text-label-left" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<p:selectOneMenu id="per1" required="true" style="width:90%"
+							requiredMessage="Seleccione un período" autoWidth="off"
+							value="#{movimientoBean.movin.idPeriodo}"
+							converter="periodoConverter">
+							<f:selectItem itemValue="#{null}" itemLabel="- Seleccione -" />
+							<f:selectItems value="#{movimientoBean.listPeriodo}" var="per"
+								itemValue="#{per}" itemLabel="#{per.nombre}" />
+						</p:selectOneMenu>
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-1" />
+					<div class="ui-g-12 ui-md-6 ui-lg-2">
+						<p:outputLabel value="Estado: " styleClass="text-label-left" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<p:selectOneMenu id="est1" value="#{movimientoBean.estado}"
+							style="width:90%" required="true" autoWidth="off"
+							requiredMessage="Seleccione un estado">
+							<f:selectItem itemLabel="- Seleccione -" />
+							<f:selectItem itemValue="Activo" itemLabel="Activo" />
+							<f:selectItem itemValue="Inactivo" itemLabel="Inactivo" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-2">
+						<p:outputLabel value="Nombre: " styleClass="text-label-left" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<p:inputText id="nombre1" value="#{movimientoBean.movin.nombre}"
+							style="width:90%" maxlength="40" autocomplete="off"
+							requiredMessage="Ingrese un nombre">
+							<f:attribute name="message" value="Ingrese un nombre" />
+							<f:validator validatorId="RequiredValidator" />
+						</p:inputText>
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-1" />
+					<div class="ui-g-12 ui-md-6 ui-lg-2">
+						<p:outputLabel value="Descripción: " styleClass="text-label-left" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<p:inputTextarea rows="3" id="desc1" required="true"
+							autocomplete="off" requiredMessage="Ingrese una descripción"
+							style="width:90%" value="#{movimientoBean.movin.descripcion}">
+							<f:attribute name="message" value="Ingrese una descripción" />
+							<f:validator validatorId="RequiredValidator" />
+						</p:inputTextarea>
+					</div>
+				</div>
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-2">
+						<p:outputLabel value="Fecha creación: "
+							styleClass="text-label-left" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<p:calendar id="fchcr1" required="true" autocomplete="off"
+							locale="es" requiredMessage="Seleccione la fecha de creación"
+							value="#{movimientoBean.movin.fechaCreacion}"
+							pattern="dd/MM/yyyy" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-1" />
+					<div class="ui-g-12 ui-md-6 ui-lg-2">
+						<p:outputLabel value="Repetición: " styleClass="text-label-left" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<p:spinner id="rep1" min="-1" required="true"
+							requiredMessage="Ingrese una repetición"
+							title="Seleccione un valor -1 para repeticiones infinitas o un valor mayor que 1 para el número de repeticiones"
+							value="#{movimientoBean.movin.repeticion}">
+							<p:tooltip id="tf2" for="rep1" showEvent="focus" hideEvent="blur" />
+						</p:spinner>
+					</div>
+				</div>
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<p:outputLabel value="Pago patronal: "
+							styleClass="text-label-left" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<p:selectBooleanCheckbox id="pat1"
+							value="#{movimientoBean.ejecutar}"
+							title="Seleccione para aplicar pago patronal" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-3" />
+					<div class="ui-g-12 ui-md-6 ui-lg-3" />
+
+				</div>
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-6">
+						<p:commandButton styleClass="btnSave" id="btnSave" value="Guardar"
+							actionListener="#{movimientoBean.crearMovin()}"
+							oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblMov').clearFilters();PF('w_dlgAdd').hide();}"
+							icon="fa fa-save Fs15 white" update="formTblMov:tblMov,form1,msg" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-6">
+						<p:commandButton styleClass="btnCancel" id="btnCancel"
+							value="Cancelar" process="@this"
+							actionListener="#{movimientoBean.cancelar()}"
+							oncomplete="PF('w_dlgAdd').hide();" icon="fa fa-times Fs15 white"
+							update="formTblMov:tblMov,form1,msg" />
+					</div>
+				</div>
+
+			</h:form>
+		</p:dialog>
+
+		<p:dialog id="dlgMod" header="Modificar un movimiento"
+			styleClass="disable-scroll movimiento-modal-body" closable="false"
+			widgetVar="w_dlgMod" modal="true" resizable="false" showEffect="fade"
+			hideEffect="fade" responsive="true">
+
+			<h:form id="form2">
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-2">
+						<p:outputLabel value="País: " styleClass="text-label-left" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<p:selectOneMenu id="pais2" required="true"
+							requiredMessage="Seleccione un país" style="width:90%"
+							value="#{movimientoBean.selectedMovin.idPais}" autoWidth="off"
+							converter="paisConverter">
+							<f:selectItem itemValue="#{null}" itemLabel="- Seleccione País -" />
+							<f:selectItems value="#{movimientoBean.listPais}" var="pais"
+								itemValue="#{pais}" itemLabel="#{pais.nombre}" />
+						</p:selectOneMenu>
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-1" />
+					<div class="ui-g-12 ui-md-6 ui-lg-2">
+						<p:outputLabel value="Tipo movimiento: "
+							styleClass="text-label-left" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<p:selectOneMenu id="tm2" required="true" autoWidth="off"
+							requiredMessage="Seleccione un movimiento" style="width:90%"
+							value="#{movimientoBean.selectedMovin.idTipoMovin}"
+							converter="tipoMovinConverter">
+							<f:selectItem itemValue="#{null}"
+								itemLabel="- Seleccione Movimiento -" />
+							<f:selectItems value="#{movimientoBean.listTipoMovin}" var="tmov"
+								itemValue="#{tmov}" itemLabel="#{tmov.tipo}" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-2">
+						<p:outputLabel value="Período: " styleClass="text-label-left" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<p:selectOneMenu id="per2" required="true"
+							requiredMessage="Seleccione un período" style="width:90%"
+							value="#{movimientoBean.selectedMovin.idPeriodo}" autoWidth="off"
+							converter="periodoConverter">
+							<f:selectItem itemValue="#{null}"
+								itemLabel="- Seleccione Periodo -" />
+							<f:selectItems value="#{movimientoBean.listPeriodo}" var="per"
+								itemValue="#{per}" itemLabel="#{per.nombre}" />
+						</p:selectOneMenu>
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-1" />
+					<div class="ui-g-12 ui-md-6 ui-lg-2">
+						<p:outputLabel value="Estado: " styleClass="text-label-left" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<p:selectOneMenu id="est2" value="#{movimientoBean.estado}"
+							style="width:90%" required="true" autoWidth="off"
+							requiredMessage="Seleccione un estado">
+							<f:selectItem itemLabel="- Seleccione un estado -" />
+							<f:selectItem itemValue="Activo" itemLabel="Activo" />
+							<f:selectItem itemValue="Inactivo" itemLabel="Inactivo" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-2">
+						<p:outputLabel value="Nombre: " styleClass="text-label-left" />
+					</div>
+
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<p:inputText id="nombre2" style="width:90%" autocomplete="off"
+							value="#{movimientoBean.selectedMovin.nombre}" maxlength="40"
+							requiredMessage="Ingrese un nombre">
+							<f:attribute name="message" value="Ingrese un nombre" />
+							<f:validator validatorId="RequiredValidator" />
+						</p:inputText>
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-1" />
+					<div class="ui-g-12 ui-md-6 ui-lg-2">
+						<p:outputLabel value="Descripción: " styleClass="text-label-left" />
+					</div>
+
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<p:inputTextarea rows="3" id="desc2" required="true"
+							autocomplete="off" requiredMessage="Ingrese una descripción"
+							style="width:90%"
+							value="#{movimientoBean.selectedMovin.descripcion}">
+							<f:attribute name="message" value="Ingrese una descripción" />
+							<f:validator validatorId="RequiredValidator" />
+						</p:inputTextarea>
+					</div>
+				</div>
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-2">
+						<p:outputLabel value="Fecha creación: "
+							styleClass="text-label-left" />
+					</div>
+
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<p:calendar id="fchcr2" required="true" autocomplete="off"
+							locale="es" requiredMessage="Seleccione la fecha de creación"
+							value="#{movimientoBean.selectedMovin.fechaCreacion}"
+							pattern="dd/MM/yyyy" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-1" />
+					<div class="ui-g-12 ui-md-6 ui-lg-2">
+						<p:outputLabel value="Repetición: " styleClass="text-label-left" />
+					</div>
+
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<p:spinner id="rep2" min="-1" required="true"
+							requiredMessage="Ingrese una repetición"
+							title="Seleccione un valor -1 para repeticiones infinitas o un valor mayor que 1 para el número de repeticiones"
+							value="#{movimientoBean.selectedMovin.repeticion}">
+							<p:tooltip id="tf5" for="rep2" showEvent="focus" hideEvent="blur" />
+						</p:spinner>
+					</div>
+				</div>
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<p:outputLabel value="Pago patronal: "
+							styleClass="text-label-left" />
+					</div>
+
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<p:selectBooleanCheckbox id="pat2"
+							value="#{movimientoBean.ejecutar}" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-3" />
+					<div class="ui-g-12 ui-md-6 ui-lg-3" />
+				</div>
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-4">
+
+						<p:commandButton styleClass="btnEdit" id="btnEdit"
+							value="Modificar"
+							disabled="#{sessionBean.renderizarComponente('BTN_EDITAR') eq false?true:false}"
+							actionListener="#{movimientoBean.editarMovin()}"
+							oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblMov').clearFilters();PF('w_dlgMod').hide();}"
+							icon="fa icon-edit-1 Fs15 white"
+							update="formTblMov:tblMov,form2,msg" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-4">
+						<p:commandButton styleClass="btnDelete" id="btnDelete"
+							disabled="#{sessionBean.renderizarComponente('BTN_ELIMINAR') eq false?true:false}"
+							value="Eliminar" icon="fa icon-trash Fs15 white"
+							actionListener="#{movimientoBean.eliminarMovin()}"
+							update="formTblMov:tblMov,form2,msg">
+							<p:confirm message="Desea eliminar el registro?"
+								icon="ui-icon-alert" />
+						</p:commandButton>
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-4">
+						<p:commandButton styleClass="btnCancel2" id="btnCancel2"
+							value="Cancelar" icon="fa fa-times Fs15 white" process="@this"
+							oncomplete="PF('w_dlgMod').hide();"
+							actionListener="#{movimientoBean.limpiarSelected()}"
+							update="formTblMov:tblMov,form2,msg" />
+					</div>
+
+
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+						<p:commandButton title="YesButton" value="SI"
+							oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblMov').clearFilters();PF('w_dlgMod').hide();}"
+							styleClass="ui-confirmdialog-yes" style="margin-left: 50px" />
+						<p:commandButton title="NoButton" value="No"
+							oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblMov').clearFilters();PF('w_dlgMod').hide();}"
+							styleClass="ui-confirmdialog-no" />
+					</p:confirmDialog>
+
+				</div>
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+
+</ui:composition>

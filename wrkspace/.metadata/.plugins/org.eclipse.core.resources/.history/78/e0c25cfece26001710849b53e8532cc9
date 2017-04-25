@@ -1,0 +1,391 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml">
+
+	<ui:define name="content">
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+
+		<h3 class="hardblue TexAlCenter">Registro de períodos</h3>
+
+
+		<div class="ContainerIndent">
+			<p:panel>
+				<div class="ContainerIndent">
+
+					<h:form id="formTblPeriodos">
+
+						<p:dataTable id="tblPeriodos" var="lazyModel"
+							value="#{periodoBean.lazyModel}" paginator="true" rows="10"
+							selectionMode="single" selection="#{periodoBean.selectedPeriodo}"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							lazy="true" rowKey="#{lazyModel.id}"
+							rowsPerPageTemplate="10,15,20"
+							loadingmessage="Realizando la operación, por favor espere un momento..."
+							emptyMessage="No se encontro registros" reflow="true"
+							widgetVar="w_tblPeriodo">
+
+							<p:ajax event="rowSelect" oncomplete="PF('w_dlgMod').show();"
+								update="form2" listener="#{periodoBean.onRowSelect(event)}" />
+
+							<f:facet name="header">
+                             Períodos registrados 
+                            </f:facet>
+
+							<p:column headerText="Id" rendered="false">
+								<h:outputText value="#{lazyModel.id}" />
+							</p:column>
+
+							<p:column headerText="Nombre">
+								<h:outputText value="#{lazyModel.nombre}" />
+							</p:column>
+
+							<p:column headerText="Descripción">
+								<h:outputText value="#{lazyModel.descripcion}" />
+							</p:column>
+
+
+							<p:column headerText="Número de dias">
+								<h:outputText value="#{lazyModel.noDias}" />
+							</p:column>
+
+							<p:column headerText="Programar ejecución">
+								<h:outputText value="#{lazyModel.useJob==1?'Si':'No'}" />
+							</p:column>
+
+							<p:column headerText="Dias de ejecución">
+								<h:outputText value="#{lazyModel.diasEjecucionJob}" />
+							</p:column>
+
+							<p:column headerText="Horas de ejecución">
+								<h:outputText value="#{lazyModel.horaEjecucionJob}">
+									<f:convertDateTime pattern="HH:mm:ss" />
+								</h:outputText>
+							</p:column>
+
+
+							<f:facet name="footer">
+								<p:commandButton style="width:150px"
+									rendered="#{sessionBean.renderizarComponente('BTN_GUARDAR')}"
+									icon="fa icon-plus Fs15 white"
+									oncomplete="PF('w_dlgAdd').show();" value="Agregar" />
+
+							</f:facet>
+						</p:dataTable>
+					</h:form>
+				</div>
+			</p:panel>
+			<div class="EmptyBox20"></div>
+		</div>
+
+		<p:dialog id="dlgAdd" header="Agregar un período" widgetVar="w_dlgAdd"
+			styleClass="periodo-modal-body" modal="true" resizable="false"
+			showEffect="fade" hideEffect="fade" responsive="true"
+			closable="false">
+
+			<h:form id="form1">
+
+				<div id="divContentPeriodoAdd">
+
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:outputLabel value="Período: " styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:selectOneMenu id="per1" value="#{periodoBean.tiempo}"
+								required="true" requiredMessage="Seleccione un período"
+								style="width:90%">
+								<f:selectItem itemLabel="- Período -" />
+								<f:selectItem itemValue="Mensual" itemLabel="Mensual" />
+								<f:selectItem itemValue="Quincenal" itemLabel="Quincenal" />
+								<f:selectItem itemValue="Anual" itemLabel="Anual" />
+								<p:ajax event="change" update="form1"
+									listener="#{periodoBean.cambiarMask()}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:outputLabel value="Días de ejecución"
+								rendered="#{periodoBean.renderDias}"
+								styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:inputMask mask="#{periodoBean.mascara}" id="txtM1"
+								rendered="#{periodoBean.renderDias}" required="true"
+								requiredMessage="Ingrese los días " autocomplete="off"
+								value="#{periodoBean.periodo.diasEjecucionJob}"
+								styleClass="imput-text-box"
+								title="Indique el dia del mes en el que se realiza la ejecución">
+								<p:tooltip id="tfp1" for="txtM1" showEvent="focus"
+									hideEvent="blur" />
+							</p:inputMask>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:outputLabel value="Programar ejecución: "
+								styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:selectBooleanCheckbox id="pe1" value="#{periodoBean.ejecutar}" />
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:outputLabel value="Nombre: " styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:inputText id="n1" value="#{periodoBean.periodo.nombre}"
+								required="true" requiredMessage="Ingrese un nombre"
+								autocomplete="off" maxlength="40" styleClass="imput-text-box">
+								<f:attribute name="message" value="Ingrese un nombre" />
+								<f:validator validatorId="RequiredValidator" />
+							</p:inputText>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:outputLabel value="Descripción: " styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:inputTextarea rows="3" id="d1" required="true"
+								requiredMessage="Ingrese una descripción" maxlength="150"
+								value="#{periodoBean.periodo.descripcion}"
+								styleClass="imput-text-box">
+								<f:attribute name="message" value="Ingrese una descripción" />
+								<f:validator validatorId="RequiredValidator" />
+							</p:inputTextarea>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:outputLabel value="Número de días: "
+								styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:inputMask mask="#{periodoBean.mascaraDias}" id="de1"
+								required="true" autocomplete="off"
+								requiredMessage="Ingrese el número de días"
+								value="#{periodoBean.periodo.noDias}"
+								styleClass="imput-text-box" />
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:outputLabel value="Horas de ejecución: "
+								styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:inputMask mask="99:99" id="he1" autocomplete="off"
+								value="#{periodoBean.periodo.horaEjecucionJob}"
+								styleClass="imput-text-box"
+								title="Ingrese una hora en formato de 24, ejemplo: 23:59">
+								<p:tooltip id="tf1" for="he1" showEvent="focus" hideEvent="blur" />
+							</p:inputMask>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:commandButton styleClass="btnSave" id="btnSave"
+								value="Guardar" actionListener="#{periodoBean.crearPeriodo()}"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_dlgAdd').hide()}"
+								icon="fa fa-save Fs15 white"
+								update="formTblPeriodos:tblPeriodos,form1,msg" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:commandButton styleClass="btnCancel" id="btnCancel"
+								value="Cancelar" oncomplete="PF('w_dlgAdd').hide();"
+								icon="fa fa-times Fs15 white" process="@this"
+								update="formTblPeriodos:tblPeriodos,form1,msg">
+								<p:resetInput target="form1" />
+							</p:commandButton>
+						</div>
+					</div>
+				</div>
+
+			</h:form>
+		</p:dialog>
+
+		<p:dialog id="dlgMod" header="Modificar un período" closable="false"
+			widgetVar="w_dlgMod" modal="true" resizable="false6"
+			styleClass="periodo-modal-body" showEffect="fade" hideEffect="fade"
+			width="auto" responsive="true">
+
+			<h:form id="form2">
+				<div id="divContentPeriodoModd">
+
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:outputLabel value="Período: " styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:selectOneMenu id="per1" value="#{periodoBean.tiempo}"
+								style="width:90%">									>
+									<f:selectItem itemLabel="- Período -" />
+								<f:selectItem itemValue="Mensual" itemLabel="Mensual" />
+								<f:selectItem itemValue="Quincenal" itemLabel="Quincenal" />
+								<f:selectItem itemValue="Anual" itemLabel="Anual" />
+								<p:ajax event="change" update="form2"
+									listener="#{periodoBean.cambiarMask()}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:outputLabel value="Días de ejecución: "
+								rendered="#{periodoBean.renderDias}"
+								styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+
+							<p:inputMask mask="#{periodoBean.mascara}" id="txtM2"
+								rendered="#{periodoBean.renderDias}"
+								value="#{periodoBean.selectedPeriodo.diasEjecucionJob}"
+								styleClass="imput-text-box" required="true" autocomplete="off"
+								requiredMessage="Ingrese los días "
+								title="Indique el dia del mes en el que se realiza la ejecución">
+								<p:tooltip id="txfP2" for="txtM2" showEvent="focus"
+									hideEvent="blur" />
+							</p:inputMask>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:outputLabel value="Programar ejecución: "
+								styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:selectBooleanCheckbox id="pe2" value="#{periodoBean.ejecutar}" />
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:outputLabel value="Nombre: " styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:inputText id="n2" required="true" maxlength="40"
+								requiredMessage="Ingrese un nombre" autocomplete="off"
+								value="#{periodoBean.selectedPeriodo.nombre}"
+								styleClass="imput-text-box">
+								<f:attribute name="message" value="Ingrese un nombre" />
+								<f:validator validatorId="RequiredValidator" />
+							</p:inputText>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:outputLabel value="Descripción: " styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:inputTextarea rows="3" id="d2" required="true"
+								requiredMessage="Ingrese una descripción" maxlength="150"
+								value="#{periodoBean.selectedPeriodo.descripcion}"
+								styleClass="imput-text-box">
+								<f:attribute name="message" value="Ingrese una descripción" />
+								<f:validator validatorId="RequiredValidator" />
+							</p:inputTextarea>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:outputLabel value="Número de días: "
+								styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:inputMask mask="#{periodoBean.mascaraDias}" id="nd2"
+								autocomplete="off" value="#{periodoBean.selectedPeriodo.noDias}"
+								styleClass="imput-text-box" />
+						</div>
+					</div>
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:outputLabel value="Horas de ejecución: "
+								styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:inputMask mask="99:99" id="he2"
+								value="#{periodoBean.selectedPeriodo.horaEjecucionJob}"
+								styleClass="imput-text-box" autocomplete="off"
+								title="Ingrese una hora en formato de 24, ejemplo: 23:59">
+								<p:tooltip id="tf2" for="he2" showEvent="focus" hideEvent="blur" />
+							</p:inputMask>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+							<p:commandButton styleClass="btnEdit" id="btnEdit"
+								value="Modificar"
+								disabled="#{sessionBean.renderizarComponente('BTN_EDITAR') eq false?true:false}"
+								actionListener="#{periodoBean.editarPeriodo()}"
+								icon="fa icon-edit-1 Fs15 white"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_dlgMod').hide();}"
+								update="formTblPeriodos:tblPeriodos,form2,msg" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+
+							<p:commandButton styleClass="btnDelete" id="btnDelete"
+								disabled="#{sessionBean.renderizarComponente('BTN_ELIMINAR') eq false?true:false}"
+								value="Eliminar" icon="fa icon-trash Fs15 white"
+								actionListener="#{periodoBean.eliminarPeriodo()}"
+								update="formTblPeriodos:tblPeriodos,form2,msg">
+								<p:confirm message="Desea eliminar el registro?"
+									icon="ui-icon-alert" />
+							</p:commandButton>
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+							<p:commandButton styleClass="btnCancel2" id="btnCancel2"
+								value="Cancelar"
+								actionListener="#{periodoBean.cancelarSelected()}"
+								oncomplete="PF('w_dlgMod').hide();"
+								icon="fa fa-times Fs15 white" process="@this"
+								update="formTblPeriodos:tblPeriodos,form2,msg" />
+						</div>
+
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							<p:commandButton title="YesButton" value="SI"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_dlgMod').hide();}"
+								styleClass="ui-confirmdialog-yes" style="margin-left: 50px" />
+							<p:commandButton title="NoButton" value="No"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_dlgMod').hide();}"
+								styleClass="ui-confirmdialog-no" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+
+</ui:composition>

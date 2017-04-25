@@ -1,0 +1,285 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="../template/plantilla.xhtml">
+
+	<ui:define name="content">
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+
+		<h3 class="hardblue TexAlCenter">Registro de salarios mínimos</h3>
+
+		<div class="ContainerIndent">
+
+			<p:panel>
+				<div class="ContainerIndent">
+					<h:form id="formTblSM">
+						<p:panel style="text-align:right;border:none">
+
+							<h:commandLink action="#{salarioMinimoBean.generarExcel()}">
+								<p:graphicImage id="excel" name="/img/excel.png" width="40" />
+								<p:tooltip id="tfE" for="excel" value="Exportar a Excel"
+									position="top" />
+
+							</h:commandLink>
+
+							<h:commandLink action="#{salarioMinimoBean.generarPdf()}">
+								<p:graphicImage id="pdf" name="/img/pdf.png" width="40" />
+								<p:tooltip id="tfP" for="pdf" value="Exportar a PDF"
+									position="top" />
+
+							</h:commandLink>
+
+						</p:panel>
+						<p:dataTable id="tblSM" var="lazyModel"
+							value="#{salarioMinimoBean.lazyModel}" paginator="true" rows="10"
+							selectionMode="single"
+							selection="#{salarioMinimoBean.selectedSalarioMinimo}"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							lazy="true" rowKey="#{lazyModel.id}"
+							loadingmessage="Realizando la operación, por favor espere un momento..."
+							rowsPerPageTemplate="10,15,20"
+							emptyMessage="No se encontro registros" reflow="true"
+							widgetVar="w_tblSM">
+
+							<p:ajax event="rowSelect" oncomplete="PF('w_dlgMod').show();"
+								update="form2" />
+
+							<f:facet name="header">
+                                Salarios mínimos registrados
+                            </f:facet>
+
+							<p:column headerText="País" filterBy="#{lazyModel.idPais.nombre}"
+								filterMatchMode="contains" sortBy="#{lazyModel.idPais.nombre}">
+								<h:outputText value="#{lazyModel.idPais.nombre}" />
+							</p:column>
+
+							<p:column headerText="Rubro" sortBy="#{lazyModel.idPais.nombre}"
+								filterBy="#{lazyModel.idRubro.rubro}" filterMatchMode="contains">
+								<h:outputText value="#{lazyModel.idRubro.rubro}" />
+							</p:column>
+
+							<p:column headerText="Salario" filterBy="#{lazyModel.salario}"
+								filterMatchMode="exact" sortBy="#{lazyModel.salario}">
+								<f:facet name="filter">
+									<p:inputText onkeyup="PF('w_tblSM').filter();"
+										converter="javax.faces.BigDecimal" class="ui-column-filter" />
+								</f:facet>
+
+								<h:outputText value="#{lazyModel.salario}" />
+							</p:column>
+
+
+
+							<f:facet name="footer">
+								<p:commandButton style="width:150px"
+									rendered="#{sessionBean.renderizarComponente('BTN_GUARDAR')}"
+									icon="fa icon-plus Fs15 white"
+									oncomplete="PF('w_dlgAdd').show();" value="Agregar" />
+
+							</f:facet>
+						</p:dataTable>
+					</h:form>
+				</div>
+			</p:panel>
+
+			<div class="EmptyBox20"></div>
+
+		</div>
+
+
+		<p:dialog id="dlgAdd" header="Agregar un salario mínimo"
+			styleClass="modal-body" widgetVar="w_dlgAdd" closable="false"
+			modal="true" resizable="false6" showEffect="fade" hideEffect="fade"
+			responsive="true">
+			<h:form id="form1">
+				<div id="divContentSMAdd">
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6" style="width: 20% !important">
+							<p:outputLabel value="País: " styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:selectOneMenu id="pais1" styleClass="cmbStyle" required="true"
+								requiredMessage="Seleccione un país"
+								style="width: 78% !important;"
+								value="#{salarioMinimoBean.salarioMinimo.idPais}"
+								converter="paisConverter">
+								<f:selectItem itemValue="#{null}"
+									itemLabel="- Seleccione un Pais -" />
+								<f:selectItems value="#{salarioMinimoBean.listPais}" var="pais"
+									itemValue="#{pais}" itemLabel="#{pais.nombre}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6" style="width: 20% !important">
+							<p:outputLabel value="Rubro: " />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:selectOneMenu id="rub1" styleClass="cmbStyle" required="true"
+								requiredMessage="Seleccione un Rubro" filter="true"
+								filterMatchMode="contains"
+								value="#{salarioMinimoBean.salarioMinimo.idRubro}"
+								converter="rubroConverter">
+								<f:selectItem itemValue="#{null}"
+									itemLabel="- Seleccione un Rubro -" />
+								<f:selectItems value="#{salarioMinimoBean.listRubro}"
+									var="rubro" itemValue="#{rubro}" itemLabel="#{rubro.rubro}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6" style="width: 20% !important">
+							<p:outputLabel value="Salario: " styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:inputNumber id="sal1" decimalPlaces="2" decimalSeparator="."
+								required="true" requiredMessage="Ingrese un salario"
+								autocomplete="off"
+								value="#{salarioMinimoBean.salarioMinimo.salario}"
+								maxlength="40" styleClass="imput-text-box" />
+						</div>
+					</div>
+
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:commandButton styleClass="btnSave" id="btnSave"
+								value="Guardar"
+								actionListener="#{salarioMinimoBean.crearSalario()}"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblSM').clearFilters();PF('w_dlgAdd').hide();}"
+								icon="fa fa-save Fs15 white" update="formTblSM:tblSM,form1,msg" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:commandButton styleClass="btnCancel" id="btnCancel"
+								value="Cancelar" process="@this"
+								actionListener="#{salarioMinimoBean.cancelar()}"
+								oncomplete="PF('w_dlgAdd').hide();PF('w_tblSM').clearFilters()"
+								icon="fa fa-times Fs15 white" update="formTblSM:tblSM,form1,msg">
+								<p:resetInput target="form1" />
+							</p:commandButton>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+
+		<p:dialog id="dlgMod" header="Modificar un salario mínimo"
+			styleClass="modal-body" widgetVar="w_dlgMod" modal="true"
+			resizable="false6" closable="false" showEffect="fade"
+			hideEffect="fade" responsive="true">
+
+			<h:form id="form2">
+				<div id="divContentSMAdd">
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6" style="width: 30% !important">
+							<p:outputLabel value="País: " styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:selectOneMenu id="pais2" styleClass="cmbStyle" required="true"
+								requiredMessage="Seleccione un país"
+								style="width: 78% !important;"
+								value="#{salarioMinimoBean.selectedSalarioMinimo.idPais}"
+								converter="paisConverter">
+								<f:selectItem itemValue="#{null}"
+									itemLabel="- Seleccione un Pais -" />
+								<f:selectItems value="#{salarioMinimoBean.listPais}" var="pais"
+									itemValue="#{pais}" itemLabel="#{pais.nombre}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6" style="width: 30% !important">
+
+							<p:outputLabel value="Rubro: " />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:selectOneMenu id="rub1" styleClass="cmbStyle" required="true"
+								requiredMessage="Seleccione un Rubro" filter="true"
+								filterMatchMode="contains"
+								value="#{salarioMinimoBean.selectedSalarioMinimo.idRubro}"
+								converter="rubroConverter">
+								<f:selectItem itemValue="#{null}"
+									itemLabel="- Seleccione un Rubro -" />
+								<f:selectItems value="#{salarioMinimoBean.listRubro}"
+									var="rubro" itemValue="#{rubro}" itemLabel="#{rubro.rubro}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6" style="width: 30% !important">
+							<p:outputLabel value="Salario: " styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:inputNumber id="sal1" decimalPlaces="2" decimalSeparator="."
+								required="true" requiredMessage="Ingrese un salario"
+								autocomplete="off"
+								value="#{salarioMinimoBean.selectedSalarioMinimo.salario}"
+								maxlength="40" styleClass="imput-text-box" />
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+							<p:commandButton styleClass="btnEdit" id="btnEdit"
+								value="Modificar"
+								disabled="#{sessionBean.renderizarComponente('BTN_EDITAR') eq false?true:false}"
+								actionListener="#{salarioMinimoBean.editarSalario()}"
+								icon="fa icon-edit-1 Fs15 white"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblSM').clearFilters();PF('w_dlgMod').hide();}"
+								update="formTblSM:tblSM,form2,msg" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+							<p:commandButton styleClass="btnDelete" id="btnDelete"
+								disabled="#{sessionBean.renderizarComponente('BTN_ELIMINAR') eq false?true:false}"
+								value="Eliminar" icon="fa icon-trash Fs15 white"
+								actionListener="#{salarioMinimoBean.eliminarSalario()}"
+								update="formTblSM:tblSM,form2,msg">
+								<p:confirm message="Desea eliminar el registro?"
+									icon="ui-icon-alert" />
+							</p:commandButton>
+						</div>
+
+
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+							<p:commandButton styleClass="btnCancel2" id="btnCancel2"
+								value="Cancelar" process="@this"
+								actionListener="#{salarioMinimoBean.cancelarSelected()}"
+								oncomplete="PF('w_dlgMod').hide();PF('w_tblSM').clearFilters()"
+								icon="fa fa-times Fs15 white" update="formTblSM:tblSM,form2,msg">
+								<p:resetInput target="form2" />
+							</p:commandButton>
+						</div>
+
+
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							<p:commandButton title="YesButton" value="SI"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblSM').clearFilters();PF('w_dlgMod').hide();}"
+								styleClass="ui-confirmdialog-yes" style="margin-left: 50px" />
+							<p:commandButton title="NoButton" value="No"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblSM').clearFilters();PF('w_dlgMod').hide();}"
+								styleClass="ui-confirmdialog-no" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+
+</ui:composition>

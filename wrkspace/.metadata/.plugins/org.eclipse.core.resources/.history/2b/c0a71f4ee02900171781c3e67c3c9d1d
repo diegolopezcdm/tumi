@@ -1,0 +1,55 @@
+package com.sv.tumi.view.util;
+
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.convert.Converter;
+import javax.faces.convert.ConverterException;
+import javax.faces.convert.FacesConverter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.avantia.sv.saen.db.entity.Cargo;
+import com.avantia.sv.saen.service.CargoService;
+import com.avantia.sv.saen.service.impl.CargoServiceImpl;
+
+
+
+@FacesConverter("cargoConverter")
+public class CargoConverter implements Converter{
+	
+	private static final Logger logger = LoggerFactory.getLogger(CargoConverter.class);
+
+	@Override
+	public Object getAsObject(FacesContext arg0, UIComponent arg1, String value) throws ConverterException{
+		if (value.trim().equals("")) {
+			return null;
+		} else {
+			try {
+				
+				CargoService cSrv = new CargoServiceImpl();
+				Cargo obt = cSrv.buscarPorId(new Integer(value));
+								
+				return obt;
+			} catch (Exception ex) {
+				logger.debug("Error al buscar objeto getAsObject ", ex);
+				return null;
+			}
+		}
+	}
+
+	@Override
+	public String getAsString(FacesContext arg0, UIComponent arg1, Object value) throws ConverterException{
+		if (value == null || value.equals("")) {
+			return "";
+		} else {
+			try {
+				return String.valueOf(((Cargo) value).getId());
+			} catch (Exception ex) {
+				logger.debug("Error al buscar string getAsString ", ex);
+				return null;
+			}
+		}
+	}
+
+}

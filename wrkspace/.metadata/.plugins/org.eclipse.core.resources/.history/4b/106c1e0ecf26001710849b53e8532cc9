@@ -1,0 +1,271 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml">
+
+	<ui:define name="content">
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript library="js" name="calendar_es.js" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+
+		<h3 class="hardblue TexAlCenter">Registro de anticipos</h3>
+
+		<div class="ContainerIndent">
+			<p:panel>
+				<div class="ContainerIndent">
+
+					<h:form id="formTblAnticipo">
+
+						<p:dataTable id="tblAnticipo" var="lazyModel"
+							value="#{anticipoBean.lazyModel}" paginator="true" rows="10"
+							selectionMode="single"
+							selection="#{anticipoBean.selectedAnticipo}"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							lazy="true" rowKey="#{lazyModel.id}"
+							rowsPerPageTemplate="10,15,20"
+							emptyMessage="No se encontraron registros" reflow="true"
+							widgetVar="w_tblAnticipo">
+
+							<p:ajax event="rowSelect" oncomplete="PF('w_dlgMod').show();"
+								update="form2" listener="#{anticipoBean.onRowSelect(event)}" />
+
+
+							<f:facet name="header">
+								<h:outputText value="Anticipos registrados" />
+							</f:facet>
+
+							<p:column headerText="Id" rendered="false">
+								<h:outputText value="#{lazyModel.id}" />
+							</p:column>
+
+							<p:column headerText="Fecha Pago"
+								filterBy="#{lazyModel.fechaPago}" filterMatchMode="contains"
+								sortBy="#{lazyModel.fechaPago}">
+								<h:outputText value="#{lazyModel.fechaPago}">
+									<f:convertDateTime pattern="dd-MM-yyyy" />
+								</h:outputText>
+							</p:column>
+
+							<p:column headerText="Monto" filterBy="#{lazyModel.monto}"
+								filterMatchMode="contains" sortBy="#{lazyModel.monto}">
+								<h:outputText value="#{lazyModel.monto}" />
+							</p:column>
+
+							<p:column headerText="Tipo" filterBy="#{lazyModel.tipoAnticipo}"
+								filterMatchMode="contains" sortBy="#{lazyModel.tipoAnticipo}">
+								<h:outputText value="#{lazyModel.tipoAnticipo.descripcion}" />
+							</p:column>
+
+
+							<p:column headerText="Estado" sortBy="#{lazyModel.procesado}">
+								<h:outputText
+									value="#{lazyModel.procesado eq 'N'.charAt(0)?'Sin procesar':'Procesado'}" />
+							</p:column>
+
+
+							<f:facet name="footer">
+								<p:panelGrid id="pngButtons" columns="2" layout="grid"
+									styleClass="bottomButtons">
+
+									<p:commandButton style="width:150px" ajax="false"
+										icon="fa icon-left-1 Fs15 white" id="btnEmpMov"
+										action="#{anticipoBean.goEmpleado()}" value="Regresar">
+									</p:commandButton>
+
+									<p:commandButton style="width:150px"
+										icon="fa icon-plus Fs15 white"
+										disabled="#{sessionBean.renderizarComponente('BTN_GUARDAR') eq false?true:false}"					
+										oncomplete="PF('w_dlgAdd').show();" value="Agregar" />
+								</p:panelGrid>
+							</f:facet>
+						</p:dataTable>
+					</h:form>
+				</div>
+			</p:panel>
+
+			<div class="EmptyBox20"></div>
+
+		</div>
+
+
+		<p:dialog id="dlgAdd" header="Agregar un Anticipo"
+			widgetVar="w_dlgAdd" closable="false" modal="true" resizable="false6"
+			showEffect="fade" hideEffect="fade" styleClass="modal-body"
+			responsive="true">
+
+			<h:form id="form1">
+				<div id="divContentAnAdd">
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 40%">
+
+							<p:outputLabel value="Fecha: " styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:calendar id="fn1" value="#{anticipoBean.anticipo.fechaPago}"
+								autocomplete="off" required="true"
+								requiredMessage="Ingrese una fecha" locale="es"
+								pattern="dd-MM-yyyy" />
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 40%">
+							<p:outputLabel value="Monto:" styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:inputNumber id="monto1" decimalPlaces="2" decimalSeparator="."
+								autocomplete="off" required="true"
+								requiredMessage="Ingrese un monto de anticipo"
+								value="#{anticipoBean.anticipo.monto}" maxlength="40"
+								styleClass="imput-text-box" />
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 40%">
+							<p:outputLabel value="Tipo de anticipo: "
+								styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:selectOneMenu id="tp1" styleClass="cmbStyle" required="true"
+								requiredMessage="Seleccione un tipo de anticipo"
+								value="#{anticipoBean.anticipo.tipoAnticipo}"
+								converter="tipoAnticipoConverter">
+								<f:selectItem itemValue="#{null}"
+									itemLabel="- Seleccione un tipo -" />
+								<f:selectItems value="#{anticipoBean.listTipoAnticipo}" var="tp"
+									itemValue="#{tp}" itemLabel="#{tp.descripcion}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:commandButton styleClass="btnSave" id="btnSave"
+								value="Guardar" actionListener="#{anticipoBean.crear()}"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblAnticipo').clearFilters();PF('w_dlgAdd').hide();}"
+								icon="fa fa-save Fs15 white"
+								update="formTblAnticipo:tblAnticipo,form1,msg" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:commandButton styleClass="btnCancel" id="btnCancel"
+								value="Cancelar" actionListener="#{anticipoBean.cancelar()}"
+								oncomplete="PF('w_dlgAdd').hide();"
+								icon="fa fa-times Fs15 white" process="@this"
+								update="formTblAnticipo:tblAnticipo,form1,msg" />
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog id="dlgMod" header="Modificar un anticipo"
+			widgetVar="w_dlgMod" closable="false" modal="true" resizable="false6"
+			showEffect="fade" hideEffect="fade" styleClass="modal-body"
+			responsive="true">
+
+			<h:form id="form2">
+				<div id="divContentAnMod">
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+
+							<p:outputLabel value="Fecha: " styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:calendar id="fn1" locale="es" autocomplete="off"
+								value="#{anticipoBean.selectedAnticipo.fechaPago}"
+								required="true" requiredMessage="Ingrese una fecha"
+								pattern="dd-MM-yyyy" />
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+
+							<p:outputLabel value="Monto:" styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:inputNumber id="monto2" decimalPlaces="2" decimalSeparator="."
+								autocomplete="off" required="true"
+								requiredMessage="Ingrese un monto de anticipo"
+								value="#{anticipoBean.selectedAnticipo.monto}" maxlength="40"
+								styleClass="imput-text-box" />
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:outputLabel value="Tipo de anticipo: "
+								styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:selectOneMenu id="tp1" styleClass="cmbStyle" required="true"
+								requiredMessage="Seleccione un tipo de anticipo"
+								value="#{anticipoBean.selectedAnticipo.tipoAnticipo}"
+								converter="tipoAnticipoConverter">
+								<f:selectItem itemValue="#{null}"
+									itemLabel="- Seleccione un tipo -" />
+								<f:selectItems value="#{anticipoBean.listTipoAnticipo}" var="tp"
+									itemValue="#{tp}" itemLabel="#{tp.descripcion}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+							<p:commandButton styleClass="btnEdit" id="btnEdit"
+								disabled="#{sessionBean.renderizarComponente('BTN_EDITAR') eq false?true:false}"
+								value="Modificar" actionListener="#{anticipoBean.editar()}"
+								icon="fa icon-edit-1 Fs15 white"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblAnticipo').clearFilters();PF('w_dlgMod').hide();}"
+								update="formTblAnticipo:tblAnticipo,form2,msg" />
+						</div>
+
+
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+							<p:commandButton styleClass="btnDelete" id="btnDelete"
+								disabled="#{sessionBean.renderizarComponente('BTN_ELIMINAR') eq false?true:false}"
+								update="formTblAnticipo:tblAnticipo,form2,msg" value="Eliminar"
+								actionListener="#{anticipoBean.eliminar()}"
+								icon="fa icon-trash Fs15 white">
+								<p:confirm message="Desea eliminar el registro?"
+									icon="ui-icon-alert" />
+							</p:commandButton>
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+							<p:commandButton styleClass="btnCancel2" id="btnCancel2"
+								value="Cancelar" process="@this"
+								actionListener="#{anticipoBean.cancelarSelected()}"
+								oncomplete="PF('w_dlgMod').hide();"
+								icon="fa fa-times Fs15 white"
+								onclick="PF('w_tblAnticipo').clearFilters()"
+								update="formTblAnticipo:tblAnticipo,form2,msg" />
+
+
+							<p:confirmDialog global="true" showEffect="fade"
+								hideEffect="fade">
+								<p:commandButton title="YesButton" value="SI"
+									oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblAnticipo').clearFilters();PF('w_dlgMod').hide();}"
+									styleClass="ui-confirmdialog-yes" style="margin-left: 50px" />
+								<p:commandButton title="NoButton" value="No"
+									oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblAnticipo').clearFilters();PF('w_dlgMod').hide();}"
+									styleClass="ui-confirmdialog-no" />
+							</p:confirmDialog>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>

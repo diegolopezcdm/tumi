@@ -1,0 +1,137 @@
+package com.avantia.sv.saen.ws;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.jws.WebService;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.avantia.sv.saen.db.entity.Cargo;
+import com.avantia.sv.saen.db.entity.CentroCosto;
+import com.avantia.sv.saen.db.entity.Compania;
+import com.avantia.sv.saen.db.entity.Empleado;
+import com.avantia.sv.saen.db.entity.EmpleadoMovin;
+import com.avantia.sv.saen.db.entity.Movin;
+import com.avantia.sv.saen.db.entity.Periodo;
+import com.avantia.sv.saen.service.CargoService;
+import com.avantia.sv.saen.service.CentroCostoService;
+import com.avantia.sv.saen.service.CompaniaService;
+import com.avantia.sv.saen.service.EmpleadoMovinService;
+import com.avantia.sv.saen.service.EmpleadoService;
+import com.avantia.sv.saen.service.MovinService;
+import com.avantia.sv.saen.service.PeriodoService;
+import com.avantia.sv.saen.service.impl.CargoServiceImpl;
+import com.avantia.sv.saen.service.impl.CentroCostoServiceImpl;
+import com.avantia.sv.saen.service.impl.CompaniaServiceImpl;
+import com.avantia.sv.saen.service.impl.EmpleadoMovinServiceImpl;
+import com.avantia.sv.saen.service.impl.EmpleadoServiceImpl;
+import com.avantia.sv.saen.service.impl.MovinServiceImpl;
+import com.avantia.sv.saen.service.impl.PeriodoServiceImpl;
+
+/**
+ * implementacion de ISincronizationInterview
+ * 
+ * @author Martin Molina - Avantia Consultores
+ *
+ */
+@WebService(endpointInterface = "com.avantia.sv.saen.ws.ISincronizationInterview")
+public class SincronizationInterview implements ISincronizationInterview {
+
+	private static final long serialVersionUID = 1L;
+	private static final Logger logger = LoggerFactory.getLogger(SincronizationInterview.class);
+
+	public Compania[] getCompanias() {
+		CompaniaService serv = new CompaniaServiceImpl();
+		Map<String, Object> properties = new HashMap<String, Object>();
+		return serv.buscarPorPropiedad(properties).toArray(new Compania[0]);
+	}
+
+	public Periodo[] getPeriodos() {
+		PeriodoService serv = new PeriodoServiceImpl();
+		Map<String, Object> properties = new HashMap<String, Object>();
+		return serv.buscarPorPropiedad(properties).toArray(new Periodo[0]);
+	}
+
+	public Cargo[] getCargos() {
+		Map<String, Object> properties = new HashMap<String, Object>();
+		CargoService serv = new CargoServiceImpl();
+		return serv.buscarPorPropiedad(properties).toArray(new Cargo[0]);
+	}
+
+	public CentroCosto[] getCentroCosto() {
+		Map<String, Object> properties = new HashMap<String, Object>();
+		CentroCostoService serv = new CentroCostoServiceImpl();
+		return serv.buscarPorPropiedad(properties).toArray(new CentroCosto[0]);
+	}
+
+	public Movin[] getMovin() {
+		Map<String, Object> properties = new HashMap<String, Object>();
+		MovinService serv = new MovinServiceImpl();
+		return serv.buscarPorPropiedad(properties).toArray(new Movin[0]);
+	}
+
+	public int createEmpledo(EmpleadoRegister empleadoRegister, int[] idMovimientos) {
+		EmpleadoService serv = new EmpleadoServiceImpl();
+		EmpleadoMovinService servMovin = new EmpleadoMovinServiceImpl();
+		boolean existError = false;
+
+		Empleado empleado = new Empleado();
+		empleado.setNombre(empleadoRegister.getNombre());
+		empleado.setApellidos(empleadoRegister.getApellido());
+		try {
+			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+			Date fechaNacimiento = formatter.parse(empleadoRegister.getFechaNac());
+			empleado.setFechaNac(fechaNacimiento);
+		} catch (Exception ex) {
+			empleado.setFechaNac(new Date());
+		}
+		empleado.setDireccion(empleadoRegister.getDireccion());
+		empleado.setDireccion1(empleadoRegister.getDireccion1());
+		empleado.setTelefono(empleadoRegister.getTelefono());
+		empleado.setCuentaBanc(empleadoRegister.getCuentaBanc());
+		empleado.setNoDocumento(empleadoRegister.getNoDocumento());
+		empleado.setSalario(empleadoRegister.getSalario());
+		empleado.setSexo(empleadoRegister.getSexo());
+		empleado.setNacionalidad(empleadoRegister.getNacionalidad());
+		empleado.setCodigo(empleadoRegister.getCodigo());
+		// Asignando Cargo
+		CargoService cargoService = new CargoServiceImpl();
+		empleado.setIdCargo(cargoService.buscarPorId(empleadoRegister.getCargo()));
+		// Asignando Centro de costo
+		CentroCostoService centroCostoService = new CentroCostoServiceImpl();
+		empleado.setIdCentroCosto(centroCostoService.buscarPorId(empleadoRegister.getCentroCosto()));
+		// Asignando Compania
+		CompaniaService companiaService = new CompaniaServiceImpl();
+		empleado.setIdCompania(companiaService.buscarPorId(empleadoRegister.getCompania()));
+		// AsignandoPeriodo de Pago
+		PeriodoService periodoService = new PeriodoServiceImpl();
+		empleado.setIdPeriodo(periodoService.buscarPorId(empleadoRegister.getPeriodo()));
+
+		// Creando el registro del empleado
+		if (!serv.crear(empleado)) {
+			logger.info("Fallo creacion " + empleado);
+			return -1;
+		}
+		logger.info("creacion exitosa " + empleado);
+		MovinService movinService = new MovinServiceImpl();
+		// Asignando movimientos
+		for (int movimiento : idMovimientos) {
+			EmpleadoMovin empMovin = new EmpleadoMovin();
+			empMovin.setIdEmpleado(empleado);
+			Movin movin = movinService.buscarPorId(movimiento);
+			empMovin.setIdMovin(movin);
+			if (!servMovin.crear(empMovin)) {
+				logger.info("Fallo creacion movimiento " + empMovin);
+				existError = true;
+			} else {
+				logger.info("Creacion movimiento exitosa " + empMovin);
+			}
+		}
+		return (existError) ? -2 : 1;
+	}
+
+}

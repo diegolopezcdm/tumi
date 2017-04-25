@@ -1,0 +1,295 @@
+package com.avantia.sv.saen.view.bean;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
+import javax.faces.context.Flash;
+
+import org.primefaces.component.datatable.DataTable;
+import org.primefaces.event.SelectEvent;
+import org.primefaces.model.LazyDataModel;
+import org.primefaces.model.SortOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.avantia.sv.saen.db.entity.Anticipo;
+import com.avantia.sv.saen.db.entity.Empleado;
+import com.avantia.sv.saen.db.entity.TipoAnticipo;
+import com.avantia.sv.saen.service.AnticipoService;
+import com.avantia.sv.saen.service.impl.AnticipoServiceImpl;
+import com.avantia.sv.saen.service.impl.TipoAnticipoServiceImpl;
+
+/**
+ * 
+ * @author Martin Molina - Avantia Consultores
+ * @version 1.0
+ */
+@ManagedBean
+@ViewScoped
+public class AnticipoBean implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	private static final Logger logger = LoggerFactory.getLogger(AnticipoBean.class);
+
+	private Anticipo anticipo;
+	private Anticipo selectedAnticipo;
+	private List<Anticipo> listAnticipo;
+	private List<TipoAnticipo> listTipoAnticipo;
+	private LazyDataModel<Anticipo> lazyModel;
+	private Empleado empleado;
+
+	@PostConstruct
+	public void inicializar() {
+		anticipo = new Anticipo();
+		if (getEmpleado()) {
+			cargarListado();
+		
+		}
+		cargarListadoTipoMovimiento();
+	}
+
+	/**
+	 * Carga el listado de tipos de anticipo (Salario, comision, etc)
+	 */
+	public void cargarListadoTipoMovimiento() {
+		Map<String, Object> properties = new HashMap<String, Object>();
+		listTipoAnticipo = (new TipoAnticipoServiceImpl()).buscarPorPropiedad(properties);
+	}
+
+	/**
+	 * Define el lazydatamodel a utiliar para cargar el listado paginado
+	 */
+	public void cargarListado() {
+		AnticipoService service = new AnticipoServiceImpl();
+		lazyModel = new LazyDataModel<Anticipo>() {
+			private static final long serialVersionUID = 8885722005055879976L;
+
+			@Override
+			public Anticipo getRowData(String rowKey) {
+				int intRowKey = Integer.parseInt(rowKey);
+				for (Anticipo c : lazyModel) {
+					if (c.getId() == intRowKey) {
+						return c;
+					}
+				}
+				return null;
+			}
+
+			@Override
+			public Object getRowKey(Anticipo c) {
+				return c.getId();
+			}
+
+			@Override
+			public List<Anticipo> load(int first, int pageSize, String sortField, SortOrder sortOrder,
+					Map<String, Object> filters) {
+				filters.put("empleado", empleado);
+				// Se realiza el filtrado por empleado
+				listAnticipo = service.listadoAnticipo(filters, sortField, sortOrder.toString(), first, pageSize);
+				// Se realiza el count con los mismos filtros
+				this.setRowCount(service.contarAnticipos(filters, sortField, sortOrder.toString()));
+				return listAnticipo;
+			}
+		};
+	}
+
+	public void onRowSelect(SelectEvent event) {
+
+	}
+
+	public void mensaje() {
+		if (listAnticipo.size() == 0) {
+			DataTable dt = new DataTable();
+			dt.setEmptyMessage("No se encontraron registros");
+		}
+	}
+
+	public void cancelar() {
+		limpiar();
+	}
+
+	public void cancelarSelected() {
+		limpiarSelected();
+	}
+
+	public void limpiar() {
+		anticipo = new Anticipo();
+	}
+
+	public void limpiarSelected() {
+		selectedAnticipo = new Anticipo();
+	}
+
+	public void generarExcel() {
+	}
+
+	public void generarPdf() {
+	}
+
+	/**
+	 * Crea un nuevo registro de Anticipo
+	 */
+	public void crear() {
+		FacesMessage msg;
+		AnticipoService service = new AnticipoServiceImpl();
+		anticipo.setEmpleado(empleado);
+		boolean result = service.crear(anticipo);
+		if (result == true) {
+			msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Anticipo creado ", null);
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+			logger.info("EL anticipo se registro con exito");
+			limpiar();
+			cargarListado();
+		} else {
+			msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "El anticipo no se pudo crear", null);
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+			limpiar();
+			cargarListado();
+		}
+	}
+
+	/**
+	 * Actualiza la inf de un registro de anticipo
+	 */
+	public void editar() {
+		FacesMessage msg;
+		AnticipoService service = new AnticipoServiceImpl();
+		boolean result = service.editar(selectedAnticipo);
+		if (result == true) {
+			msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Anticipo actualizado ", null);
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+			logger.info("EL anticipo se actualizo con exito");
+			limpiarSelected();
+			cargarListado();
+		} else {
+			msg = new FacesMessage(FacesMessage.SEVERITY_WARN,
+					"El anticipo no se pudo actualizar", null);
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+			limpiarSelected();
+			cargarListado();
+		}
+	}
+
+	/**
+	 * Elimina un registro
+	 */
+	public void eliminar() {
+		FacesMessage msg;
+		AnticipoService service = new AnticipoServiceImpl();
+		boolean result = service.eliminar(selectedAnticipo.getId());
+		if (result == true) {
+			msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Anticipo eliminado ", null);
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+			logger.info("EL antitipo se elimino con exito");
+			limpiarSelected();
+			cargarListado();
+
+		} else if (result == false) {
+			msg = new FacesMessage(FacesMessage.SEVERITY_WARN, "El anticipo no se pudo eliminar",
+					null);
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+			limpiarSelected();
+			cargarListado();
+		}
+	}
+
+	/**
+	 * Redireccion a la pantalla de empleado
+	 * 
+	 * @throws IOException
+	 */
+	public void goEmpleado() throws IOException {
+		FacesContext fc = FacesContext.getCurrentInstance();
+		fc.getExternalContext().redirect("empleado.xhtml?faces-redirect=true");
+	}
+
+	/**
+	 * Obtiene el empleado del parametro enviado desde el mantenimiento de
+	 * empleados
+	 * 
+	 * @return
+	 */
+	public boolean getEmpleado() {
+		try {
+			Flash flash = FacesContext.getCurrentInstance().getExternalContext().getFlash();
+			empleado = (Empleado) flash.get("selectedEmpl");
+			logger.debug("Datos del empleado encontrado: " + empleado);
+			if (empleado == null) {
+				logger.debug("intentando hacer redireccion");
+				checkEmpleado();
+				return false;
+			}
+			
+		} catch (Exception ex) {
+			logger.error("Error en el metodo de obtencion del empleado: " + ex.getMessage(), ex);
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Verifica si no se encontro registro de empleado, para redireccionarlo
+	 */
+	public void checkEmpleado() {
+		if (empleado == null) {
+			try {
+				goEmpleado();
+			} catch (Exception ex) {
+				logger.error("Error al redireccionar " + ex);
+			}
+		}
+	}
+
+	public Anticipo getAnticipo() {
+		return anticipo;
+	}
+
+	public void setAnticipo(Anticipo anticipo) {
+		this.anticipo = anticipo;
+	}
+
+	public Anticipo getSelectedAnticipo() {
+		return selectedAnticipo;
+	}
+
+	public void setSelectedAnticipo(Anticipo selectedAnticipo) {
+		this.selectedAnticipo = selectedAnticipo;
+	}
+
+	public List<Anticipo> getListAnticipo() {
+		return listAnticipo;
+	}
+
+	public void setListAnticipo(List<Anticipo> listAnticipo) {
+		this.listAnticipo = listAnticipo;
+	}
+
+	public LazyDataModel<Anticipo> getLazyModel() {
+		return lazyModel;
+	}
+
+	public void setLazyModel(LazyDataModel<Anticipo> lazyModel) {
+		this.lazyModel = lazyModel;
+	}
+
+	public void setEmpleado(Empleado empleado) {
+		this.empleado = empleado;
+	}
+
+	public List<TipoAnticipo> getListTipoAnticipo() {
+		return listTipoAnticipo;
+	}
+
+	public void setListTipoAnticipo(List<TipoAnticipo> listTipoAnticipo) {
+		this.listTipoAnticipo = listTipoAnticipo;
+	}
+
+}

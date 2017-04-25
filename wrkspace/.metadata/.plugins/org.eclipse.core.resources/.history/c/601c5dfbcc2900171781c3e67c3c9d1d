@@ -1,0 +1,293 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml"
+	xmlns:pe="http://primefaces.org/ui">
+
+	<ui:define name="content">
+
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+
+		<h3 class="hardblue TexAlCenter">Examen Inicial para : #{evaluacionBean.selectedEvaluacion.usuarioRegistro}</h3>
+
+		<div class="ContainerIndent">
+			<p:panel>
+				<div class="ContainerIndent">
+
+					<h:form id="formEvaluacion">
+						<p:panel style="text-align:right;border:none">
+
+							<div class="ui-g">
+								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+									<p:outputLabel value="Bienvenido: " styleClass="text-label-left" />
+								</div>
+								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+									<p:outputLabel value="#{evaluacionBean.selectedEvaluacion.usuarioRegistro}" styleClass="text-label-left" />
+								</div>
+							</div>
+							
+							<div class="ui-g">
+								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+									<p:outputLabel value="Tiempo de duración de la prueba: " styleClass="text-label-left" />
+								</div>
+								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+									<p:outputLabel value="#{evaluacionBean.selectedTiempo.segundosTiempoPregunta} minutos" styleClass="text-label-left" />
+								</div>
+							</div>
+							
+							<div class="ui-g">
+								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+									<p:outputLabel value="Indicaciones Generales " styleClass="text-label-left" />
+								</div>
+								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+									<p:outputLabel value="Nombre: " styleClass="text-label-left" />
+								</div>
+							</div>
+							
+							<p:panel style="text-align:right" rendered="false">
+								<p:commandButton id="btnDespido" value="Despido/Renuncia"
+									icon="fa icon-cancel-circled Fs14 white"
+									disabled="#{empleadoBean.despido}"
+									oncomplete="PF('w_dlgDespido').show();" />
+
+							</p:panel>
+							
+							<h:commandLink action="#{paisBean.generarExcel()}">
+								<p:graphicImage id="excel" name="/img/excel.png" width="40" />
+								<p:tooltip id="tfE" for="excel" value="Exportar a Excel"
+									position="top" />
+
+							</h:commandLink>
+
+							<h:commandLink action="#{paisBean.generarPdf()}">
+								<p:graphicImage id="pdf" name="/img/pdf.png" width="40" />
+								<p:tooltip id="tfP" for="pdf" value="Exportar a PDF"
+									position="top" />
+
+							</h:commandLink>
+
+						</p:panel>
+					</h:form>
+				</div>
+			</p:panel>
+
+			<div class="EmptyBox20"></div>
+
+		</div>
+
+
+		<p:dialog id="dlgAdd" header="Agregar un país" widgetVar="w_dlgAdd"
+			closable="false" styleClass="modal-body" modal="true"
+			resizable="false" showEffect="fade" hideEffect="fade"
+			responsive="true">
+
+			<h:form id="form1">
+
+				<div id="divContentPaisAdd">
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:outputLabel value="Nombre: " styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:inputText id="paisNombre" value="#{paisBean.pais.nombre}"
+								required="true" requiredMessage="Ingrese un nombre"
+								autocomplete="off" maxlength="40" styleClass="imput-text-box">
+								<f:attribute name="message" value="Ingrese un nombre" />
+								<f:validator validatorId="RequiredValidator" />
+							</p:inputText>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:outputLabel value="Moneda: " styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:inputText id="paisMoneda" value="#{paisBean.pais.moneda}"
+								required="true" requiredMessage="Ingrese una moneda"
+								autocomplete="off" maxlength="20" styleClass="imput-text-box">
+								<f:attribute name="message" value="Ingrese una moneda" />
+								<f:validator validatorId="RequiredValidator" />
+							</p:inputText>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:outputLabel value="Símbolo monetario: "
+								styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:inputText id="simMoneda" required="true"
+								requiredMessage="Ingrese un símbolo monetario"
+								autocomplete="off" value="#{paisBean.pais.simbolomonetario}"
+								maxlength="5" styleClass="imput-text-box">
+								<f:attribute name="message" value="Ingrese un símbolo monetario" />
+								<f:validator validatorId="RequiredValidator" />
+							</p:inputText>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:outputLabel value="Código de área: "
+								styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:inputText id="paisArea" value="#{paisBean.pais.area}"
+								maxlength="3" required="true" autocomplete="off"
+								requiredMessage="Ingrese un código de área"
+								styleClass="imput-text-box">
+								<f:attribute name="message" value="Ingrese un código de área" />
+								<f:validator validatorId="RequiredValidator" />
+							</p:inputText>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:commandButton styleClass="btnSave" id="btnSave"
+								value="Guardar" actionListener="#{paisBean.crearPais()}"
+								update="formTblPaises:tblPaises,form1,msg"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblPaises').clearFilters();PF('w_dlgAdd').hide();}"
+								icon="fa fa-save Fs15 white" />
+
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:commandButton styleClass="btnCancel" id="btnCancel"
+								value="Cancelar" actionListener="#{paisBean.cancelar()}"
+								oncomplete="PF('w_dlgAdd').hide();"
+								icon="fa fa-times Fs15 white" process="@this"
+								update="formTblPaises:tblPaises,form1,msg">
+								<p:resetInput target="form1" />
+							</p:commandButton>
+						</div>
+
+
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+
+		<p:dialog id="dlgMod" header="Modificar un país" widgetVar="w_dlgMod"
+			closable="false" modal="true" resizable="false" showEffect="fade"
+			styleClass="modal-body" hideEffect="fade" responsive="true">
+
+			<h:form id="form2">
+				<div id="divContentPaisEdit">
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:outputLabel value="Nombre: " styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:inputText id="paisNombre2" required="true" maxlength="40"
+								requiredMessage="Ingrese un nombre" autocomplete="off"
+								value="#{paisBean.selectedPais.nombre}"
+								styleClass="imput-text-box">
+								<f:attribute name="message" value="Ingrese un nombre" />
+								<f:validator validatorId="RequiredValidator" />
+							</p:inputText>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:outputLabel value="Moneda: " styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:inputText id="paisMoneda2" required="true" maxlength="20"
+								requiredMessage="Ingrese una moneda" autocomplete="off"
+								value="#{paisBean.selectedPais.moneda}"
+								styleClass="imput-text-box">
+								<f:attribute name="message" value="Ingrese una moneda" />
+								<f:validator validatorId="RequiredValidator" />
+							</p:inputText>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:outputLabel value="Simbolo monetario: "
+								styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:inputText id="simMoneda2" required="true" maxlength="5"
+								requiredMessage="Ingrese un símbolo monetario"
+								autocomplete="off"
+								value="#{paisBean.selectedPais.simbolomonetario}"
+								styleClass="imput-text-box">
+								<f:attribute name="message" value="Ingrese un símbolo monetario" />
+								<f:validator validatorId="RequiredValidator" />
+							</p:inputText>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:outputLabel value="Código de área: "
+								styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:inputText id="paisArea2" value="#{paisBean.selectedPais.area}"
+								required="true" requiredMessage="Ingrese un código de área"
+								autocomplete="off" maxlength="3" styleClass="imput-text-box">
+								<f:attribute name="message" value="Ingrese un código de área" />
+								<f:validator validatorId="RequiredValidator" />
+							</p:inputText>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+
+							<p:commandButton styleClass="btnEdit" id="btnEdit"
+								disabled="#{sessionBean.renderizarComponente('BTN_EDITAR') eq false?true:false}"
+								value="Modificar" actionListener="#{paisBean.editarPais()}"
+								icon="fa icon-edit-1 Fs15 white"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblPaises').clearFilters();PF('w_dlgMod').hide();}"
+								update="formTblPaises:tblPaises,form2,msg" />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+							<p:commandButton styleClass="btnDelete" id="btnDelete"
+								disabled="#{sessionBean.renderizarComponente('BTN_ELIMINAR') eq false?true:false}"
+								value="Eliminar" icon="fa icon-trash Fs15 white"
+								update="formTblPaises:tblPaises,form2,msg"
+								actionListener="#{paisBean.eliminarPais()}">
+								<p:confirm message="Desea eliminar el registro?"
+									icon="ui-icon-alert" />
+							</p:commandButton>
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+							<p:commandButton styleClass="btnCancel2" id="btnCancel2"
+								value="Cancelar" oncomplete="PF('w_dlgMod').hide();"
+								actionListener="#{paisBean.cancelarSelected()}"
+								icon="fa fa-times Fs15 white" process="@this"
+								update="formTblPaises:tblPaises,form2,msg">
+								<p:resetInput target="form2" />
+							</p:commandButton>
+						</div>
+
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							<p:commandButton title="YesButton" value="SI"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblPaises').clearFilters();PF('w_dlgMod').hide();}"
+								styleClass="ui-confirmdialog-yes" style="margin-left: 50px" />
+							<p:commandButton title="NoButton" value="No"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblPaises').clearFilters();PF('w_dlgMod').hide();}"
+								styleClass="ui-confirmdialog-no" />
+						</p:confirmDialog>
+					</div>
+				</div>
+
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+
+</ui:composition>

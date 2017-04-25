@@ -1,0 +1,80 @@
+<ns1:deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns1="http://xml.apache.org/axis/wsdd/">
+ <ns1:globalConfiguration>
+  <ns1:parameter name="sendMultiRefs" value="true"/>
+  <ns1:parameter name="disablePrettyXML" value="true"/>
+  <ns1:parameter name="adminPassword" value="admin"/>
+  <ns1:parameter name="attachments.Directory" value="C:\Users\marti\Desktop\fuentes\planilla_mvn\.metadata\.plugins\org.eclipse.wst.server.core\tmp1\wtpwebapps\saen\WEB-INF\attachments"/>
+  <ns1:parameter name="dotNetSoapEncFix" value="true"/>
+  <ns1:parameter name="enableNamespacePrefixOptimization" value="false"/>
+  <ns1:parameter name="sendXMLDeclaration" value="true"/>
+  <ns1:parameter name="sendXsiTypes" value="true"/>
+  <ns1:parameter name="attachments.implementation" value="org.apache.axis.attachments.AttachmentsImpl"/>
+  <ns1:requestFlow>
+   <ns1:handler type="java:org.apache.axis.handlers.JWSHandler">
+    <ns1:parameter name="scope" value="session"/>
+   </ns1:handler>
+   <ns1:handler type="java:org.apache.axis.handlers.JWSHandler">
+    <ns1:parameter name="scope" value="request"/>
+    <ns1:parameter name="extension" value=".jwr"/>
+   </ns1:handler>
+  </ns1:requestFlow>
+ </ns1:globalConfiguration>
+ <ns1:handler name="URLMapper" type="java:org.apache.axis.handlers.http.URLMapper"/>
+ <ns1:handler name="Authenticate" type="java:org.apache.axis.handlers.SimpleAuthenticationHandler"/>
+ <ns1:handler name="LocalResponder" type="java:org.apache.axis.transport.local.LocalResponder"/>
+ <ns1:service name="AdminService" provider="java:MSG">
+  <ns1:parameter name="allowedMethods" value="AdminService"/>
+  <ns1:parameter name="enableRemoteAdmin" value="false"/>
+  <ns1:parameter name="className" value="org.apache.axis.utils.Admin"/>
+  <ns1:namespace>http://xml.apache.org/axis/wsdd/</ns1:namespace>
+ </ns1:service>
+ <ns1:service name="Version" provider="java:RPC">
+  <ns1:parameter name="allowedMethods" value="getVersion"/>
+  <ns1:parameter name="className" value="org.apache.axis.Version"/>
+ </ns1:service>
+ <ns1:service name="SincronizationInterview" provider="java:RPC" style="wrapped" use="literal">
+  <ns3:operation name="getCompanias" qname="ns1:getCompanias" returnQName="ns1:getCompaniasReturn" returnType="ns2:Compania" soapAction="" xmlns:ns1="http://ws.saen.sv.avantia.com" xmlns:ns2="http://entity.db.saen.sv.avantia.com" xmlns:ns3="http://xml.apache.org/axis/wsdd/"/>
+  <ns1:operation name="getPeriodos" qname="ns3:getPeriodos" returnQName="ns3:getPeriodosReturn" returnType="ns4:Periodo" soapAction="" xmlns:ns3="http://ws.saen.sv.avantia.com" xmlns:ns4="http://entity.db.saen.sv.avantia.com"/>
+  <ns1:operation name="getCentroCosto" qname="ns5:getCentroCosto" returnQName="ns5:getCentroCostoReturn" returnType="ns6:CentroCosto" soapAction="" xmlns:ns5="http://ws.saen.sv.avantia.com" xmlns:ns6="http://entity.db.saen.sv.avantia.com"/>
+  <ns1:operation name="getMovin" qname="ns7:getMovin" returnQName="ns7:getMovinReturn" returnType="ns8:Movin" soapAction="" xmlns:ns7="http://ws.saen.sv.avantia.com" xmlns:ns8="http://entity.db.saen.sv.avantia.com"/>
+  <ns1:operation name="createEmpledo" qname="ns9:createEmpledo" returnQName="ns9:createEmpledoReturn" returnType="xsd:int" soapAction="" xmlns:ns9="http://ws.saen.sv.avantia.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns9:empleadoRegister" type="ns9:EmpleadoRegister"/>
+   <ns1:parameter qname="ns9:idMovimientos" type="xsd:int"/>
+  </ns1:operation>
+  <ns1:operation name="getCargos" qname="ns10:getCargos" returnQName="ns10:getCargosReturn" returnType="ns11:Cargo" soapAction="" xmlns:ns10="http://ws.saen.sv.avantia.com" xmlns:ns11="http://entity.db.saen.sv.avantia.com"/>
+  <ns1:parameter name="allowedMethods" value="getCentroCosto getMovin createEmpledo getPeriodos getCompanias getCargos"/>
+  <ns1:parameter name="typeMappingVersion" value="1.2"/>
+  <ns1:parameter name="wsdlPortType" value="SincronizationInterview"/>
+  <ns1:parameter name="className" value="com.avantia.sv.saen.ws.SincronizationInterview"/>
+  <ns1:parameter name="wsdlServicePort" value="SincronizationInterview"/>
+  <ns1:parameter name="schemaQualified" value="http://entity.db.saen.sv.avantia.com,http://ws.saen.sv.avantia.com"/>
+  <ns1:parameter name="wsdlTargetNamespace" value="http://ws.saen.sv.avantia.com"/>
+  <ns1:parameter name="wsdlServiceElement" value="SincronizationInterviewService"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns12:Pais" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.avantia.sv.saen.db.entity.Pais" xmlns:ns12="http://entity.db.saen.sv.avantia.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns13:Cargo" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.avantia.sv.saen.db.entity.Cargo" xmlns:ns13="http://entity.db.saen.sv.avantia.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns14:Movin" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.avantia.sv.saen.db.entity.Movin" xmlns:ns14="http://entity.db.saen.sv.avantia.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns15:Compania" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.avantia.sv.saen.db.entity.Compania" xmlns:ns15="http://entity.db.saen.sv.avantia.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns16:Periodo" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.avantia.sv.saen.db.entity.Periodo" xmlns:ns16="http://entity.db.saen.sv.avantia.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns17:TipoMovin" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.avantia.sv.saen.db.entity.TipoMovin" xmlns:ns17="http://entity.db.saen.sv.avantia.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns18:EmpleadoRegister" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.avantia.sv.saen.ws.EmpleadoRegister" xmlns:ns18="http://ws.saen.sv.avantia.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns19:Rubro" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.avantia.sv.saen.db.entity.Rubro" xmlns:ns19="http://entity.db.saen.sv.avantia.com"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns20:CentroCosto" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:com.avantia.sv.saen.db.entity.CentroCosto" xmlns:ns20="http://entity.db.saen.sv.avantia.com"/>
+ </ns1:service>
+ <ns1:transport name="http">
+  <ns1:requestFlow>
+   <ns1:handler type="URLMapper"/>
+   <ns1:handler type="java:org.apache.axis.handlers.http.HTTPAuthHandler"/>
+  </ns1:requestFlow>
+  <ns1:parameter name="qs:list" value="org.apache.axis.transport.http.QSListHandler"/>
+  <ns1:parameter name="qs:wsdl" value="org.apache.axis.transport.http.QSWSDLHandler"/>
+  <ns1:parameter name="qs.list" value="org.apache.axis.transport.http.QSListHandler"/>
+  <ns1:parameter name="qs.method" value="org.apache.axis.transport.http.QSMethodHandler"/>
+  <ns1:parameter name="qs:method" value="org.apache.axis.transport.http.QSMethodHandler"/>
+  <ns1:parameter name="qs.wsdl" value="org.apache.axis.transport.http.QSWSDLHandler"/>
+ </ns1:transport>
+ <ns1:transport name="local">
+  <ns1:responseFlow>
+   <ns1:handler type="LocalResponder"/>
+  </ns1:responseFlow>
+ </ns1:transport>
+</ns1:deployment>

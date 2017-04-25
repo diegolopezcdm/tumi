@@ -1,0 +1,894 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml">
+
+	<ui:define name="content">
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript library="js" name="calendar_es.js" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+
+		<h3 class="hardblue TexAlCenter">Registro de empleados</h3>
+
+		<div class="ContainerIndent">
+			<p:panel>
+				<div class="ContainerIndent">
+					<h:form id="formTblEmpleados">
+						<p:panel style="text-align:right;border:none">
+
+							<h:commandLink action="#{empleadoBean.generarExcel()}">
+								<p:graphicImage id="excel" name="/img/excel.png" width="40" />
+								<p:tooltip id="tfE" for="excel" value="Exportar a Excel"
+									position="top" />
+							</h:commandLink>
+
+							<h:commandLink action="#{empleadoBean.generarPdf()}">
+								<p:graphicImage id="pdf" name="/img/pdf.png" width="40" />
+								<p:tooltip id="tfP" for="pdf" value="Exportar a PDF"
+									position="top" />
+							</h:commandLink>
+
+						</p:panel>
+
+						<p:panel style="text-align:right" rendered="false">
+							<p:commandButton id="btnDespido" value="Despido/Renuncia"
+								icon="fa icon-cancel-circled Fs14 white"
+								disabled="#{empleadoBean.despido}"
+								oncomplete="PF('w_dlgDespido').show();" />
+
+						</p:panel>
+						<p:dataTable id="tblEmpleados" var="lazyModel"
+							value="#{empleadoBean.lazyModel}" paginator="true" rows="10"
+							selectionMode="single"
+							loadingmessage="Realizando la operación, por favor espere un momento..."
+							selection="#{empleadoBean.selectedEmpleado}"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							lazy="true" rowKey="#{lazyModel.id}"
+							rowsPerPageTemplate="10,15,20"
+							emptyMessage="No se encontro registros" reflow="true"
+							widgetVar="w_tblEmpleados">
+
+							<p:ajax event="rowSelect" oncomplete="PF('w_dlgMod').show();"
+								update="form2:png2,formTblEmpleados:tblEmpleados"
+								listener="#{empleadoBean.onRowSelect(event)}" />
+
+							<f:facet name="header">
+                                Empleados registrados 
+                            </f:facet>
+
+							<p:column headerText="Id" rendered="false">
+								<h:outputText value="#{lazyModel.id}" />
+							</p:column>
+
+							<p:column headerText="Codigo Empleado"
+								filterBy="#{lazyModel.codigo}" filterMatchMode="contains"
+								sortBy="#{lazyModel.codigo}">
+								<h:outputText value="#{lazyModel.codigo}" />
+							</p:column>
+
+							<p:column headerText="Compañia" filterMatchMode="contains"
+								filterBy="#{lazyModel.idCompania.nombre}"
+								sortBy="#{lazyModel.idCompania.nombre}">
+								<h:outputText value="#{lazyModel.idCompania.nombre}" />
+							</p:column>
+
+							<p:column headerText="Nombres" filterBy="#{lazyModel.nombre}"
+								filterMatchMode="contains" sortBy="#{lazyModel.nombre}">
+								<h:outputText value="#{lazyModel.nombre}" />
+							</p:column>
+
+							<p:column headerText="Apellidos" filterMatchMode="contains"
+								filterBy="#{lazyModel.apellidos}"
+								sortBy="#{lazyModel.apellidos}">
+								<h:outputText value="#{lazyModel.apellidos}" />
+							</p:column>
+
+							<p:column headerText="Datos de empleado">
+								<div id="colbtn1" style="text-align: center">
+									<p:commandButton update="formInfo" styleClass="btnInfo"
+										oncomplete="PF('w_dlgInfo').show()" id="btnDetail"
+										icon="fa icon-search Fs12 white" title="View">
+										<f:setPropertyActionListener value="#{lazyModel}"
+											target="#{empleadoBean.selectedEmpleado}" />
+									</p:commandButton>
+									<p:tooltip id="toolTipFade1" for="btnDetail"
+										value="Consultar datos personales del empleado"
+										trackMouse="true" />
+								</div>
+							</p:column>
+
+							<p:column headerText="Operaciones / Procesos">
+								<div id="colbtn2" style="text-align: center">
+									<p:commandButton update="formInfo" id="btnProcess"
+										oncomplete="PF('w_dlgOperation').show()"
+										icon="fa icon-th-list-2 Fs12 white" title="View">
+										<f:setPropertyActionListener value="#{lazyModel}"
+											target="#{empleadoBean.selectedEmpleado}" />
+									</p:commandButton>
+									<p:tooltip id="toolTipFade2" for="btnProcess"
+										value="Realizar operaciones y procesos sobre el empleado"
+										trackMouse="true" />
+								</div>
+							</p:column>
+
+
+
+							<f:facet name="footer">
+								<p:panelGrid id="pngButtons" columns="1" layout="grid"
+									styleClass="bottomButtons">
+
+									<p:commandButton style="width:150px"
+										icon="fa icon-plus Fs14 white"
+										rendered="#{sessionBean.renderizarComponente('BTN_GUARDAR')}"
+										oncomplete="PF('w_dlgAdd').show();" value="Agregar" />
+								</p:panelGrid>
+							</f:facet>
+						</p:dataTable>
+					</h:form>
+				</div>
+			</p:panel>
+		</div>
+
+		<p:dialog id="dlgOperation" header="Operaciones / Procesos"
+			widgetVar="w_dlgOperation" modal="true" resizable="false"
+			closable="false" showEffect="fade" hideEffect="fade" width="auto"
+			responsive="true">
+			<h:form id="operacion">
+				<p:panelGrid id="png1" columns="2" styleClass="ui-panelgrid-blank"
+					layout="grid">
+
+					<p:commandButton ajax="false" id="btnAnticipo2" value="Anticipos"
+						style="width: 100%;" action="#{empleadoBean.goAnticipo()}">
+					</p:commandButton>
+
+					<p:commandButton ajax="false" id="btnAsis2" value="Asistencias"
+						style="width: 100%;"
+						action="#{empleadoBean.goEmpleadoAsistencia()}">
+					</p:commandButton>
+
+					<p:commandButton ajax="false" value="Documentos" id="btnEmpDoc2"
+						style="width: 100%;"
+						action="#{empleadoBean.goEmpleadoDocumento()}">
+					</p:commandButton>
+
+					<p:commandButton ajax="false" id="btnHExtras2" value="Horas extras"
+						style="width: 100%;"
+						action="#{empleadoBean.goEmpleadoHorasExtras()}">
+					</p:commandButton>
+
+					<p:commandButton ajax="false" id="btnMov2" value="Movimientos"
+						style="width: 100%;" action="#{empleadoBean.goEmpleadoMovin}">
+					</p:commandButton>
+
+					<p:commandButton ajax="false" id="btnVac" value="Vacaciones"
+						style="width: 100%;" action="#{empleadoBean.goEmpleadoVacacion()}">
+					</p:commandButton>
+
+					<p:commandButton ajax="false" id="btnSuspension"
+						style="width: 100%;" value="Suspensiones"
+						action="#{empleadoBean.goSuspension()}">
+					</p:commandButton>
+				</p:panelGrid>
+
+				<p:separator />
+				<div style="text-align: center">
+					<p:commandButton id="close" value="Cerrar"
+						icon="fa icon-cancel-circled Fs13 white" style="width: 60%;"
+						oncomplete="PF('w_dlgOperation').hide();">
+					</p:commandButton>
+
+				</div>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog id="dlgInfo" header="Datos de contacto" width="auto"
+			widgetVar="w_dlgInfo" modal="true" resizable="false"
+			styleClass="modal-body" closable="false" showEffect="fade"
+			hideEffect="fade" responsive="true">
+			<h:form id="formInfo">
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:outputLabel value="Cargo en empresa: "
+							styleClass="text-label-left" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:outputLabel id="inf0"
+							value="#{empleadoBean.selectedEmpleado.idCargo.nombre}" />
+					</div>
+				</div>
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:outputLabel value="Número de documento: "
+							styleClass="text-label-left" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:outputLabel id="inf1"
+							value="#{empleadoBean.selectedEmpleado.noDocumento}" />
+					</div>
+				</div>
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:outputLabel value="Número de cuenta: "
+							styleClass="text-label-left" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:outputLabel id="inf2"
+							value="#{empleadoBean.selectedEmpleado.cuentaBanc}" />
+					</div>
+				</div>
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:outputLabel value="Teléfono: " styleClass="text-label-left" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:outputLabel id="inf3"
+							value="#{empleadoBean.selectedEmpleado.telefono}" />
+					</div>
+				</div>
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:outputLabel value="Fecha de nacimiento: "
+							styleClass="text-label-left" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:outputLabel id="inf4"
+							value="#{empleadoBean.selectedEmpleado.fechaNac}">
+							<f:convertDateTime pattern="dd-MM-yyyy" />
+						</p:outputLabel>
+					</div>
+				</div>
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:outputLabel value="Fecha de ingreso: "
+							styleClass="text-label-left" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:outputLabel id="inf5"
+							value="#{empleadoBean.selectedEmpleado.fechaIngreso}">
+							<f:convertDateTime pattern="dd-MM-yyyy" />
+						</p:outputLabel>
+					</div>
+				</div>
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:outputLabel value="Dirección principal: "
+							styleClass="text-label-left" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:outputLabel id="inf6"
+							value="#{empleadoBean.selectedEmpleado.direccion}" />
+					</div>
+				</div>
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:outputLabel value="Dirección secundaria: "
+							styleClass="text-label-left" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:outputLabel id="inf7"
+							value="#{empleadoBean.selectedEmpleado.direccion1}" />
+					</div>
+				</div>
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:outputLabel value="Estado Laboral: "
+							styleClass="text-label-left" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:outputLabel id="inf8"
+							value="#{empleadoBean.selectedEmpleado.estado==1?' Activo':'Inactivo'}" />
+					</div>
+				</div>
+
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:outputLabel value="Período : " styleClass="text-label-left" />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:outputLabel id="inf9"
+							value="#{empleadoBean.selectedEmpleado.idPeriodo.nombre}" />
+					</div>
+				</div>
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:outputLabel value="Fecha de egreso: " />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:outputLabel id="inf10"
+							value="#{empleadoBean.selectedEmpleado.fechaEgreso}">
+							<f:convertDateTime pattern="dd-MM-yyyy" />
+						</p:outputLabel>
+					</div>
+				</div>
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-12 ui-lg-12 " style="text-align: center">
+						<p:commandButton styleClass="btnClose" id="btnClose"
+							value="Cerrar" oncomplete="PF('w_dlgInfo').hide();"
+							icon="fa icon-cancel-circled Fs13 white" />
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog id="dlgDespido" header="Ingresar fecha despido/renuncia"
+			widgetVar="w_dlgDespido" modal="true" resizable="false"
+			showEffect="fade" hideEffect="fade" styleClass="modal-body"
+			responsive="true">
+			<h:form id="formDespido">
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+
+						<p:outputLabel value="Fecha de egreso: " />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:calendar id="fechEgreso" required="true" locale="es"
+							requiredMessage="Ingrese una fecha"
+							value="#{empleadoBean.selectedEmpleado.fechaEgreso}"
+							pattern="dd/MM/yyyy" />
+					</div>
+				</div>
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:commandButton styleClass="btnSave" id="btnProcesar"
+							value="Procesar" actionListener="#{empleadoBean.ingresarDespido}"
+							oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_dlgDespido').hide();}"
+							icon="fa fa-save Fs15 white"
+							update="formTblEmpleados:tblEmpleados,msg" />
+					</div>
+
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:commandButton id="btnCancel" styleClass="btnCancel"
+							value="Cancelar" oncomplete="PF('w_dlgDespido').hide();"
+							icon="fa fa-times Fs15 white" process="@this"
+							update="formTblEmpleados:tblEmpleados,msg" />
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog id="dlgProcesarDespido" header="Gestión de despido/renuncia"
+			widgetVar="w_dlgProcesarDespido" modal="true" resizable="false"
+			showEffect="fade" hideEffect="fade" styleClass="despido-modal-body"
+			responsive="true">
+
+			<h:form id="formProcesarDespido">
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:outputLabel value="Fecha Egreso: " />
+					</div>
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:calendar id="fechEgreso" required="true"
+							requiredMessage="Ingrese una fecha" locale="es"
+							value="#{empleadoBean.selectedEmpleado.fechaEgreso}"
+							pattern="dd/MM/yyyy" />
+					</div>
+				</div>
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:outputLabel value="Movimientos :" />
+					</div>
+
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:selectCheckboxMenu id="selectMovin" required="true"
+							requiredMessage="Seleccione almenos un movimiento"
+							value="#{empleadoBean.selectedMovin}" multiple="true"
+							style="width:100%;" filter="true" filterMatchMode="contains"
+							immediate="true" label="- Seleccione -">
+							<f:selectItems value="#{empleadoBean.listMovin}" var="mv"
+								itemLabel="#{mv.nombre}" itemValue="#{mv.id}" />
+						</p:selectCheckboxMenu>
+					</div>
+				</div>
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+
+						<p:commandButton styleClass="btnSave" id="btnProcesar"
+							value="Procesar"
+							actionListener="#{empleadoBean.procesarDespido()}"
+							oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_dlgProcesarDespido').hide();}"
+							icon="fa fa-save Fs15 white"
+							update="formTblEmpleados:tblEmpleados,msg" />
+					</div>
+
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:commandButton id="btnCancel" styleClass="btnCancel"
+							value="Cancelar" oncomplete="PF('w_dlgProcesarDespido').hide();"
+							icon="fa fa-times Fs15 white" process="@this"
+							update="formTblEmpleados:tblEmpleados,msg" />
+					</div>
+
+				</div>
+
+			</h:form>
+
+		</p:dialog>
+
+
+
+		<p:dialog id="dlgAdd" header="Agregar un empleado" closable="false"
+			styleClass="modal-body" widgetVar="w_dlgAdd" modal="true"
+			resizable="false" showEffect="fade" hideEffect="fade" width="78%"
+			responsive="true">
+			<h:form id="form1">
+				<p:outputPanel style="text-align:justify">
+					<div class="Container100">
+						<div class="ContainerIndent">
+							<p:panelGrid id="png1" columns="4"
+								columnClasses=",columMargin,,columMargin,"
+								styleClass="ui-panelgrid-blank" layout="grid">
+
+								<p:outputLabel value="País: " styleClass="text-label-left" />
+								<p:selectOneMenu id="cpais" styleClass="cmbEmpleado"
+									required="true" requiredMessage="Seleccione un país"
+									value="#{empleadoBean.pais}" converter="paisConverter">
+									<f:selectItem itemValue="#{null}"
+										itemLabel="- Seleccione Pais -" />
+									<f:selectItems value="#{empleadoBean.listPais}" var="cpais"
+										itemValue="#{cpais}" itemLabel="#{cpais.nombre}" />
+									<p:ajax event="change" update="form1:cmp1"
+										listener="#{empleadoBean.cargarListaCompania()}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Compañía: " styleClass="text-label-left" />
+								<p:selectOneMenu id="cmp1" styleClass="cmbEmpleado"
+									required="true" requiredMessage="Seleccione una compañia"
+									value="#{empleadoBean.empleado.idCompania}"
+									converter="companiaConverter">
+									<f:selectItem itemValue="#{null}"
+										itemLabel="- Seleccione Compañia -" />
+									<f:selectItems value="#{empleadoBean.listCompania}" var="comp"
+										itemValue="#{comp}" itemLabel="#{comp.nombre}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Cargo: " styleClass="text-label-left" />
+								<p:selectOneMenu id="car1" styleClass="cmbEmpleado"
+									required="true" requiredMessage="Seleccione un cargo"
+									value="#{empleadoBean.empleado.idCargo}"
+									converter="cargoConverter">
+									<f:selectItem itemValue="#{null}"
+										itemLabel="- Seleccione Cargo -" />
+									<f:selectItems value="#{empleadoBean.listCargo}" var="car"
+										itemValue="#{car}" itemLabel="#{car.nombre}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Período: " styleClass="text-label-left" />
+								<p:selectOneMenu id="per1" styleClass="cmbEmpleado"
+									required="true" requiredMessage="Seleccione un período"
+									value="#{empleadoBean.empleado.idPeriodo}"
+									converter="periodoConverter">
+									<f:selectItem itemValue="#{null}"
+										itemLabel="- Seleccione Periodo -" />
+									<f:selectItems value="#{empleadoBean.listPeriodo}" var="per"
+										itemValue="#{per}" itemLabel="#{per.nombre}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Nombres: " styleClass="text-label-left" />
+								<p:inputText id="nom1" value="#{empleadoBean.empleado.nombre}"
+									required="true" requiredMessage="Ingrese un nombre"
+									maxlength="40" styleClass="imput-text-box">
+									<f:attribute name="message" value="Ingrese nombres" />
+									<f:validator validatorId="RequiredValidator" />
+								</p:inputText>
+
+
+
+								<p:outputLabel value="Apellidos: " styleClass="text-label-left" />
+								<p:inputText id="apl1" required="true"
+									requiredMessage="Ingrese apellidos" maxlength="40"
+									value="#{empleadoBean.empleado.apellidos}"
+									styleClass="imput-text-box">
+									<f:attribute name="message" value="Ingrese apellidos" />
+									<f:validator validatorId="RequiredValidator" />
+								</p:inputText>
+
+								<p:outputLabel value="Código Empleado: "
+									styleClass="text-label-left" />
+								<p:inputText id="cod" value="#{empleadoBean.empleado.codigo}"
+									required="true" requiredMessage="Ingrese el código de empleado"
+									maxlength="50" styleClass="imput-text-box">
+									<f:attribute name="message"
+										value="Ingrese el codigo de empleado" />
+									<f:validator validatorId="RequiredValidator" />
+								</p:inputText>
+
+								<p:outputLabel value="Fecha de nacimiento: "
+									styleClass="text-label-left" />
+								<p:calendar id="fn1" value="#{empleadoBean.empleado.fechaNac}"
+									required="true" locale="es"
+									requiredMessage="Ingrese una fecha de nacimiento"
+									pattern="dd/MM/yyyy" />
+
+								<p:outputLabel value="Fecha de ingreso: "
+									styleClass="text-label-left" />
+								<p:calendar id="fi1" required="true" locale="es"
+									requiredMessage="Ingrese una fecha de ingreso"
+									value="#{empleadoBean.empleado.fechaIngreso}"
+									pattern="dd/MM/yyyy" />
+
+								<p:outputLabel value="Dirección principal: "
+									styleClass="text-label-left" />
+								<p:inputTextarea rows="2" id="dirp1" maxlength="300"
+									required="true" requiredMessage="Ingrese una dirección"
+									value="#{empleadoBean.empleado.direccion}"
+									styleClass="imput-text-box">
+								</p:inputTextarea>
+
+								<p:outputLabel value="Dirección secundaria: "
+									styleClass="text-label-left" />
+								<p:inputTextarea rows="2" id="dirs1" maxlength="300"
+									value="#{empleadoBean.empleado.direccion1}"
+									styleClass="imput-text-box" />
+
+								<p:outputLabel value="Teléfono: " styleClass="text-label-left" />
+								<p:inputMask mask="999-9999-9999" id="tel1" required="true"
+									requiredMessage="Ingrese un teléfono"
+									value="#{empleadoBean.empleado.telefono}"
+									styleClass="imput-text-box" />
+
+								<p:outputLabel value="Salario: " styleClass="text-label-left" />
+								<p:inputNumber id="sal1" decimalPlaces="2" decimalSeparator="."
+									required="true" requiredMessage="Ingrese un salario"
+									value="#{empleadoBean.empleado.salario}" maxlength="40"
+									styleClass="imput-text-box" />
+
+								<p:outputLabel value="Número cuenta bancaria: "
+									styleClass="text-label-left" />
+								<p:inputText id="nbac1" required="true"
+									requiredMessage="Ingrese una cuenta"
+									value="#{empleadoBean.empleado.cuentaBanc}"
+									styleClass="imput-text-box">
+									<f:attribute name="message" value="Ingrese una cuenta" />
+									<f:validator validatorId="RequiredValidator" />
+								</p:inputText>
+
+								<p:outputLabel value="Número de documento: "
+									styleClass="text-label-left" />
+								<p:inputText id="ndoc1" required="true"
+									requiredMessage="Ingrese un número de documento"
+									value="#{empleadoBean.empleado.noDocumento}"
+									styleClass="imput-text-box">
+									<f:attribute name="message"
+										value="Ingrese un número de documento" />
+									<f:validator validatorId="RequiredValidator" />
+								</p:inputText>
+
+								<p:outputLabel value="Estado: " />
+								<p:selectOneMenu id="est1" value="#{empleadoBean.estado}"
+									styleClass="cmbEmpleado" required="true"
+									requiredMessage="Seleccione un estado">
+									<f:selectItem itemLabel="- Seleccione estado -" />
+									<f:selectItem itemValue="Activo" itemLabel="Activo" />
+									<f:selectItem itemValue="Inactivo" itemLabel="Inactivo" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Sexo: " />
+								<p:selectOneMenu id="sexox" value="#{empleadoBean.sexo}"
+									styleClass="cmbEmpleado" required="true"
+									requiredMessage="Seleccione sexo">
+									<f:selectItem itemLabel="- Seleccione sexo -" />
+									<f:selectItem itemValue="M" itemLabel="Masculino" />
+									<f:selectItem itemValue="F" itemLabel="Femenino" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Nacionalidad: "
+									styleClass="text-label-left" />
+								<p:inputText id="nacionalidadx" required="true"
+									requiredMessage="Ingrese una cuenta"
+									value="#{empleadoBean.empleado.nacionalidad}"
+									styleClass="imput-text-box">
+									<f:attribute name="message" value="Ingrese una nacionalidad" />
+									<f:validator validatorId="RequiredValidator" />
+								</p:inputText>
+
+								<p:outputLabel value="Centro de Costo: "
+									styleClass="text-label-left" />
+								<p:selectOneMenu id="cc12x" styleClass="cmbEmpleado"
+									autoWidth="off" required="true"
+									requiredMessage="Seleccione centro de costo"
+									value="#{empleadoBean.centroCosto}"
+									converter="centroCostoConverter">
+									<f:selectItem itemValue="#{null}"
+										itemLabel="- Seleccione centro costo -" />
+									<f:selectItems value="#{empleadoBean.listCentroCosto}"
+										var="costo" itemValue="#{costo}" itemLabel="#{costo.nombre}" />
+								</p:selectOneMenu>
+
+
+								<p:outputLabel value="" />
+								<p:outputLabel value="" />
+
+								<f:facet name="footer">
+									<p:panelGrid id="pngButtons" columns="2" layout="grid"
+										style="border:none;margin-top: 20px;">
+
+										<p:commandButton styleClass="btnSave" id="btnSave"
+											value="Guardar"
+											actionListener="#{empleadoBean.crearEmpleado()}"
+											oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblEmpleados').clearFilters();PF('w_dlgAdd').hide();}"
+											icon="fa fa-save Fs15 white"
+											update="formTblEmpleados:tblEmpleados,form1:png1,msg" />
+
+										<p:commandButton styleClass="btnCancel" id="btnCancel"
+											value="Cancelar" actionListener="#{empleadoBean.cancelar()}"
+											oncomplete="PF('w_dlgAdd').hide();"
+											onclick="PF('w_tblEmpleados').clearFilters()"
+											icon="fa fa-times Fs15 white" process="@this"
+											update="formTblEmpleados:tblEmpleados,form1:png1,msg" />
+									</p:panelGrid>
+								</f:facet>
+							</p:panelGrid>
+						</div>
+					</div>
+				</p:outputPanel>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog id="dlgMod" header="Editar un empleado" widgetVar="w_dlgMod"
+			closable="false" modal="true" resizable="false" showEffect="fade"
+			styleClass="modal-body" hideEffect="fade" width="78%"
+			responsive="true">
+			<h:form id="form2">
+				<p:outputPanel style="text-align:justify">
+					<div class="Container100">
+						<div class="ContainerIndent">
+							<p:panelGrid id="png2" columns="4"
+								columnClasses=",columMargin,,columMargin,"
+								styleClass="ui-panelgrid-blank" layout="grid">
+
+
+								<p:outputLabel value="País: " styleClass="text-label-left" />
+								<p:selectOneMenu id="cpais2" styleClass="cmbEmpleado"
+									value="#{empleadoBean.selectedEmpleado.idCompania.idPais}"
+									converter="paisConverter">
+									<f:selectItem itemValue="#{null}"
+										itemLabel="- Seleccione Pais -" />
+									<f:selectItems value="#{empleadoBean.listPais}" var="cpais"
+										itemValue="#{cpais}" itemLabel="#{cpais.nombre}" />
+									<p:ajax event="change" update="form2:cmp2"
+										listener="#{empleadoBean.cargarListaCompania()}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Compañía: " styleClass="text-label-left" />
+								<p:selectOneMenu id="cmp2" styleClass="cmbEmpleado"
+									required="true" requiredMessage="Seleccione una compañia"
+									value="#{empleadoBean.selectedEmpleado.idCompania}"
+									converter="companiaConverter">
+									<f:selectItem itemValue="#{null}"
+										itemLabel="- Seleccione Compañia -" />
+									<f:selectItems value="#{empleadoBean.listCompania}" var="comp"
+										itemValue="#{comp}" itemLabel="#{comp.nombre}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Cargo: " styleClass="text-label-left" />
+								<p:selectOneMenu id="car2" styleClass="cmbEmpleado"
+									required="true" requiredMessage="Seleccione un cargo"
+									value="#{empleadoBean.selectedEmpleado.idCargo}"
+									converter="cargoConverter">
+									<f:selectItem itemValue="#{null}"
+										itemLabel="- Seleccione Cargo -" />
+									<f:selectItems value="#{empleadoBean.listCargo}" var="car"
+										itemValue="#{car}" itemLabel="#{car.nombre}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Período: " styleClass="text-label-left" />
+								<p:selectOneMenu id="per2" styleClass="cmbEmpleado"
+									required="true" requiredMessage="Seleccione un período"
+									value="#{empleadoBean.selectedEmpleado.idPeriodo}"
+									converter="periodoConverter">
+									<f:selectItem itemValue="#{null}"
+										itemLabel="- Seleccione Periodo -" />
+									<f:selectItems value="#{empleadoBean.listPeriodo}" var="per"
+										itemValue="#{per}" itemLabel="#{per.nombre}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Nombres: " styleClass="text-label-left" />
+								<p:inputText id="nom2"
+									value="#{empleadoBean.selectedEmpleado.nombre}" required="true"
+									requiredMessage="Ingrese un nombre" maxlength="40"
+									styleClass="imput-text-box">
+									<f:attribute name="message" value="Ingrese nombres" />
+									<f:validator validatorId="RequiredValidator" />
+								</p:inputText>
+
+								<p:outputLabel value="Apellidos: " styleClass="text-label-left" />
+								<p:inputText id="apl2" required="true"
+									requiredMessage="Ingrese apellidos" maxlength="40"
+									value="#{empleadoBean.selectedEmpleado.apellidos}"
+									styleClass="imput-text-box">
+									<f:attribute name="message" value="Ingrese apellidos" />
+									<f:validator validatorId="RequiredValidator" />
+								</p:inputText>
+
+								<p:outputLabel value="Código Empleado: "
+									styleClass="text-label-left" />
+								<p:inputText id="cod2"
+									value="#{empleadoBean.selectedEmpleado.codigo}" required="true"
+									requiredMessage="Ingrese el codigo de empleado" maxlength="50"
+									styleClass="imput-text-box">
+									<f:attribute name="message"
+										value="Ingrese el codigo de empleado" />
+									<f:validator validatorId="RequiredValidator" />
+								</p:inputText>
+
+								<p:outputLabel value="Fecha de nacimiento: "
+									styleClass="text-label-left" />
+								<p:calendar id="fn2" locale="es"
+									value="#{empleadoBean.selectedEmpleado.fechaNac}"
+									required="true"
+									requiredMessage="Ingrese una fecha de nacimiento"
+									pattern="dd/MM/yyyy" />
+
+								<p:outputLabel value="Fecha de ingreso: "
+									styleClass="text-label-left" />
+								<p:calendar id="fi2" required="true" locale="es"
+									requiredMessage="Ingrese una fecha de ingreso"
+									value="#{empleadoBean.selectedEmpleado.fechaIngreso}"
+									pattern="dd/MM/yyyy" />
+
+								<p:outputLabel value="Dirección principal: "
+									styleClass="text-label-left" />
+								<p:inputTextarea rows="2" id="dirp2" maxlength="300"
+									required="true" requiredMessage="Ingrese una dirección"
+									value="#{empleadoBean.selectedEmpleado.direccion}"
+									styleClass="imput-text-box">
+								</p:inputTextarea>
+
+								<p:outputLabel value="Dirección secundaria: "
+									styleClass="text-label-left" />
+								<p:inputTextarea rows="2" id="dirs2" maxlength="300"
+									value="#{empleadoBean.selectedEmpleado.direccion1}"
+									styleClass="imput-text-box" />
+
+								<p:outputLabel value="Teléfono: " styleClass="text-label-left" />
+								<p:inputMask mask="999-9999-9999" id="tel2" required="true"
+									requiredMessage="Ingrese un teléfono"
+									value="#{empleadoBean.selectedEmpleado.telefono}"
+									styleClass="imput-text-box" />
+
+								<p:outputLabel value="Salario: " styleClass="text-label-left" />
+								<p:inputNumber id="sal2" decimalPlaces="2" decimalSeparator="."
+									required="true" requiredMessage="Ingrese un salario"
+									value="#{empleadoBean.selectedEmpleado.salario}" maxlength="40"
+									styleClass="imput-text-box" />
+
+								<p:outputLabel value="Número cuenta bancaria: "
+									styleClass="text-label-left" />
+								<p:inputText id="nbac2" required="true"
+									requiredMessage="Ingrese una cuenta"
+									value="#{empleadoBean.selectedEmpleado.cuentaBanc}"
+									styleClass="imput-text-box">
+									<f:attribute name="message" value="Ingrese una cuenta" />
+									<f:validator validatorId="RequiredValidator" />
+								</p:inputText>
+
+								<p:outputLabel value="Número de documento: "
+									styleClass="text-label-left" />
+								<p:inputText id="ndoc2" required="true"
+									requiredMessage="Ingrese un número de documento"
+									value="#{empleadoBean.selectedEmpleado.noDocumento}"
+									styleClass="imput-text-box">
+									<f:attribute name="message"
+										value="Ingrese un número de documento" />
+									<f:validator validatorId="RequiredValidator" />
+								</p:inputText>
+
+								<p:outputLabel value="Estado: " />
+								<p:selectOneMenu id="est2" value="#{empleadoBean.estado}"
+									styleClass="cmbEmpleado" required="true"
+									requiredMessage="Seleccione un estado">
+									<f:selectItem itemLabel="- Seleccione un estado -" />
+									<f:selectItem itemValue="Activo" itemLabel="Activo" />
+									<f:selectItem itemValue="Inactivo" itemLabel="Inactivo" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Sexo: " />
+								<p:selectOneMenu id="sexo" styleClass="cmbEmpleado"
+									value="#{empleadoBean.selectedEmpleado.sexo}" required="true"
+									requiredMessage="Seleccione sexo">
+									<f:selectItem itemLabel="- Seleccione sexo -" />
+									<f:selectItem itemValue="M" itemLabel="Masculino" />
+									<f:selectItem itemValue="F" itemLabel="Femenino" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Nacionalidad: "
+									styleClass="text-label-left" />
+								<p:inputText id="nacionalidad" required="true"
+									requiredMessage="Ingrese una cuenta"
+									value="#{empleadoBean.selectedEmpleado.nacionalidad}"
+									styleClass="imput-text-box">
+									<f:attribute name="message" value="Ingrese una nacionalidad" />
+									<f:validator validatorId="RequiredValidator" />
+								</p:inputText>
+
+								<p:outputLabel value="Centro de Costo: "
+									styleClass="text-label-left" />
+								<p:selectOneMenu id="cc12" styleClass="cmbEmpleado"
+									autoWidth="false" required="true"
+									requiredMessage="Seleccione un centro de costo"
+									value="#{empleadoBean.selectedEmpleado.idCentroCosto}"
+									converter="centroCostoConverter">
+									<f:selectItem itemValue="#{null}"
+										itemLabel="- Seleccione centro de costo -" />
+									<f:selectItems value="#{empleadoBean.listCentroCosto}"
+										var="costo" itemValue="#{costo}" itemLabel="#{costo.nombre}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Ingresar despido/renuncia" />
+								<p:commandButton id="btnDespido" value="Despido/Renuncia"
+									icon="fa icon-logout Fs14 white" update="formDespido"
+									disabled="#{empleadoBean.despido}"
+									actionListener="#{empleadoBean.cargarListaMovin()}"
+									oncomplete="PF('w_dlgDespido').show();" />
+
+								<p:outputLabel value="Procesar despido/renuncia" />
+								<p:commandButton id="btnProcesarDespido"
+									value="Despido/Renuncia" icon="fa icon-logout Fs14 white"
+									update="formProcesarDespido" disabled="#{empleadoBean.despido}"
+									actionListener="#{empleadoBean.cargarListaMovin()}"
+									oncomplete="PF('w_dlgProcesarDespido').show();" />
+
+								<p:outputLabel value="" />
+								<p:outputLabel value="" />
+
+								<f:facet name="footer">
+									<p:panelGrid id="pngButtons2" columns="3" layout="grid"
+										style="border:none;margin-top: 20px;">
+
+										<p:commandButton styleClass="btnEdit" id="btnEdit"
+											value="Modificar"
+											disabled="#{sessionBean.renderizarComponente('BTN_EDITAR') eq false?true:false}"
+											actionListener="#{empleadoBean.editarEmpleado()}"
+											icon="fa icon-edit-1 Fs15 white"
+											oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblEmpleados').clearFilters();PF('w_dlgMod').hide();}"
+											update="formTblEmpleados:tblEmpleados,form2:png2,msg" />
+
+										<p:commandButton styleClass="btnDelete" id="btnDelete"
+											disabled="#{sessionBean.renderizarComponente('BTN_ELIMINAR') eq false?true:false}"
+											value="Eliminar" icon="fa icon-trash Fs15 white"
+											actionListener="#{empleadoBean.eliminarEmpleado()}"
+											update="formTblEmpleados:tblEmpleados,form2:png2,msg">
+											<p:confirm message="Desea eliminar el registro?"
+												icon="ui-icon-alert" />
+										</p:commandButton>
+
+										<p:commandButton styleClass="btnCancel2" id="btnCancel2"
+											value="Cancelar" icon="fa fa-times Fs15 white"
+											process="@this" oncomplete="PF('w_dlgMod').hide();"
+											update="formTblEmpleados:tblEmpleados,form2:png2,msg" />
+
+									</p:panelGrid>
+
+									<p:confirmDialog global="true" showEffect="fade"
+										hideEffect="fade">
+										<p:commandButton title="YesButton" value="SI"
+											oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblEmpleados').clearFilters();PF('w_dlgMod').hide();}"
+											styleClass="ui-confirmdialog-yes" style="margin-left: 50px" />
+										<p:commandButton title="NoButton" value="No"
+											oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblEmpleados').clearFilters();PF('w_dlgMod').hide();}"
+											styleClass="ui-confirmdialog-no" />
+									</p:confirmDialog>
+
+								</f:facet>
+							</p:panelGrid>
+						</div>
+					</div>
+				</p:outputPanel>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>

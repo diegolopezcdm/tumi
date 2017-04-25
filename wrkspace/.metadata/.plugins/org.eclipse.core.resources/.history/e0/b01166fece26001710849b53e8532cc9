@@ -1,0 +1,248 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml">
+
+	<ui:define name="content">
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+
+		<h3 class="hardblue TexAlCenter">Procesar Nómina</h3>
+
+		<div class="ContainerIndent">
+
+			<h:form id="form1">
+
+				<div id="divContentReport">
+
+					<div class="ui-g" style="padding-top: 5%">
+						<div class="ui-g-12 ui-md-6 ui-lg-3 "
+							style="width: 20%; height: 0px;" />
+						<div class="ui-g-12 ui-md-6 ui-lg-3 ">
+							<p:outputLabel value="País: "/>
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-3 ">
+							<p:selectOneMenu id="cpais" style="width:100%;"
+								value="#{planillaBean.pais}" converter="paisConverter">
+								<f:selectItem itemValue="#{null}"
+									itemLabel="- Seleccione país -" />
+								<f:selectItems value="#{planillaBean.listPais}" var="cpais"
+									itemValue="#{cpais}" itemLabel="#{cpais.nombre}" />
+								<p:ajax event="change"
+									update="form1:cmp,form1:cmc,form1"
+									listener="#{planillaBean.cargarListaCompania()}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-3 "
+							style="width: 20%; height: 0px;" />
+						<div class="ui-g-12 ui-md-6 ui-lg-3 ">
+							<p:outputLabel value="Compañia: " />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-3 ">
+							<p:selectOneMenu id="cmc"   style="width:100%;"
+								disabled="#{planillaBean.disableListC}"
+								value="#{planillaBean.compania}" converter="companiaConverter"
+								required="true" requiredMessage="- Seleccione una compañia -">
+								<f:selectItem itemValue="#{null}"
+									itemLabel="- Seleccione compañia -" />
+								<f:selectItems value="#{planillaBean.listCompania}" var="cmp"
+									itemValue="#{cmp}" itemLabel="#{cmp.nombre}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-3 "
+							style="width: 20%; height: 0px;" />
+						<div class="ui-g-12 ui-md-6 ui-lg-3 ">
+							<p:outputLabel value="Periodo: " />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-3 ">
+							<p:selectOneMenu id="cmp"   style="width:100%;"
+								disabled="#{planillaBean.disableListP}"
+								value="#{planillaBean.periodo}" converter="periodoConverter"
+								required="true" requiredMessage="- Seleccione un período -">
+								<f:selectItem itemValue="#{null}"
+									itemLabel="- Seleccione período -" />
+								<f:selectItems value="#{planillaBean.listPeriodo}" var="per"
+									itemValue="#{per}" itemLabel="#{per.nombre}" />
+							</p:selectOneMenu>
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-3 "
+							style="width: 20%; height: 0px;" />
+
+					</div>
+
+					<div class="ui-g" style="padding-bottom: 5%">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:commandButton id="btn2" style="width:80%;"
+								disabled="#{planillaBean.disableP}" value="Procesar planilla"
+								icon="fa icon-ok-1 Fs15 white"
+								actionListener="#{planillaBean.ProcesarNomina()}"
+								update="formTbl:tblP,form1,msg" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:commandButton id="btn3" style="width:80%;"
+								disabled="#{planillaBean.disableC}" value="Cerrar planilla"
+								icon="fa icon-stop Fs15 white"
+								actionListener="#{planillaBean.cerrarPlanilla()}"
+								update="formTbl:tblP,form1,msg">
+								<p:confirm message="Desea cerrar la planilla?"
+									icon="ui-icon-alert" />
+							</p:commandButton>
+						</div>
+
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							<p:commandButton title="YesButton" value="SI"
+								styleClass="ui-confirmdialog-yes" style="margin-left: 50px" />
+							<p:commandButton title="NoButton" value="No"
+								styleClass="ui-confirmdialog-no" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</h:form>
+
+			<p:separator></p:separator>
+
+
+			<p:panel>
+				<div class="ContainerIndent">
+					<h:form id="formTbl">
+						<p:dataTable id="tblP" var="listPlanilla"
+							value="#{planillaBean.listPlanilla}" paginator="true" rows="5"
+							selectionMode="single"
+							loadingmessage="Realizando la operación, por favor espere un momento..."
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							selection="#{planillaBean.planilla}" lazy="true"
+							rowKey="#{listPlanilla.id}" rowsPerPageTemplate="5,10"
+							emptyMessage="No se encontro registros" reflow="true"
+							widgetVar="tblP">
+
+
+							<f:facet name="header">
+                                Planillas Registradas en Sistema
+                            </f:facet>
+
+							<p:column headerText="Id" rendered="false">
+								<h:outputText value="#{listPlanilla.id}" />
+							</p:column>
+
+							<p:column headerText="Compañia">
+								<h:outputText
+									value="#{listPlanilla.idEmpleado.idCompania.nombre}" />
+							</p:column>
+
+							<p:column headerText="Empleado">
+								<h:outputText
+									value="#{listPlanilla.idEmpleado.nombre} #{listPlanilla.idEmpleado.apellidos}" />
+							</p:column>
+
+							<p:column headerText="Estado">
+								<h:outputText value="#{listPlanilla.estado}" />
+							</p:column>
+
+							<p:column headerText="Datos de Pagos" styleClass="centeredColumn">
+								<p:commandButton update="formInfo" styleClass="btnInfo"
+									oncomplete="PF('w_dlgInfo').show()"
+									icon="fa icon-search Fs15 white" title="View">
+									<f:setPropertyActionListener value="#{listPlanilla}"
+										target="#{planillaBean.selectedPlanilla}" />
+								</p:commandButton>
+							</p:column>
+
+							<p:column headerText="Fecha Desembolso">
+								<h:outputText value="#{listPlanilla.fechaDesembolso}">
+									<f:convertDateTime pattern="dd-MM-yyyy" />
+								</h:outputText>
+							</p:column>
+
+							<p:column headerText="Desde">
+								<h:outputText value="#{listPlanilla.desde}">
+									<f:convertDateTime pattern="dd-MM-yyyy" />
+								</h:outputText>
+
+							</p:column>
+
+							<p:column headerText="Hasta">
+								<h:outputText value="#{listPlanilla.hasta}">
+									<f:convertDateTime pattern="dd-MM-yyyy" />
+								</h:outputText>
+
+							</p:column>
+
+							<p:column headerText="Total Anticipos">
+								<h:outputText value="#{listPlanilla.totalAnticipos}" />
+							</p:column>
+
+						</p:dataTable>
+					</h:form>
+				</div>
+			</p:panel>
+
+			<div class="EmptyBox20"></div>
+
+			<p:dialog id="dlgInfo" header="Información de Pagos"
+				widgetVar="w_dlgInfo" modal="true" resizable="false"
+				closable="false" showEffect="fade" hideEffect="fade" width="30%"
+				responsive="true">
+				<h:form id="formInfo">
+					<p:outputPanel style="text-align:justify">
+						<div class="Container100">
+							<div class="ContainerIndent">
+								<p:panelGrid id="png1" columns="2"
+									styleClass="ui-panelgrid-blank" layout="grid">
+
+									<p:outputLabel value="Sueldo Base: "
+										styleClass="text-label-left" />
+									<p:outputLabel id="inf1"
+										value="#{planillaBean.moneda} #{planillaBean.selectedPlanilla.sueldoBase}" />
+
+									<p:outputLabel value="Descuentos: "
+										styleClass="text-label-left" />
+									<p:outputLabel id="inf2"
+										value="#{planillaBean.moneda} #{planillaBean.selectedPlanilla.descuentos}" />
+
+									<p:outputLabel value="Bonos: " styleClass="text-label-left" />
+									<p:outputLabel id="inf3"
+										value="#{planillaBean.moneda} #{planillaBean.selectedPlanilla.bonos}" />
+
+									<p:outputLabel value="Horas Extra: "
+										styleClass="text-label-left" />
+									<p:outputLabel id="inf4"
+										value="#{planillaBean.moneda} #{planillaBean.selectedPlanilla.horasExtras}" />
+
+									<p:outputLabel value="Sueldo Líquido: "
+										styleClass="text-label-left" />
+									<p:outputLabel id="inf5"
+										value="#{planillaBean.moneda} #{planillaBean.selectedPlanilla.sueldoLiquido}" />
+
+									<f:facet name="footer">
+										<p:panelGrid id="pngButtons" columns="1" layout="grid"
+											style="border:none;margin-top: 20px;text-align:center">
+
+											<p:commandButton styleClass="btnClose" id="btnClose"
+												value="Cerrar" oncomplete="PF('w_dlgInfo').hide();"
+												icon="fa icon-cancel-circled Fs15 white" />
+
+										</p:panelGrid>
+									</f:facet>
+								</p:panelGrid>
+							</div>
+						</div>
+					</p:outputPanel>
+				</h:form>
+			</p:dialog>
+
+
+		</div>
+
+
+	</ui:define>
+
+</ui:composition>

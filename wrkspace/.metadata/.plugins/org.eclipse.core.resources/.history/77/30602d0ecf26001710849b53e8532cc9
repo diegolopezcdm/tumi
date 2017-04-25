@@ -1,0 +1,317 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml"
+	xmlns:pe="http://primefaces.org/ui">
+
+	<ui:define name="content">
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+
+		<h3 class="hardblue TexAlCenter">Registro de asuetos</h3>
+
+
+		<div class="ContainerIndent">
+
+			<p:panel>
+				<div class="ContainerIndent">
+					<h:form id="formTblAsueto">
+						<p:panel style="text-align:right;border:none">
+
+							<h:commandLink action="#{asuetoBean.generarExcel()}">
+								<p:graphicImage id="excel" name="/img/excel.png" width="40" />
+								<p:tooltip id="tfE" for="excel" value="Exportar a Excel"
+									position="top" />
+
+							</h:commandLink>
+
+							<h:commandLink action="#{asuetoBean.generarPdf()}">
+								<p:graphicImage id="pdf" name="/img/pdf.png" width="40" />
+								<p:tooltip id="tfP" for="pdf" value="Exportar a PDF"
+									position="top" />
+
+							</h:commandLink>
+
+						</p:panel>
+						<p:dataTable id="tblAsueto" var="lazyModel"
+							value="#{asuetoBean.lazyModel}" paginator="true" rows="10"
+							selectionMode="single"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							lazy="true" selection="#{asuetoBean.selectedAsueto}"
+							rowKey="#{lazyModel.id}" rowsPerPageTemplate="10,15,20"
+							emptyMessage="No se encontraron registros" reflow="true"
+							loadingmessage="Realizando la operación, por favor espere un momento..."
+							widgetVar="w_tblAsueto">
+
+							<p:ajax event="rowSelect" oncomplete="PF('w_dlgMod').show();"
+								update="form2" listener="#{asuetoBean.onRowSelect(event)}" />
+
+
+							<f:facet name="header">
+                                Asuetos registrados
+                            </f:facet>
+
+							<p:column headerText="Id" rendered="false">
+								<h:outputText value="#{lazyModel.id}" />
+							</p:column>
+
+
+							<p:column headerText="Fecha (Dia/Mes)"
+								sortBy="#{lazyModel.fecha}">
+								<h:outputText value="#{lazyModel.fecha}">
+									<f:converter converterId="fechaAsuetoConverter" />
+								</h:outputText>
+
+							</p:column>
+
+							<p:column headerText="Descripción"
+								sortBy="#{lazyModel.descripcion}"
+								filterBy="#{lazyModel.descripcion}" filterMatchMode="contains">
+								<h:outputText value="#{lazyModel.descripcion}" />
+							</p:column>
+
+							<p:column headerText="País" sortBy="#{lazyModel.idPais.nombre}"
+								filterMatchMode="contains" filterBy="#{lazyModel.idPais.nombre}">
+								<h:outputText value="#{lazyModel.idPais.nombre}" />
+							</p:column>
+
+							<f:facet name="footer">
+								<p:commandButton style="width:150px"
+									rendered="#{sessionBean.renderizarComponente('BTN_GUARDAR')}"
+									icon="fa icon-plus Fs15 white"
+									oncomplete="PF('w_dlgAdd').show();" value="Agregar" />
+
+							</f:facet>
+						</p:dataTable>
+					</h:form>
+				</div>
+			</p:panel>
+			<div class="EmptyBox20"></div>
+		</div>
+
+		<p:dialog id="dlgAdd" header="Agregar un asueto" widgetVar="w_dlgAdd"
+			closable="false" modal="true" styleClass="asueto-modal-body"
+			resizable="false" showEffect="fade" hideEffect="fade"
+			responsive="true">
+			<h:form id="form1">
+				<div id="divContentAsuetoAdd" style="width: 100%">
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6" style="width: 40% !important">
+							<p:outputLabel value="Descripción: " styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:inputTextarea rows="3" id="desc1" required="true"
+								requiredMessage="Ingrese una descripción" maxlength="150"
+								value="#{asuetoBean.asueto.descripcion}"
+								styleClass="imput-text-box">
+								<f:attribute name="message" value="Ingrese una descripción" />
+								<f:validator validatorId="RequiredValidator" />
+							</p:inputTextarea>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6" style="width: 40% !important">
+							<p:outputLabel value="Fecha: " />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<div class="ui-g" style="width: 80%; text-align: left">
+
+								<div class="ui-g-4 ui-md-4 ui-lg-4"
+									style="width: 30% !important; text-align: left;">
+									<p:inputNumber minValue="0" id="dia1" maxValue="31"
+										maxlength="2" size="2" value="#{asuetoBean.dia}"
+										autocomplete="off" required="true"
+										requiredMessage="Ingrese un día"
+										title="Ingrese un día, ejemplo: 01" placeholder="Día"
+										inputStyle="width:30px !important" />
+									<p:tooltip id="tfd1" for="dia1" showEvent="focus"
+										hideEvent="blur" />
+
+
+								</div>
+								<div class="ui-g-4 ui-md-4 ui-lg-4"
+									style="text-align: center; width: 5%"></div>
+								<div class="ui-g-4 ui-md-4 ui-lg-4"
+									style="width: 30% !important; text-align: left;">
+									<p:inputNumber minValue="0" id="mes1" maxValue="12"
+										required="true" requiredMessage="Ingrese un mes"
+										autocomplete="off" value="#{asuetoBean.mes}" maxlength="2"
+										size="2" title="Ingrese un mes, ejemplo: 01" placeholder="Mes"
+										inputStyle="width:30px !important" />
+									<p:tooltip id="tfm1" for="mes1" showEvent="focus"
+										hideEvent="blur" />
+								</div>
+
+							</div>
+						</div>
+					</div>
+
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6" style="width: 40% !important">
+							<p:outputLabel value="País: " />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:selectOneMenu id="pais1" value="#{asuetoBean.asueto.idPais}"
+								converter="paisConverter" required="true"
+								requiredMessage="Seleccione un país">
+								<f:selectItem itemValue="#{null}"
+									itemLabel="- Seleccione un Pais -" />
+								<f:selectItems value="#{asuetoBean.listPais}" var="pais"
+									itemValue="#{pais}" itemLabel="#{pais.nombre}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:commandButton styleClass="btnSave" id="btnSave"
+								value="Guardar" actionListener="#{asuetoBean.crearAsueto()}"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblAsueto').clearFilters();PF('w_dlgAdd').hide();}"
+								icon="fa fa-save Fs15 white"
+								update="formTblAsueto:tblAsueto,form1,msg" />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:commandButton styleClass="btnCancel" id="btnCancel"
+								value="Cancelar" actionListener="#{asuetoBean.cancelar()}"
+								oncomplete="PF('w_dlgAdd').hide();" process="@this"
+								icon="fa fa-times Fs15 white"
+								update="formTblAsueto:tblAsueto,form1,msg">
+								<p:resetInput target="form1" />
+							</p:commandButton>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+
+		<p:dialog id="dlgMod" header="Modificar un asueto"
+			styleClass="modal-body" widgetVar="w_dlgMod" closable="false"
+			modal="true" resizable="false" showEffect="fade" hideEffect="fade"
+			width="auto" responsive="true">
+			<h:form id="form2">
+				<div id="divContentAsuetoAdd">
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:outputLabel value="Descripción: " styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:inputTextarea rows="3" id="desc2" required="true"
+								requiredMessage="Ingrese una descripción" maxlength="150"
+								value="#{asuetoBean.selectedAsueto.descripcion}"
+								styleClass="imput-text-box">
+								<f:attribute name="message" value="Ingrese una descripción" />
+								<f:validator validatorId="RequiredValidator" />
+							</p:inputTextarea>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:outputLabel value="Fecha: " />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+
+							<div class="ui-g" style="width: 80%; text-align: left">
+
+								<div class="ui-g-4 ui-md-4 ui-lg-4"
+									style="width: 30% !important; text-align: left;">
+									<p:inputNumber minValue="0" id="dia2" maxValue="31"
+										autocomplete="off" maxlength="2" size="2"
+										value="#{asuetoBean.dia}" required="true"
+										requiredMessage="Ingrese un día"
+										title="Ingrese un día, ejemplo: 01" placeholder="Día"
+										inputStyle="width:30px !important" />
+									<p:tooltip id="tfd1" for="dia2" showEvent="focus"
+										hideEvent="blur" />
+
+
+								</div>
+								<div class="ui-g-4 ui-md-4 ui-lg-4"
+									style="text-align: center; width: 5%"></div>
+								<div class="ui-g-4 ui-md-4 ui-lg-4"
+									style="width: 30% !important; text-align: left;">
+									<p:inputNumber minValue="0" id="mes2" maxValue="12"
+										autocomplete="off" required="true"
+										requiredMessage="Ingrese un mes" value="#{asuetoBean.mes}"
+										maxlength="2" size="2" title="Ingrese un mes, ejemplo: 01"
+										placeholder="Mes" inputStyle="width:30px !important" />
+									<p:tooltip id="tfm1" for="mes2" showEvent="focus"
+										hideEvent="blur" />
+								</div>
+
+							</div>
+
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:outputLabel value="País: " />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6">
+							<p:selectOneMenu id="pais2" required="true"
+								requiredMessage="Seleccione un país"
+								value="#{asuetoBean.selectedAsueto.idPais}"
+								converter="paisConverter">
+								<f:selectItem itemValue="#{null}"
+									itemLabel="- Seleccione un Pais -" />
+								<f:selectItems value="#{asuetoBean.listPais}" var="pais"
+									itemValue="#{pais}" itemLabel="#{pais.nombre}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+							<p:commandButton styleClass="btnEdit" id="btnEdit"
+								disabled="#{sessionBean.renderizarComponente('BTN_EDITAR') eq false?true:false}"
+								value="Modificar" actionListener="#{asuetoBean.editarAsueto()}"
+								icon="fa icon-edit-1 Fs15 white"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblAsueto').clearFilters();PF('w_dlgMod').hide();}"
+								update="formTblAsueto:tblAsueto,form2,msg" />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+							<p:commandButton styleClass="btnDelete" id="btnDelete"
+								disabled="#{sessionBean.renderizarComponente('BTN_ELIMINAR') eq false?true:false}"
+								actionListener="#{asuetoBean.eliminarAsueto()}"
+								update="formTblAsueto:tblAsueto,form2,msg" value="Eliminar"
+								icon="fa icon-trash Fs15 white">
+								<p:confirm message="Desea eliminar el registro?"
+									icon="ui-icon-alert" />
+							</p:commandButton>
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+							<p:commandButton styleClass="btnCancel2" id="btnCancel2"
+								value="Cancelar"
+								actionListener="#{asuetoBean.cancelarSelected()}"
+								oncomplete="PF('w_dlgMod').hide();"
+								icon="fa fa-times Fs15 white" process="@this"
+								update="formTblAsueto:tblAsueto,form2,msg">
+								<p:resetInput target="form2" />
+							</p:commandButton>
+						</div>
+
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							<p:commandButton title="YesButton" value="SI"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblAsueto').clearFilters();PF('w_dlgMod').hide();}"
+								styleClass="ui-confirmdialog-yes" style="margin-left: 50px" />
+							<p:commandButton title="NoButton" value="No"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblAsueto').clearFilters();PF('w_dlgMod').hide();}"
+								styleClass="ui-confirmdialog-no" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+
+	</ui:define>
+
+</ui:composition>

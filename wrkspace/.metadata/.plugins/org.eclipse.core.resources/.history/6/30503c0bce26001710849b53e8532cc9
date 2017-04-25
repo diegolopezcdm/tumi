@@ -1,0 +1,74 @@
+package com.avantia.sv.saen.ws;
+
+import java.util.List;
+
+import javax.jws.WebMethod;
+import javax.jws.WebService;
+
+import com.avantia.sv.saen.db.entity.Cargo;
+import com.avantia.sv.saen.db.entity.CentroCosto;
+import com.avantia.sv.saen.db.entity.Compania;
+import com.avantia.sv.saen.db.entity.Empleado;
+import com.avantia.sv.saen.db.entity.Movin;
+import com.avantia.sv.saen.db.entity.Periodo;
+
+/**
+ * Creado para manejar el servicio web de sincronizacion desde la aplicaicon de
+ * seguimiento de entrevistas
+ * 
+ * @author Martin Molina - Avantia Consultores
+ * @version 1.0
+ */
+@WebService
+public interface ISincronizationInterview {
+	/**
+	 * Retorna el listado de companias registradas
+	 * 
+	 * @return
+	 */
+	@WebMethod
+	public Compania[] getCompanias();
+
+	/**
+	 * Retorna los periodos registrados
+	 * 
+	 * @return
+	 */
+	@WebMethod
+	public Periodo[] getPeriodos();
+
+	/**
+	 * Retorna los cargos registrados
+	 * 
+	 * @return
+	 */
+	@WebMethod
+	public Cargo[] getCargos();
+
+	/**
+	 * Retorna los centro de costo registrados
+	 * 
+	 * @return
+	 */
+	@WebMethod
+	public CentroCosto[] getCentroCosto();
+	
+	/**
+	 * Retorna los movimientos registrados
+	 * 
+	 * @return
+	 */
+	@WebMethod
+	public Movin[] getMovin();
+	
+
+	/**
+	 * Crea un empleado y asigna movimientos
+	 * 
+	 * @param empleado
+	 * @param movimientos
+	 * @return
+	 */
+	@WebMethod
+	public int createEmpledo(EmpleadoRegister empleadoRegister, int[] idMovimientos) ;
+}

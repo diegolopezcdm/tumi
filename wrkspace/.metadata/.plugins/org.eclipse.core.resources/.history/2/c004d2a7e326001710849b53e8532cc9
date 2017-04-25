@@ -1,0 +1,108 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ps="http://primefaces.org/sentinel"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:outputStylesheet library="css" name="main.css" />
+	<div id="layout-menubar" class="Unselectable fontRegular">
+		<div class="layout-menubarinner-box" id="buttonArea">
+			<a href="#" id="layout-menubar-resize" class="BordRad3"
+				title="Menu Resize"><i class="icon-th-list-2"></i></a> <a href="#"
+				id="layout-menubar-resize2" class="BordRad3" title="Open Menu"><i
+				class="icon-menu"></i></a>
+		</div>
+		<h:form id="menuform">
+			<ps:menu id="sm_leftmenu">
+
+				<p:submenu id="MP_GENERALES" label="Generales" icon="icon-sitemap"
+					rendered="#{sessionBean.renderizarComponente('MP_GENERALES')}">
+					<p:menuitem id="MI_PAIS" value="Países" icon="icon-globe-outline"
+						outcome="/app/pais.xhtml"
+						rendered="#{sessionBean.renderizarComponente('MI_PAIS')}" />
+					<p:menuitem id="MI_CARGO" value="Cargos" icon="icon-briefcase"
+						outcome="/app/cargo.xhtml"
+						rendered="#{sessionBean.renderizarComponente('MI_CARGO')}" />
+					<p:menuitem id="MI_DOCUMENTO" value="Documentos" icon="icon-vcard"
+						outcome="/app/documento.xhtml"
+						rendered="#{sessionBean.renderizarComponente('MI_DOCUMENTO')}" />
+					<p:menuitem id="MI_ASUETO" value="Asuetos" icon="icon-clock"
+						outcome="/app/asueto.xhtml"
+						rendered="#{sessionBean.renderizarComponente('MI_ASUETO')}" />
+					<p:menuitem id="MI_PERIODO" value="Período" icon="icon-calendar"
+						outcome="/app/periodo.xhtml"
+						rendered="#{sessionBean.renderizarComponente('MI_PERIODO')}" />
+				</p:submenu>
+
+				<p:submenu id="MP_LEGISLACION" label="Legislación" icon="icon-book"
+					rendered="#{sessionBean.renderizarComponente('MP_LEGISLACION')}">
+					<p:menuitem id="MI_RUBRO" value="Rubros" icon="icon-money"
+						outcome="/app/rubro.xhtml"
+						rendered="#{sessionBean.renderizarComponente('MI_RUBRO')}" />
+					<p:menuitem id="MI_SALARIO_MIN" value="Salario mínimo"
+						icon="icon-dollar" outcome="/app/salario_minimo.xhtml"
+						rendered="#{sessionBean.renderizarComponente('MI_SALARIO_MIN')}" />
+					<p:menuitem id="MI_MOVIMIENTO" value="Movimiento"
+						icon="icon-arrows-cw-1" outcome="/app/movimiento.xhtml"
+						rendered="#{sessionBean.renderizarComponente('MI_MOVIMIENTO')}" />
+				</p:submenu>
+
+				<p:submenu id="MP_GESTION_RECURSOS" label="Gestión de recursos"
+					icon="icon-list-alt"
+					rendered="#{sessionBean.renderizarComponente('MP_GESTION_RECURSOS')}">
+					<p:menuitem id="MI_COMPANIA" value="Compañía" icon="icon-building"
+						outcome="/app/compania.xhtml"
+						rendered="#{sessionBean.renderizarComponente('MI_COMPANIA')}" />
+					<p:menuitem id="MI_EMPLEADO" value="Empleado" icon="icon-users-2"
+						outcome="/app/empleado.xhtml"
+						rendered="#{sessionBean.renderizarComponente('MI_EMPLEADO')}" />
+					<p:menuitem id="MI_PLANILLA" value="Planillas" icon="icon-clock"
+						outcome="/app/historico_planilla.xhtml"
+						rendered="#{sessionBean.renderizarComponente('MI_PLANILLA')}" />
+					<p:menuitem id="MI_NOMINA" value="Procesar nómina"
+						outcome="/app/procesar_nomina.xhtml" icon="icon-doc-text-1" 
+						rendered="#{sessionBean.renderizarComponente('MI_NOMINA')}"/>
+					<p:menuitem id="MI_CENTRO_COSTO" value="Centro de costos"
+						icon="icon-money" outcome="/app/centro_costo.xhtml"
+						rendered="#{sessionBean.renderizarComponente('MI_CENTRO_COSTO')}" />
+				</p:submenu>
+
+				<p:submenu id="MP_CONFIGURACIONES_USERS" label="Usuarios y Roles"
+					icon="icon-cog-alt"
+					rendered="#{sessionBean.renderizarComponente('MP_CONFIGURACIONES')}">
+					<p:menuitem id="MI_COMPONENTE" value="Componentes de sistema"
+						icon="icon-cog" outcome="/app/componente.xhtml"
+						rendered="#{sessionBean.renderizarComponente('MI_COMPONENTE')}" />
+					<p:menuitem id="MI_PERMISOS" value="Listas de accesos"
+						icon="icon-check" outcome="/app/permiso.xhtml"
+						rendered="#{sessionBean.renderizarComponente('MI_PERMISOS')}" />
+					<p:menuitem id="MI_ROLES" value="Roles usuarios"
+						icon="icon-users-1" outcome="/app/rol_usuario.xhtml"
+						rendered="#{sessionBean.renderizarComponente('MI_ROLES')}" />
+					<p:menuitem id="MI_USUARIOS" value="Usuarios" icon="icon-users-1"
+						outcome="/app/usuario.xhtml"
+						rendered="#{sessionBean.renderizarComponente('MI_USUARIOS')}" />
+				</p:submenu>
+
+				<p:submenu id="MP_REPORTES" label="Reportes y Documentos"
+					icon="icon-book"
+					rendered="#{sessionBean.renderizarComponente('MP_REPORTES')}">
+					<p:menuitem id="MI_REPORTE" value="Reportes" icon="icon-doc-text"
+						outcome="/app/reporte.xhtml"
+						rendered="#{sessionBean.renderizarComponente('MI_REPORTE')}" />
+					<p:menuitem id="MI_REPORTE_RECIBO" value="Recibos"
+						icon="icon-doc-text-inv" outcome="/app/reporte_recibo.xhtml" />
+					<p:menuitem id="MI_REPORTE_DOCUMENTO" value="Documentos"
+						icon="icon-file-word" outcome="/app/reporte_documento.xhtml" />
+				</p:submenu>
+
+				<p:menuitem id="MI_BITACORA" value="Bitácora de sistema"
+					icon="icon-doc-text-1" outcome="/app/bitacora.xhtml"
+					rendered="#{sessionBean.renderizarComponente('MI_BITACORA')}" />
+
+		
+			</ps:menu>
+		</h:form>
+	</div>
+
+</ui:composition>

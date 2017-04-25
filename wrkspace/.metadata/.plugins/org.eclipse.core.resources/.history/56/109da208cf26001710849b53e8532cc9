@@ -1,0 +1,202 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml">
+	<ui:define name="content">
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+
+		<h3 class="hardblue TexAlCenter">Registro de movimientos de
+			movimientos</h3>
+
+		<div class="ContainerIndent">
+			<p:panel>
+				<div class="ContainerIndent">
+					<h:form id="formtblMovin">
+						
+						<p:dataTable id="tblMovin" var="lazyModel"
+							value="#{movimientoMovimientoBean.lazyModel}" paginator="true"
+							rows="5" selectionMode="single"
+							selection="#{movimientoMovimientoBean.selectedVacaciones}"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							lazy="true" rowKey="#{lazyModel.id}"
+							rowsPerPageTemplate="5,10,15"
+							emptyMessage="No se encontro registros" reflow="true"
+							widgetVar="w_tblMovin">
+
+							<p:ajax event="rowSelect" oncomplete="PF('w_dlgMod').show();"
+								update="form2"
+								listener="#{movimientoMovimientoBean.onRowSelect(event)}" />
+
+
+							<f:facet name="header">
+								<h:outputText value="Movimientos de movimiento registrados" />
+							</f:facet>
+
+							<p:column headerText="Id" rendered="false">
+								<h:outputText value="#{lazyModel.id}" />
+							</p:column>
+
+							<p:column headerText="Movimiento"
+								filterBy="#{lazyModel.movimiento.nombre}"
+								filterMatchMode="contains"
+								sortBy="#{lazyModel.movimiento.nombre}">
+								<h:outputText value="#{lazyModel.movimiento.nombre}" />
+							</p:column>
+
+							<p:column headerText="Movimiento a aplicar"
+								filterBy="#{lazyModel.movimientoRequerido.nombre}"
+								filterMatchMode="contains"
+								sortBy="#{lazyModel.movimientoRequerido.nombre}">
+								<h:outputText value="#{lazyModel.movimientoRequerido.nombre}">
+								</h:outputText>
+							</p:column>
+
+
+							<f:facet name="footer">
+								<p:panelGrid id="pngButtons" columns="2" layout="grid"
+									styleClass="bottomButtons">
+									<p:commandButton style="width:150px" ajax="false"
+										icon="fa icon-left-1 Fs13.5 white" id="btnMov"
+										action="#{movimientoMovimientoBean.goMovin()}"
+										value="Regresar">
+									</p:commandButton>
+
+									<p:commandButton style="width:150px"
+										icon="fa icon-plus Fs13.5 white"
+										oncomplete="PF('w_dlgAdd').show();" value="Agregar" />
+								</p:panelGrid>
+							</f:facet>
+						</p:dataTable>
+					</h:form>
+				</div>
+			</p:panel>
+
+			<div class="EmptyBox20"></div>
+
+		</div>
+
+
+		<p:dialog id="dlgAdd" header="Agregar un movimiento"
+			styleClass="modal-body" widgetVar="w_dlgAdd" closable="false"
+			modal="true" resizable="false" showEffect="fade" hideEffect="fade"
+			responsive="true">
+
+			<h:form id="form1">
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 30%;">
+						<p:outputLabel value="Movimiento: " />
+					</div>
+
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:selectOneMenu id="np1" required="true" filter="true"
+							filterMatchMode="contains" style="width:90%;"
+							requiredMessage="Seleccione un movimiento a aplicar"
+							value="#{movimientoMovimientoBean.movinMovin.movimientoRequerido}"
+							converter="movinConverter">
+							<f:selectItem itemValue="#{null}"
+								itemLabel="- Seleccione un movimiento -" />
+							<f:selectItems value="#{movimientoMovimientoBean.listMovin}"
+								var="movimiento" itemValue="#{movimiento}"
+								itemLabel="#{movimiento.nombre}" />
+						</p:selectOneMenu>
+					</div>
+
+				</div>
+
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:commandButton styleClass="btnSave" id="btnSave" value="Guardar"
+							actionListener="#{movimientoMovimientoBean.crear()}"
+							oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblMovin').clearFilters();PF('w_dlgAdd').hide();}"
+							icon="fa fa-save Fs15 white"
+							update="formtblMovin:tblMovin,form1,msg" />
+					</div>
+
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:commandButton styleClass="btnCancel" id="btnCancel"
+							value="Cancelar"
+							actionListener="#{movimientoMovimientoBean.cancelar()}"
+							oncomplete="PF('w_dlgAdd').hide();" icon="fa fa-times Fs15 white"
+							process="@this" update="formtblMovin:tblMovin,form1,msg" />
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog id="dlgMod" header="Modificar un movimiento" styleClass="modal-body"
+			widgetVar="w_dlgMod" closable="false" modal="true" resizable="false"
+			showEffect="fade" hideEffect="fade" responsive="true">
+
+			<h:form id="form2">
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width:40%;">
+						<p:outputLabel value="Movimiento: " />
+					</div>
+
+					<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+						<p:selectOneMenu id="np1" required="true" filter="true"
+							filterMatchMode="contains" style="width:90%;"
+							requiredMessage="Seleccione un movimiento a aplicar"
+							value="#{movimientoMovimientoBean.selectedMovinMovin.movimientoRequerido}"
+							converter="movinConverter">
+							<f:selectItem itemValue="#{null}"
+								itemLabel="- Seleccione un movimiento -" />
+							<f:selectItems value="#{movimientoMovimientoBean.listMovin}"
+								var="movimiento" itemValue="#{movimiento}"
+								itemLabel="#{movimiento.nombre}" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+
+				<div class="ui-g">
+					<div class="ui-g-12 ui-md-6 ui-lg-4">
+						<p:commandButton styleClass="btnEdit" id="btnEdit"
+							value="Modificar"
+							actionListener="#{movimientoMovimientoBean.editar()}"
+							icon="fa icon-edit-1 Fs15 white"
+							oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblMovin').clearFilters();PF('w_dlgMod').hide();}"					
+							update="formtblMovin:tblMovin,form2,msg" />
+					</div>
+
+					<div class="ui-g-12 ui-md-6 ui-lg-4">
+						<p:commandButton styleClass="btnDelete" id="btnDelete"
+							update="formtblMovin:tblMovin,form2,msg" value="Eliminar"
+							actionListener="#{movimientoMovimientoBean.eliminar()}"
+							icon="fa icon-trash Fs15 white">
+							<p:confirm message="Desea eliminar el registro?"
+								icon="ui-icon-alert" />
+						</p:commandButton>
+					</div>
+
+
+					<div class="ui-g-12 ui-md-6 ui-lg-4">
+
+						<p:commandButton styleClass="btnCancel2" id="btnCancel2"
+							value="Cancelar" process="@this"
+							actionListener="#{movimientoMovimientoBean.cancelarSelected()}"
+							oncomplete="PF('w_dlgMod').hide();"
+							icon="fa fa-times Fs15 white"
+							update="formtblMovin:tblMovin,form2,msg" />
+
+
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							<p:commandButton title="YesButton" value="SI"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblMovin').clearFilters();PF('w_dlgMod').hide();}"					
+								styleClass="ui-confirmdialog-yes" style="margin-left: 50px" />
+							<p:commandButton title="NoButton" value="No"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblMovin').clearFilters();PF('w_dlgMod').hide();}"					
+								styleClass="ui-confirmdialog-no" />
+						</p:confirmDialog>
+					</div>
+				</div>
+				
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>

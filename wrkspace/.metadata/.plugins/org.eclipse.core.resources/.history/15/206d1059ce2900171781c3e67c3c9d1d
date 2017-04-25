@@ -1,0 +1,136 @@
+package com.sv.tumi.view.bean;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
+import javax.faces.context.Flash;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+
+import org.primefaces.event.SelectEvent;
+import org.primefaces.model.LazyDataModel;
+import org.primefaces.model.SortOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.sv.tumi.db.dao.EvaluacionDAO;
+import com.sv.tumi.db.entity.Evaluacion;
+import com.sv.tumi.db.entity.Tiempodesarrollo;
+
+
+@ManagedBean
+@ViewScoped
+public class EvaluacionBean implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	private static final Logger logger = LoggerFactory.getLogger(EvaluacionBean.class);
+
+	private Evaluacion selectedEvaluacion;
+	private Tiempodesarrollo selectedTiempo;
+
+	@PostConstruct
+	public void inicializar() {
+		cargaEvaluacion();
+	}
+
+	public void cargaEvaluacion() {
+		EvaluacionDAO evaDao = new EvaluacionDAO();
+		selectedEvaluacion = evaDao.find(1);
+	}
+
+	public void onRowSelect(SelectEvent event) {
+		getSelectedEstado();
+		cargarListaMovin();
+		if (!selectedEmpleado.equals(null)) {
+			despido = false;
+
+		} else {
+			despido = true;
+
+		}
+
+	}
+
+	public void cancelar() {
+		limpiar();
+	}
+
+	public void cancelarSelected() {
+		limpiarSelected();
+
+	}
+
+	public void limpiarSelected() {
+		selectedEmpleado = new Empleado();
+	}
+
+	public void redirecEmpMov() {
+		if (selectedEmpleado.equals(null)) {
+
+		} else {
+
+		}
+	}
+
+	/**
+	 * Separaci�n con procesar despido Hector Santos
+	 */
+	public void ingresarDespido() {
+		FacesMessage msg;
+		EmpleadoMovinService movServ = new EmpleadoMovinServiceImpl();
+		EmpleadoMovinDAO emDAO = new EmpleadoMovinDAO();
+		EmpleadoService empSrv = new EmpleadoServiceImpl();
+		OperacionPlanillaService opSrv = new OperacionPlanillaServiceImpl();
+		String telefono = selectedEmpleado.getTelefono().replace("-", "");
+		selectedEmpleado.setTelefono(telefono);
+		Date fechaSalida = selectedEmpleado.getFechaEgreso();
+		boolean cerrar = true;
+		Calendar c = Calendar.getInstance();
+		try {
+			empSrv.editar(selectedEmpleado);
+			logger.info("se actualizo la fecha de egreso del empleado " + selectedEmpleado.getNombre());
+			flag = true;
+		} catch (Exception ex) {
+			logger.error("Error al actualizar la fecha de egreso " + ex);
+		}
+	}
+
+	public String goEmpleadoMovin() throws IOException {
+		Flash flash = FacesContext.getCurrentInstance().getExternalContext().getFlash();
+		//flash.put("selectedEmpl", selectedEmpleado);
+		return "empleado_movimiento.xhtml?faces-redirect=true";
+	}
+
+	public Evaluacion getSelectedEvaluacion() {
+		return selectedEvaluacion;
+	}
+
+	public void setSelectedEvaluacion(Evaluacion selectedEvaluacion) {
+		this.selectedEvaluacion = selectedEvaluacion;
+	}
+
+	public Tiempodesarrollo getSelectedTiempo() {
+		return selectedTiempo;
+	}
+
+	public void setSelectedTiempo(Tiempodesarrollo selectedTiempo) {
+		this.selectedTiempo = selectedTiempo;
+	}
+
+}
