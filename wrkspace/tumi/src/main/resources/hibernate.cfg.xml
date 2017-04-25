@@ -26,43 +26,34 @@
 		<property name="hibernate.current_session_context_class">thread</property>
 		<property name="hibernate.temp.use_jdbc_metadata_defaults">false</property>
 		<!-- Mapping Entities -->
-		<mapping class="com.avantia.sv.saen.db.entity.Pais" />
-		<mapping class="com.avantia.sv.saen.db.entity.Cargo" />
-		<mapping class="com.avantia.sv.saen.db.entity.TipoUsuario" />
-		<mapping class="com.avantia.sv.saen.db.entity.TipoMovin" />
-		<mapping class="com.avantia.sv.saen.db.entity.Periodo" />
-		<mapping class="com.avantia.sv.saen.db.entity.Compania" />
-		<mapping class="com.avantia.sv.saen.db.entity.Usuario" />
-		<mapping class="com.avantia.sv.saen.db.entity.Bitacora" />
-		<mapping class="com.avantia.sv.saen.db.entity.CentroCosto" />
-		<mapping class="com.avantia.sv.saen.db.entity.Documento" />
-		<mapping class="com.avantia.sv.saen.db.entity.Empleado" />
-		<mapping class="com.avantia.sv.saen.db.entity.DocumentoEmpleado" />
-		<mapping class="com.avantia.sv.saen.db.entity.Asueto" />
-		<mapping class="com.avantia.sv.saen.db.entity.Movin" />
-		<mapping class="com.avantia.sv.saen.db.entity.Regla" />
-		<mapping class="com.avantia.sv.saen.db.entity.Planilla" />
-		<mapping class="com.avantia.sv.saen.db.entity.DetallePlanilla" />
-		<mapping class="com.avantia.sv.saen.db.entity.EmpleadoMovin" />
-		<mapping class="com.avantia.sv.saen.db.entity.ParametroSistema" />
-		<mapping class="com.avantia.sv.saen.db.entity.UsuarioPais" />
-		<mapping class="com.avantia.sv.saen.db.entity.Rubro" />
-		<mapping class="com.avantia.sv.saen.db.entity.SalarioMinimo" />
-		<mapping class="com.avantia.sv.saen.db.entity.Componente" />
-		<mapping class="com.avantia.sv.saen.db.entity.Permisos" />
-		<mapping class="com.avantia.sv.saen.db.entity.Vacaciones" />
-		<mapping class="com.avantia.sv.saen.db.entity.Asistencia" />
-		<mapping class="com.avantia.sv.saen.db.entity.MovinMovin" />
-		<mapping class="com.avantia.sv.saen.db.entity.TipoHorasExtras" />
-		<mapping class="com.avantia.sv.saen.db.entity.HorasExtras" />
-		
-		<mapping class="com.avantia.sv.saen.db.entity.Anticipo" />
-		<mapping class="com.avantia.sv.saen.db.entity.TipoAnticipo" />
-		
-		<mapping class="com.avantia.sv.saen.db.entity.Suspension" />
-		<mapping class="com.avantia.sv.saen.db.entity.AguinaldoRecibo" />
-		<mapping class="com.avantia.sv.saen.db.entity.Bono14Recibo" />
-		<mapping class="com.avantia.sv.saen.db.entity.HonorarioRecibo" />
+		<mapping class="com.sv.tumi.db.entity.Area" />
+		<mapping class="com.sv.tumi.db.entity.Cargo" />
+		<mapping class="com.sv.tumi.db.entity.Curso" />
+		<mapping class="com.sv.tumi.db.entity.Cursocapacitacion" />
+		<mapping class="com.sv.tumi.db.entity.Cursocargo" />
+		<mapping class="com.sv.tumi.db.entity.Cursoevaluacion" />
+		<mapping class="com.sv.tumi.db.entity.Cursoevaluacionpregunta" />
+		<mapping class="com.sv.tumi.db.entity.Cursoevaluacionpreguntarespuesta" />
+		<mapping class="com.sv.tumi.db.entity.Cursonivel" />
+		<mapping class="com.sv.tumi.db.entity.Cursoprerequisito" />
+		<mapping class="com.sv.tumi.db.entity.Especialidad" />
+		<mapping class="com.sv.tumi.db.entity.Especialidadcapacitador" />
+		<mapping class="com.sv.tumi.db.entity.Estado" />
+		<mapping class="com.sv.tumi.db.entity.Evaluacion" />
+		<mapping class="com.sv.tumi.db.entity.Nivel" />
+		<mapping class="com.sv.tumi.db.entity.Plandesarrollo" />
+		<mapping class="com.sv.tumi.db.entity.Personal" />
+		<mapping class="com.sv.tumi.db.entity.Pregunta" />
+		<mapping class="com.sv.tumi.db.entity.Respuesta" />
+		<mapping class="com.sv.tumi.db.entity.Resultadoevaluacion" />
+		<mapping class="com.sv.tumi.db.entity.Retroalimentacion" />
+		<mapping class="com.sv.tumi.db.entity.Solicitudcapacitacion" />
+		<mapping class="com.sv.tumi.db.entity.Solicitudcurso" />
+		<mapping class="com.sv.tumi.db.entity.Subtema" />
+		<mapping class="com.sv.tumi.db.entity.Tema" />
+		<mapping class="com.sv.tumi.db.entity.Tiempodesarrollo" />
+		<mapping class="com.sv.tumi.db.entity.Tipoevaluacion" />
+		<mapping class="com.sv.tumi.db.entity.Tipopregunta" />
 
 	</session-factory>
 </hibernate-configuration>
