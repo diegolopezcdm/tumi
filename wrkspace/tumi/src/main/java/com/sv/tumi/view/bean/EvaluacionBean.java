@@ -29,7 +29,7 @@ public class EvaluacionBean implements Serializable {
 
 	@PostConstruct
 	public void inicializar() {
-		cargaEvaluacion();
+		//cargaEvaluacion();
 	}
 
 	public void cargaEvaluacion() {
