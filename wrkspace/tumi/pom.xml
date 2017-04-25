@@ -63,10 +63,11 @@
 			<version>21.0</version>
 		</dependency>
 		<!-- DRIVER DB -->
+		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
 		<dependency>
 		    <groupId>mysql</groupId>
 		    <artifactId>mysql-connector-java</artifactId>
-		    <version>5.1.6</version>
+		    <version>5.1.40</version>
 		</dependency>
 	</dependencies>
 
