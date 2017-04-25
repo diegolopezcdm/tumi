@@ -41,7 +41,7 @@
 		<mapping class="com.sv.tumi.db.entity.Estado" />
 		<mapping class="com.sv.tumi.db.entity.Evaluacion" />
 		<mapping class="com.sv.tumi.db.entity.Nivel" />
-		<mapping class="com.sv.tumi.db.entity.Plandesarrollo" />
+		<mapping class="com.sv.tumi.db.entity.Patrondesarrollo" />
 		<mapping class="com.sv.tumi.db.entity.Personal" />
 		<mapping class="com.sv.tumi.db.entity.Pregunta" />
 		<mapping class="com.sv.tumi.db.entity.Respuesta" />
