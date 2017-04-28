@@ -1,0 +1,44 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ps="http://primefaces.org/sentinel"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:outputStylesheet library="css" name="main.css" />
+	<div id="layout-menubar" class="Unselectable fontRegular">
+		<div class="layout-menubarinner-box" id="buttonArea">
+			<a href="#" id="layout-menubar-resize" class="BordRad3"
+				title="Menu Resize"><i class="icon-th-list-2"></i></a> <a href="#"
+				id="layout-menubar-resize2" class="BordRad3" title="Open Menu"><i
+				class="icon-menu"></i></a>
+		</div>
+		<h:form id="menuform">
+			<ps:menu id="sm_leftmenu">
+
+				<p:submenu id="MP_GENERALES" label="Generales" icon="icon-sitemap"
+					rendered="#{sessionBean.renderizarComponente('MP_GENERALES')}">
+					<p:menuitem id="MI_PAIS" value="Países" icon="icon-globe-outline"
+						outcome="/app/pais.xhtml"
+						rendered="#{sessionBean.renderizarComponente('MI_PAIS')}" />
+				</p:submenu>
+
+				<p:submenu id="MP_CONFIGURACIONES_USERS" label="Usuarios y Roles"
+					icon="icon-cog-alt"
+					rendered="#{sessionBean.renderizarComponente('MP_CONFIGURACIONES')}">
+					<p:menuitem id="MI_COMPONENTE" value="Componentes de sistema"
+						icon="icon-cog" outcome="/app/componente.xhtml"
+						rendered="#{sessionBean.renderizarComponente('MI_COMPONENTE')}" />
+					<p:menuitem id="MI_USUARIOS" value="Usuarios" icon="icon-users-1"
+						outcome="/app/usuario.xhtml"
+						rendered="#{sessionBean.renderizarComponente('MI_USUARIOS')}" />
+				</p:submenu>
+
+				<p:menuitem id="MI_BITACORA" value="Bitácora de sistema"
+					icon="icon-doc-text-1" outcome="/app/bitacora.xhtml"
+					rendered="#{sessionBean.renderizarComponente('MI_BITACORA')}" />
+		
+			</ps:menu>
+		</h:form>
+	</div>
+
+</ui:composition>

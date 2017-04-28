@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+	<session-factory>
+		<property name="connection.url">jdbc:mysql://localhost:3306/tumi</property>
+		<property name="connection.username">root</property>
+		<property name="connection.password">password</property>
+		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="dialect">org.hibernate.dialect.MySQLInnoDBDialect</property>
+		<property name="hibernate.show_sql">false</property>
+		<property name="hibernate.format_sql">false</property>
+		<property name="hibernate.c3p0.acquire_increment">1</property>
+		<property name="hibernate.c3p0.min_size">1</property>
+		<property name="hibernate.c3p0.max_size">50</property>
+		<property name="hibernate.c3p0.max_statements">100</property>
+		<property name="hibernate.c3p0.idle_test_period">3000</property>
+		<property name="hibernate.c3p0.timeout">1800</property>
+		<property name="hibernate.c3p0.checkoutTimeout">0</property>
+		<property name="hibernate.c3p0.validate">SELECT 1 FROM DUAL</property>
+		<property name="hibernate.c3p0.unreturnedConnectionTimeout">59</property>
+		<property name="hibernate.c3p0.debugUnreturnedConnectionStackTraces">true</property>
+		<!-- org.hibernate.HibernateException: No CurrentSessionContext configured! -->
+		<property name="hibernate.current_session_context_class">thread</property>
+		<property name="hibernate.temp.use_jdbc_metadata_defaults">false</property>
+		<!-- Mapping Entities -->
+		<mapping class="com.sv.tumi.db.entity.Area" />
+		<mapping class="com.sv.tumi.db.entity.Cargo" />
+		<mapping class="com.sv.tumi.db.entity.Curso" />
+		<mapping class="com.sv.tumi.db.entity.Cursocapacitacion" />
+		<mapping class="com.sv.tumi.db.entity.Cursocargo" />
+		<mapping class="com.sv.tumi.db.entity.Cursoevaluacion" />
+		<mapping class="com.sv.tumi.db.entity.Cursoevaluacionpregunta" />
+		<mapping class="com.sv.tumi.db.entity.Cursoevaluacionpreguntarespuesta" />
+		<mapping class="com.sv.tumi.db.entity.Cursonivel" />
+		<mapping class="com.sv.tumi.db.entity.Cursoprerequisito" />
+		<mapping class="com.sv.tumi.db.entity.Especialidad" />
+		<mapping class="com.sv.tumi.db.entity.Especialidadcapacitador" />
+		<mapping class="com.sv.tumi.db.entity.Estado" />
+		<mapping class="com.sv.tumi.db.entity.Evaluacion" />
+		<mapping class="com.sv.tumi.db.entity.Nivel" />
+		<mapping class="com.sv.tumi.db.entity.Plandesarrollo" />
+		<mapping class="com.sv.tumi.db.entity.Personal" />
+		<mapping class="com.sv.tumi.db.entity.Pregunta" />
+		<mapping class="com.sv.tumi.db.entity.Respuesta" />
+		<mapping class="com.sv.tumi.db.entity.Resultadoevaluacion" />
+		<mapping class="com.sv.tumi.db.entity.Retroalimentacion" />
+		<mapping class="com.sv.tumi.db.entity.Solicitudcapacitacion" />
+		<mapping class="com.sv.tumi.db.entity.Solicitudcurso" />
+		<mapping class="com.sv.tumi.db.entity.Subtema" />
+		<mapping class="com.sv.tumi.db.entity.Tema" />
+		<mapping class="com.sv.tumi.db.entity.Tiempodesarrollo" />
+		<mapping class="com.sv.tumi.db.entity.Tipoevaluacion" />
+		<mapping class="com.sv.tumi.db.entity.Tipopregunta" />
+
+	</session-factory>
+</hibernate-configuration>

@@ -3,7 +3,7 @@
 <fullyQualifiedTypeName name="com.sv.tumi.db.connection.SessionFactoryTumi"/>
 <fullyQualifiedTypeName name="com.sv.tumi.db.entity.Evaluacion"/>
 <fullyQualifiedTypeName name="com.sv.tumi.db.entity.Tiempodesarrollo"/>
-<fullyQualifiedTypeName name="com.sv.tumi.db.dao.EvaluacionDAO"/>
 <fullyQualifiedTypeName name="com.sv.tumi.db.dao.PreguntasDAO"/>
 <fullyQualifiedTypeName name="com.sv.tumi.db.entity.Pregunta"/>
+<fullyQualifiedTypeName name="com.sv.tumi.db.dao.EvaluacionDAO"/>
 </qualifiedTypeNameHistroy>
