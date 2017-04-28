@@ -1,0 +1,356 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="../template/plantilla.xhtml">
+
+	<ui:define name="content">
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+
+		<h3 class="hardblue TexAlCenter">Registro de usuarios de sistema</h3>
+
+		<div class="ContainerIndent">
+
+			<p:panel>
+				<div class="ContainerIndent">
+					<h:form id="formTblUsuarios">
+
+						<p:dataTable id="tblUsuarios" var="lazyModel"
+							value="#{usuarioBean.lazyModel}" paginator="true" rows="10"
+							loadingmessage="Realizando la operación, por favor espere un momento..."
+							selectionMode="single" selection="#{usuarioBean.selectedUsuario}"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							lazy="true" rowKey="#{lazyModel.id}"
+							rowsPerPageTemplate="10,15,20"
+							emptyMessage="No se encontro registros" reflow="true"
+							widgetVar="w_tblUsuario">
+
+							<p:ajax event="rowSelect" oncomplete="PF('w_dlgMod').show();"
+								update="form2" listener="#{usuarioBean.onRowSelect(event)}" />
+
+							<f:facet name="header">
+                                Usuarios registrados
+                            </f:facet>
+
+							<p:column headerText="Id" rendered="false">
+								<h:outputText value="#{lazyModel.id}" />
+							</p:column>
+
+							<p:column headerText="Usuario" filterBy="#{lazyModel.usuario}"
+								sortBy="#{lazyModel.usuario}" filterMatchMode="contains">
+								<h:outputText value="#{lazyModel.usuario}" />
+							</p:column>
+
+							<p:column headerText="Clave" rendered="false">
+								<h:outputText value="#{lazyModel.password}" />
+							</p:column>
+
+							<p:column headerText="Estado">
+								<h:outputText value="#{lazyModel.estado==1?'Activo':'Inactivo'}" />
+							</p:column>
+
+							<p:column headerText="Fecha registro"
+								filterBy="#{lazyModel.fechaRegistro}"
+								sortBy="#{lazyModel.fechaRegistro}">
+								<f:facet name="filter">
+									<p:calendar pattern="dd-MM-yyyy" size="10">
+										<p:ajax event="dateSelect"
+											oncomplete="PF('w_tblUsuario').filter()" />
+										<p:ajax event="change"
+											oncomplete="PF('w_tblUsuario').clearFilters()" />
+									</p:calendar>
+								</f:facet>
+								<h:outputText value="#{lazyModel.fechaRegistro}">
+									<f:convertDateTime pattern="dd-MM-yyyy" />
+								</h:outputText>
+							</p:column>
+
+							<p:column headerText="Fecha modificación"
+								filterBy="#{lazyModel.fechaMod}" sortBy="#{lazyModel.fechaMod}">
+								<f:facet name="filter">
+									<p:calendar pattern="dd-MM-yyyy" size="10">
+										<p:ajax event="dateSelect"
+											oncomplete="PF('w_tblUsuario').filter()" />
+										<p:ajax event="change"
+											oncomplete="PF('w_tblUsuario').clearFilters()" />
+									</p:calendar>
+								</f:facet>
+								<h:outputText value="#{lazyModel.fechaMod}" />
+
+							</p:column>
+
+							<p:column headerText="Rol de usuario">
+								<h:outputText value="#{lazyModel.idTipoUsuario.tipo}" />
+							</p:column>
+
+							<p:column headerText="País usuario" >
+								<div id="colbtn2" style="text-align: center">
+									<p:commandButton styleClass="btnInfo" ajax="false"
+										icon="fa icon-globe Fs13 white" id="btnUsrPais"
+										action="#{usuarioBean.goUserPais()}">
+										<f:setPropertyActionListener value="#{lazyModel}"
+											target="#{usuarioBean.selectedUsuario}" />
+									</p:commandButton>
+									<p:tooltip id="toolTipFade" for="btnUsrPais" value="Mostrar el país del usuario" position="top"/>
+								</div>
+							</p:column>
+
+							<f:facet name="footer">
+								<p:commandButton style="width:150px"
+									icon="fa icon-plus Fs15 white"
+									oncomplete="PF('w_dlgAdd').show();" value="Agregar" />
+
+							</f:facet>
+						</p:dataTable>
+					</h:form>
+				</div>
+			</p:panel>
+
+			<div class="EmptyBox20"></div>
+
+		</div>
+
+
+		<p:dialog id="dlgAdd" header="Agregar un usuario" widgetVar="w_dlgAdd"
+			closable="false" modal="true" resizable="false" showEffect="fade"
+			hideEffect="fade" styleClass="modal-body" responsive="true">
+			<h:form id="form1">
+				<div id="divContentUsrAdd">
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 40%">
+
+							<p:outputLabel value="Usuario: " styleClass="text-label-left" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:inputText id="usrName" value="#{usuarioBean.usuario.usuario}"
+								styleClass="imput-text-box" required="true" autocomplete="off"
+								requiredMessage="Ingrese un usuario"
+								onchange="this.value = this.value.trim()">
+								<f:attribute name="message" value="Ingrese un usuario" />
+								<f:validator validatorId="RequiredValidator" />
+							</p:inputText>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 40%">
+							<p:outputLabel value="Contraseña: " />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:password id="usrPswd" feedback="true" autocomplete="off"
+								promptLabel="Ingrese una contraseña con minimo 7 caracteres"
+								weakLabel="Nivel Bajo" goodLabel="Nivel Alto"
+								strongLabel="Nivel Fuerte"
+								validatorMessage="El campo Contraseña no debe contener espacios en blanco"
+								value="#{usuarioBean.usuario.password}"
+								styleClass="imput-text-box" required="true"
+								requiredMessage="Ingrese una contraseña">
+								<f:attribute name="message" value="Ingrese una contraseña" />
+								<f:validator validatorId="RequiredValidator" />
+
+							</p:password>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 40%">
+							<p:outputLabel value="Estado: " />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:selectOneMenu id="est1" value="#{usuarioBean.estado}"
+								required="true" requiredMessage="Seleccione un estado">
+								<f:selectItem itemLabel="- Seleccione estado -" />
+								<f:selectItem itemValue="Activo" itemLabel="Activo" />
+								<f:selectItem itemValue="Inactivo" itemLabel="Inactivo" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 40%">
+							<p:outputLabel value="Fecha registro: " />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:calendar id="fchReg" required="true" autocomplete="off"
+								requiredMessage="Ingrese una fecha de registro"
+								value="#{usuarioBean.usuario.fechaRegistro}"
+								pattern="dd/MM/yyyy" />
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 40%">
+
+							<p:outputLabel value="Rol usuario: " />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:selectOneMenu id="tipoUsr" required="true"
+								requiredMessage="Seleccione un tipo de usuario"
+								value="#{usuarioBean.usuario.idTipoUsuario}"
+								converter="tipoUsuarioConverter">
+								<f:selectItem itemValue="#{null}" itemLabel="- Seleccione rol -" />
+								<f:selectItems value="#{usuarioBean.listTipoUsuario}" var="tipo"
+									itemValue="#{tipo}" itemLabel="#{tipo.tipo}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:commandButton styleClass="btnSave" id="btnSave"
+								value="Guardar" actionListener="#{usuarioBean.crearUsuario()}"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblUsuario').clearFilters();PF('w_dlgAdd').hide();}"
+								icon="fa fa-save Fs15 white"
+								update="formTblUsuarios:tblUsuarios,form1,msg" />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:commandButton styleClass="btnCancel" id="btnCancel"
+								value="Cancelar" actionListener="#{usuarioBean.cancelar()}"
+								oncomplete="PF('w_dlgAdd').hide();"
+								icon="fa fa-times Fs15 white" process="@this"
+								update="formTblUsuarios:tblUsuarios,form1,msg" />
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+
+		<p:dialog id="dlgMod" header="Modificar un usuario"
+			widgetVar="w_dlgMod" closable="false" modal="true" resizable="false"
+			showEffect="fade" hideEffect="fade" styleClass="modal-body"
+			responsive="true">
+
+			<h:form id="form2">
+				<div id="divContentUsrMod">
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 40%">
+
+							<p:outputLabel value="Usuario: " styleClass="text-label-left" />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:outputLabel id="usrName2"
+								value="#{usuarioBean.selectedUsuario.usuario}"
+								styleClass="text-label-left" />
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 40%">
+							<p:outputLabel value="Contraseña: " />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:inputText id="usrPswd2" feedback="true" required="true"
+								requiredMessage="Ingrese una contraseña"
+								value="#{usuarioBean.selectedUsuario.password}"
+								styleClass="imput-text-box">
+								<f:attribute name="message" value="Ingrese una contraseña" />
+								<f:validator validatorId="RequiredValidator" />
+							</p:inputText>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 40%">
+							<p:outputLabel value="Estado: " />
+						</div>
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:selectOneMenu id="est2" value="#{usuarioBean.estado}"
+								required="true" requiredMessage="Seleccione un estado">
+								<f:selectItem itemLabel="- Seleccione un estado -" />
+								<f:selectItem itemValue="Activo" itemLabel="Activo" />
+								<f:selectItem itemValue="Inactivo" itemLabel="Inactivo" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 40%">
+							<p:outputLabel value="Fecha de Registro: " />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:calendar id="fchReg2" required="true"
+								requiredMessage="Ingrese una fecha de registro"
+								value="#{usuarioBean.selectedUsuario.fechaRegistro}"
+								pattern="dd/MM/yyyy" />
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-6 " style="width: 40%">
+							<p:outputLabel value="Tipo de Usuario: " />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+							<p:selectOneMenu id="tipoUsr2" required="true"
+								requiredMessage="Seleccione un tipo de usuario"
+								value="#{usuarioBean.selectedUsuario.idTipoUsuario}"
+								converter="tipoUsuarioConverter">
+								<f:selectItem itemValue="#{null}" itemLabel="Seleccione un Tipo" />
+								<f:selectItems value="#{usuarioBean.listTipoUsuario}" var="tipo"
+									itemValue="#{tipo}" itemLabel="#{tipo.tipo}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+
+					<div class="ui-g">
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+							<p:commandButton styleClass="btnEdit" id="btnEdit"
+								value="Modificar"
+								actionListener="#{usuarioBean.editarUsuario()}"
+								icon="fa icon-edit-1 Fs15 white"
+								oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblUsuario').clearFilters();PF('w_dlgMod').hide();}"
+								update="formTblUsuarios:tblUsuarios,form2,msg" />
+						</div>
+
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+
+							<p:commandButton styleClass="btnDelete" id="btnDelete"
+								value="Eliminar" icon="fa icon-trash Fs15 white"
+								actionListener="#{usuarioBean.eliminarUsuario()}"
+								update="formTblUsuarios:tblUsuarios,form2,msg">
+								<p:confirm message="Desea eliminar el registro?"
+									icon="ui-icon-alert" />
+							</p:commandButton>
+						</div>
+
+
+						<div class="ui-g-12 ui-md-6 ui-lg-4">
+							<p:commandButton styleClass="btnCancel2" id="btnCancel2"
+								value="Cancelar" process="@this"
+								actionListener="#{usuarioBean.cancelarSelected()}"
+								oncomplete="PF('w_dlgMod').hide();"
+								icon="fa fa-times Fs15 white"
+								update="formTblUsuarios:tblUsuarios,form2,msg" />
+
+
+
+							<p:confirmDialog global="true" showEffect="fade"
+								hideEffect="fade">
+								<p:commandButton title="YesButton" value="SI"
+									oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblUsuario').clearFilters();PF('w_dlgMod').hide();}"
+									styleClass="ui-confirmdialog-yes" style="margin-left: 50px" />
+								<p:commandButton title="NoButton" value="No"
+									oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('w_tblUsuario').clearFilters();PF('w_dlgMod').hide();}"
+									styleClass="ui-confirmdialog-no" />
+							</p:confirmDialog>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+
+</ui:composition>

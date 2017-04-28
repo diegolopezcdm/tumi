@@ -5,4 +5,13 @@
     xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd"
     version="2.2">
 
+	<navigation-rule>
+       <from-view-id>evaluacion.xhtml</from-view-id>
+       <navigation-case>
+      	   <from-action>#{evaluacionBean.goPreguntas}</from-action>
+           <from-outcome>pregunta</from-outcome>
+           <to-view-id>/pregunta.xhtml</to-view-id>
+       </navigation-case>
+    </navigation-rule>
+
 </faces-config>

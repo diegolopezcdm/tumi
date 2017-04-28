@@ -27,7 +27,7 @@ import javax.persistence.TemporalType;
  * @author Hector Santos
  */
 @Entity
-@Table(name = "resultadoevaluacion")
+@Table(name = "resultadoEvaluacion")
 @NamedQueries({
     @NamedQuery(name = "Resultadoevaluacion.findAll", query = "SELECT r FROM Resultadoevaluacion r")})
 public class Resultadoevaluacion implements Serializable {

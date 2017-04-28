@@ -1,0 +1,251 @@
+.imput-text-box {
+	width: 100%;
+}
+
+.text-label-left {
+	width: 50%;
+}
+
+.buttons {
+	height: 40px;
+	width: 80%;
+}
+
+.btnSave {
+	width: 80% !important;
+	height: 40px !important;
+	margin-left: 30px !important;
+}
+
+.btnDespido {
+	width: 50% !important;
+	height: 40px !important;
+}
+
+.btnProcesar {
+	width: 90% !important;
+	height: 40px !important;
+}
+
+.btnInfo {
+	width: 80% !important;
+	height: 40px !important;
+}
+
+.btnFiltrar {
+	width: 100% !important;
+	height: 40px !important;
+}
+
+.btnLimpiarGenerar {
+	width: 100% !important;
+	height: 40px !important;
+}
+
+.btnCerrar {
+	width: 100% !important;
+	height: 40px !important;
+}
+
+.btnCancel {
+	width: 80% !important;
+	height: 40px !important;
+	margin-left: 30px !important;
+}
+
+.btnEdit {
+	width: 90% !important;
+	height: 40px !important;
+	margin-left: 15px !important;
+}
+
+.btnDelete {
+	width: 90% !important;
+	height: 40px !important;
+	margin-left: 15px !important;
+}
+
+.btnCancel2 {
+	width: 90% !important;
+	height: 40px !important;
+	margin-left: 15px !important;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+	margin: 0 auto !important;
+	float: none !important;
+	text-align: center !important;
+}
+
+.ui-dialog .ui-dialog-title{
+	float: none !important;
+}
+
+.pngButttonsBox {
+	border: none;
+	margin-top: 20px;
+	margin-left: 10% !important;
+	width: 300px;
+}
+
+.pngHp1 {
+	width: 55% !important;
+	margin-left: 20% !important;
+	height: 30% !important;
+}
+
+.cmbStyle {
+	width: 50% !important;
+}
+
+.cmbPlanilla {
+	width: 80% !important;
+}
+
+.txtPlanilla {
+	margin-left: 40% !important;
+}
+
+.txtFormLabelEmp {
+	margin-left: 30% !important;
+}
+
+.leftColumn {
+	width: 80px;
+}
+
+.leftColumnSM {
+	width: 180px;
+}
+
+.pngPlanilla {
+	border: none !important;
+}
+
+.leftColumPanelGrid {
+	width: 30% !important;
+}
+
+.cmbEmpleado {
+	width: 100% !important;
+}
+
+.columMargin {
+	margin-right: 5% !important;
+}
+
+.spinnerStyle {
+	width: 115% !important;
+}
+
+.cmbMovin {
+	width: 100% !important;
+}
+
+.txtNombre {
+	width: 100% !important;
+}
+
+.txtDesc {
+	width: 100% !important;
+}
+
+.centeredColumn {
+	text-align: center !important;
+}
+
+.btnReporte {
+	width: 40% !important;
+	height: 40px !important;
+}
+
+.cmbStyleComp {
+	width: 80% !important;
+}
+
+.modal-body {
+	max-height: calc(100vh - 210px);
+	overflow-y: auto;
+}
+
+.element.style {
+	width: 75% !important;
+}
+
+.bottomButtons {
+	border: none;
+	margin-top: 20px;
+	padding-left: 25%;
+	width: 50%;
+}
+
+.pngHistoricoPlanilla {
+	width: 80% !important;
+	height: 50% !important;
+	border: none;
+	background-color: #ffffff;
+}
+
+.modal-body {
+	max-height: calc(100vh - 210px);
+	overflow-y: auto;
+}
+
+.despido-modal-body {
+	max-height: calc(100vh - 180px);
+	overflow-y: auto;
+}
+
+/*@media all and (max-width:640px)*/
+.ui-datatable-reflow .ui-reflow-label, .ui-datatable-reflow .ui-reflow-dropdown
+	{
+	display: none !important;
+}
+
+.periodo-modal-body {
+	max-height: calc(100vh - 100px);
+	overflow-y: auto;
+}
+
+.ui-datatable-reflow .ui-datatable-data td[role="gridcell"] .ui-column-title
+	{
+	min-width: 40% !important;
+}
+
+.movimiento-modal-body {
+	max-height: calc(100vh - 180px);
+	overflow-y: auto;
+}
+
+/* .ui-dialog .ui-dialog-content*/
+.disable-scroll .ui-dialog-content {
+	overflow-x: hidden !important;
+	overflow-y: auto !important;
+}
+
+#divContentHP{
+	width: 70% !important;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#divContentReport{
+	width: 70% !important;
+	margin-left: auto;
+	margin-right: auto;
+	
+}
+
+#divContentOperations{
+	text-align: center !important;
+}
+
+#layout-menubar{
+	height: 100vh !important;
+}
+
+.textParagraph{
+	width: 80%;
+	word-wrap: break-word;
+	text-align: justify;
+}

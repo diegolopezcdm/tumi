@@ -29,7 +29,7 @@ import javax.persistence.TemporalType;
  * @author Hector Santos
  */
 @Entity
-@Table(name = "solicitudcapacitacion")
+@Table(name = "solicitudCapacitacion")
 @NamedQueries({
     @NamedQuery(name = "Solicitudcapacitacion.findAll", query = "SELECT s FROM Solicitudcapacitacion s")})
 public class Solicitudcapacitacion implements Serializable {

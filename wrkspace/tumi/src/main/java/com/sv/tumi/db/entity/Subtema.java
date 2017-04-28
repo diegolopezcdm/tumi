@@ -30,7 +30,7 @@ import javax.persistence.TemporalType;
  * @author Hector Santos
  */
 @Entity
-@Table(name = "subtema")
+@Table(name = "subTema")
 @NamedQueries({
     @NamedQuery(name = "Subtema.findAll", query = "SELECT s FROM Subtema s")})
 public class Subtema implements Serializable {

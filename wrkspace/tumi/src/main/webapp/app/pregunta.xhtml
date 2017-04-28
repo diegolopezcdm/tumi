@@ -3,26 +3,32 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:pe="http://primefaces.org/ui">
 
 	<ui:define name="content">
 
 		<h:outputStylesheet library="css" name="main.css" />
 		<h:outputScript name="jquery/jquery.js" library="primefaces"
-			target="head" />
+			target="head" />#{evaluacionBean.selectedPregunta}
 
-		<h3 class="hardblue TexAlCenter">Examen Inicial para : #{preguntaBean.selectedEvaluacion.usuarioRegistro}</h3>
+		<h3 class="hardblue TexAlCenter">Examen Inicial para : #{evaluacionBean.selectedEvaluacion.usuarioRegistro}</h3>
 
 		<div class="ContainerIndent">
 			<p:panel>
 				<div class="ContainerIndent">
-
-					<h:form id="formEvaluacion1" rendered="#{preguntaBean.tipo1}">
-						<p:panel style="text-align:right;border:none">
+				test <p:outputLabel value="#{evaluacionBean.selectedPregunta.texto}" styleClass="text-label-left" />
+				
+				<h3 class="hardblue TexAlCenter">#{evaluacionBean.selectedPregunta.texto}</h3>
+				
+				
+				<c:if test="#{selectedPregunta.codigoTipoPregunta.codigo==1}">
+                	<h:form id="formEvaluacion1">
+						<div style="text-align:right;border:none">
 
 							<div class="ui-g">
 								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
-									<p:outputLabel value="Bienvenido: " styleClass="text-label-left" />
+									<p:outputLabel value="#{selectedPregunta.texto}" styleClass="text-label-left" />
 								</div>
 								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
 							        <p:selectOneRadio id="console" value="#{preguntaBean.selectedRespuesta1}">
@@ -32,59 +38,63 @@
 								</div>
 							</div>
 							
-							<p:panel style="text-align:center" rendered="false">
-								<p:commandButton id="btnIniciar" value="Iniciar"
+							<div style="text-align:center" rendered="false">
+								<p:commandButton id="btnIniciar" value="Siguiente"
 									icon="fa icon-cancel-circled Fs14 white"
-									actionListener="#{preguntaBean.goPreguntas}"
-									oncomplete="PF('w_dlgDespido').show();" />
-							</p:panel>
+									actionListener="#{preguntaBean.goPreguntas}"/>
+							</div>
 
-						</p:panel>
+						</div>
 					</h:form>
-					
-					<h:form id="formEvaluacion2" rendered="#{preguntaBean.tipo2}">
+            	</c:if>
+
+				<c:if test="#{selectedPregunta.codigoTipoPregunta.codigo==2}">
+					<h:form id="formEvaluacion2">
 						<p:panel style="text-align:right;border:none">
 
 							<div class="ui-g">
 								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
-									<p:outputLabel value="Bienvenido: " styleClass="text-label-left" />
+									<p:outputLabel value="#{selectedPregunta.texto}" styleClass="text-label-left" />
 								</div>
 								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
 									<p:outputLabel value="#{preguntaBean.selectedEvaluacion.usuarioRegistro}" styleClass="text-label-left" />
 								</div>
 							</div>
 							
-							<p:panel style="text-align:center" rendered="false">
-								<p:commandButton id="btnIniciar" value="Iniciar"
+							<div style="text-align:center" rendered="false">
+								<p:commandButton id="btnIniciar" value="Responder"
 									icon="fa icon-cancel-circled Fs14 white"
-									actionListener="#{preguntaBean.goPreguntas}"
-									oncomplete="PF('w_dlgDespido').show();" />
-							</p:panel>
+									actionListener="#{preguntaBean.goPreguntas}" />
+							</div>
 
 						</p:panel>
 					</h:form>
+				</c:if>
 					
-					<h:form id="formEvaluacion3" rendered="#{preguntaBean.tipo3}">
+					
+				<c:if test="#{selectedPregunta.codigoTipoPregunta.codigo==2}">	
+					<h:form id="formEvaluacion3">
 						<p:panel style="text-align:right;border:none">
 
 							<div class="ui-g">
 								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
-									<p:outputLabel value="Bienvenido: " styleClass="text-label-left" />
+									<p:outputLabel value="#{selectedPregunta.texto}" styleClass="text-label-left" />
 								</div>
 								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
 									<p:outputLabel value="#{preguntaBean.selectedEvaluacion.usuarioRegistro}" styleClass="text-label-left" />
 								</div>
 							</div>
 							
-							<p:panel style="text-align:center" rendered="false">
-								<p:commandButton id="btnIniciar" value="Iniciar"
+							<div style="text-align:center" rendered="false">
+								<p:commandButton id="btnIniciar" value="Responder"
 									icon="fa icon-cancel-circled Fs14 white"
-									actionListener="#{preguntaBean.goPreguntas}"
-									oncomplete="PF('w_dlgDespido').show();" />
-							</p:panel>
+									actionListener="#{preguntaBean.goPreguntas}" />
+							</div>
 
 						</p:panel>
 					</h:form>
+				</c:if>
+				
 				</div>
 			</p:panel>
 

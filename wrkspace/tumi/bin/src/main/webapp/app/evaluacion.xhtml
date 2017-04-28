@@ -1,0 +1,68 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml"
+	xmlns:pe="http://primefaces.org/ui">
+
+	<ui:define name="content">
+
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+
+		<h3 class="hardblue TexAlCenter">Examen Inicial para : #{evaluacionBean.selectedEvaluacion.usuarioRegistro}</h3>
+
+		<div class="ContainerIndent">
+			<p:panel>
+				<div class="ContainerIndent">
+
+					<h:form id="formEvaluacion">
+						<p:panel style="text-align:right;border:none">
+
+							<div class="ui-g">
+								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+									<p:outputLabel value="Bienvenido: " styleClass="text-label-left" />
+								</div>
+								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+									<p:outputLabel value="#{evaluacionBean.selectedEvaluacion.usuarioRegistro}" styleClass="text-label-left" />
+								</div>
+							</div>
+							
+							<div class="ui-g">
+								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+									<p:outputLabel value="Tiempo de duración de la prueba: " styleClass="text-label-left" />
+								</div>
+								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+									<p:outputLabel value="#{evaluacionBean.selectedTiempo.segundosTiempoPregunta} minutos" styleClass="text-label-left" />
+								</div>
+							</div>
+							
+							<div class="ui-g">
+								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+									<p:outputLabel value="Indicaciones Generales " styleClass="text-label-left" />
+								</div>
+								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+									<p:outputLabel value="XX " styleClass="text-label-left" />
+								</div>
+							</div>
+							
+							<p:panel style="text-align:center" rendered="false">
+								<p:commandButton id="btnIniciar" value="Iniciar"
+									icon="fa icon-cancel-circled Fs14 white"
+									actionListener="#{evaluacionBean.goPreguntas}"
+									oncomplete="PF('w_dlgDespido').show();" />
+							</p:panel>
+
+						</p:panel>
+					</h:form>
+				</div>
+			</p:panel>
+
+			<div class="EmptyBox20"></div>
+
+		</div>
+
+	</ui:define>
+
+</ui:composition>
