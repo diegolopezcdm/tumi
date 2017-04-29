@@ -9,9 +9,13 @@ package com.sv.tumi.db.entity;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.RequestScoped;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -28,6 +32,8 @@ import javax.persistence.TemporalType;
  *
  * @author Hector Santos
  */
+@ManagedBean(name = "pregunta", eager = true)
+@RequestScoped
 @Entity
 @Table(name = "pregunta")
 @NamedQueries({

@@ -10,86 +10,103 @@
 
 		<h:outputStylesheet library="css" name="main.css" />
 		<h:outputScript name="jquery/jquery.js" library="primefaces"
-			target="head" />#{evaluacionBean.selectedPregunta}
+			target="head" />
 
 		<h3 class="hardblue TexAlCenter">Examen Inicial para : #{evaluacionBean.selectedEvaluacion.usuarioRegistro}</h3>
 
 		<div class="ContainerIndent">
 			<p:panel>
 				<div class="ContainerIndent">
-				test <p:outputLabel value="#{evaluacionBean.selectedPregunta.texto}" styleClass="text-label-left" />
 				
-				<h3 class="hardblue TexAlCenter">#{evaluacionBean.selectedPregunta.texto}</h3>
+				<h3 class="hardblue TexAlCenter">#{evaluacionBean.pregunta.texto}</h3>
 				
 				
-				<c:if test="#{selectedPregunta.codigoTipoPregunta.codigo==1}">
+				<c:if test="#{evaluacionBean.pregunta.codigoTipoPregunta.codigo==1}">
                 	<h:form id="formEvaluacion1">
-						<div style="text-align:right;border:none">
-
-							<div class="ui-g">
-								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
-									<p:outputLabel value="#{selectedPregunta.texto}" styleClass="text-label-left" />
+						<div style="text-align:left;border:none">
+								 
+									<p:selectOneRadio id="console" layout="grid" columns="1" required = "True" styleClass="text-label-left" value="#{evaluacionBean.selectedItem}">									
+										<c:forEach var="respuesta" items="#{evaluacionBean.pregunta.respuestaList}">
+											<f:selectItem itemLabel="#{respuesta.texto}" itemValue="#{respuesta.codigo}"/>
+										</c:forEach>
+									</p:selectOneRadio>
+															
+							<c:if test="#{evaluacionBean.showfinalizar}">
+								<div style="text-align:center" rendered="false">
+								<p:commandButton id="btnFinalizar" value="Finalizar"
+									icon="fa icon-ok-circled Fs14 white"
+									actionListener="#{evaluacionBean.finalizarEvaluacion}"/>
 								</div>
-								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
-							        <p:selectOneRadio id="console" value="#{preguntaBean.selectedRespuesta1}">
-							            <f:selectItem itemLabel="Verdadero" itemValue="true" />
-							            <f:selectItem itemLabel="Falso" itemValue="false" />
-							        </p:selectOneRadio>
+							</c:if>
+							<c:if test="#{!evaluacionBean.showfinalizar}">
+								<div style="text-align:center" rendered="false">
+								<p:commandButton id="btnSiguiente" value="Siguiente"
+									icon="fa icon-ok-circled Fs14 white"
+									actionListener="#{evaluacionBean.goPreguntas}"/>
 								</div>
-							</div>
-							
-							<div style="text-align:center" rendered="false">
-								<p:commandButton id="btnIniciar" value="Siguiente"
-									icon="fa icon-cancel-circled Fs14 white"
-									actionListener="#{preguntaBean.goPreguntas}"/>
-							</div>
+							</c:if>
 
 						</div>
 					</h:form>
             	</c:if>
 
-				<c:if test="#{selectedPregunta.codigoTipoPregunta.codigo==2}">
+				<c:if test="#{evaluacionBean.pregunta.codigoTipoPregunta.codigo==2}">
 					<h:form id="formEvaluacion2">
-						<p:panel style="text-align:right;border:none">
-
-							<div class="ui-g">
-								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
-									<p:outputLabel value="#{selectedPregunta.texto}" styleClass="text-label-left" />
+						<div style="text-align:left;border:none">
+								 
+									<p:selectManyCheckbox id="console" layout="grid" columns="1" required = "True" styleClass="text-label-left" value="#{evaluacionBean.selectedItems}">									
+										<c:forEach var="respuesta" items="#{evaluacionBean.pregunta.respuestaList}">
+											<f:selectItem itemLabel="#{respuesta.texto}" itemValue="#{respuesta.codigo}"/>
+										</c:forEach>
+									</p:selectManyCheckbox>
+															
+							<c:if test="#{evaluacionBean.showfinalizar}">
+								<div style="text-align:center" rendered="false">
+								<p:commandButton id="btnFinalizar" value="Finalizar"
+									icon="fa icon-ok-circled Fs14 white"
+									actionListener="#{evaluacionBean.finalizarEvaluacion}"/>
 								</div>
-								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
-									<p:outputLabel value="#{preguntaBean.selectedEvaluacion.usuarioRegistro}" styleClass="text-label-left" />
+							</c:if>
+							<c:if test="#{!evaluacionBean.showfinalizar}">
+								<div style="text-align:center" rendered="false">
+								<p:commandButton id="btnSiguiente" value="Siguiente"
+									icon="fa icon-ok-circled Fs14 white"
+									actionListener="#{evaluacionBean.goPreguntas}"/>
 								</div>
-							</div>
-							
-							<div style="text-align:center" rendered="false">
-								<p:commandButton id="btnIniciar" value="Responder"
-									icon="fa icon-cancel-circled Fs14 white"
-									actionListener="#{preguntaBean.goPreguntas}" />
-							</div>
+							</c:if>
 
-						</p:panel>
+						</div>
 					</h:form>
 				</c:if>
 					
 					
-				<c:if test="#{selectedPregunta.codigoTipoPregunta.codigo==2}">	
+				<c:if test="#{evaluacionBean.pregunta.codigoTipoPregunta.codigo==3}">	
 					<h:form id="formEvaluacion3">
 						<p:panel style="text-align:right;border:none">
 
 							<div class="ui-g">
 								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
-									<p:outputLabel value="#{selectedPregunta.texto}" styleClass="text-label-left" />
+									<p:outputLabel value="#{pregunta.texto}" styleClass="text-label-left" />
 								</div>
 								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
 									<p:outputLabel value="#{preguntaBean.selectedEvaluacion.usuarioRegistro}" styleClass="text-label-left" />
 								</div>
 							</div>
 							
-							<div style="text-align:center" rendered="false">
-								<p:commandButton id="btnIniciar" value="Responder"
-									icon="fa icon-cancel-circled Fs14 white"
-									actionListener="#{preguntaBean.goPreguntas}" />
-							</div>
+							<c:if test="#{evaluacionBean.showfinalizar}">
+								<div style="text-align:center" rendered="false">
+								<p:commandButton id="btnFinalizar" value="Finalizar"
+									icon="fa icon-ok-circled Fs14 white"
+									actionListener="#{evaluacionBean.finalizarEvaluacion}"/>
+								</div>
+							</c:if>
+							<c:if test="#{!evaluacionBean.showfinalizar}">
+								<div style="text-align:center" rendered="false">
+								<p:commandButton id="btnSiguiente" value="Siguiente"
+									icon="fa icon-ok-circled Fs14 white"
+									actionListener="#{evaluacionBean.goPreguntas}"/>
+								</div>
+							</c:if>
 
 						</p:panel>
 					</h:form>
