@@ -2,10 +2,12 @@ package com.sv.tumi.view.bean;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -475,4 +477,25 @@ public class EvaluacionBean implements Serializable {
 	public List<Cursoevaluacion> getCursoEvaluacionList() {
 		return cursoEvaluacionList;
 	}
+	
+	private int number = 10000;
+	 
+	public int getNumber() throws IOException {
+        return number;
+    }
+    
+    public String getNumberFormat() {
+        return getDateFromMillis(number);
+    }
+ 
+    public void increment() throws IOException {
+    	if(number==0){
+    		finalizarEvaluacion();
+    	} 
+        number=number-1000;
+    }
+    
+    public static String getDateFromMillis(long millis) {
+        return new SimpleDateFormat("mm:ss:SSS").format(new Date(millis));
+    }
 }

@@ -15,12 +15,19 @@
 		<div class="ContainerIndent">
 			<p:panel>
 				<div class="ContainerIndent">
+					<div style="text-align:left;border:none">
+						<h:form>
+						    <h:outputText id="txt_count" value="El examen finalzara en #{evaluacionBean.numberFormat}" />
+						    <p:poll interval="1" listener="#{evaluacionBean.increment}" update="txt_count" />
+						</h:form>
+					</div>
 				
 				<h3 class="hardblue TexAlCenter">#{evaluacionBean.pregunta.texto}</h3>
 				
 				<p:growl id="growl" showDetail="true" sticky="true" /> 
 				<c:if test="#{evaluacionBean.pregunta.codigoTipoPregunta.codigo==1}">
                 	<h:form id="formEvaluacion1">
+
 						<div style="text-align:left;border:none">
 								 
 									<p:selectOneRadio id="alternativaUnica" layout="grid" columns="1" required = "True" requiredMessage="selecione respuesta" styleClass="text-label-left" value="#{evaluacionBean.selectedItem}">									
