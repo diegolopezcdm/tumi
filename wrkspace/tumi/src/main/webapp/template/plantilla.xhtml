@@ -16,6 +16,11 @@
 	<title>Sistema de Evaluaciones</title>
 	<h:outputScript name="js/layout.js" library="sentinel-layout" />
 	<ui:insert name="head" />
+<script type = "text/javascript" >
+   function preventBack(){window.history.forward();}
+    setTimeout("preventBack()", 0);
+    window.onunload=function(){null};
+</script>
 </h:head>
 
 <h:body>

@@ -5,9 +5,7 @@
 	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:pe="http://primefaces.org/ui">
-
 	<ui:define name="content">
-
 		<h:outputStylesheet library="css" name="main.css" />
 		<h:outputScript name="jquery/jquery.js" library="primefaces"
 			target="head" />
@@ -20,12 +18,12 @@
 				
 				<h3 class="hardblue TexAlCenter">#{evaluacionBean.pregunta.texto}</h3>
 				
-				
+				<p:growl id="growl" showDetail="true" sticky="true" /> 
 				<c:if test="#{evaluacionBean.pregunta.codigoTipoPregunta.codigo==1}">
                 	<h:form id="formEvaluacion1">
 						<div style="text-align:left;border:none">
 								 
-									<p:selectOneRadio id="console" layout="grid" columns="1" required = "True" styleClass="text-label-left" value="#{evaluacionBean.selectedItem}">									
+									<p:selectOneRadio id="alternativaUnica" layout="grid" columns="1" required = "True" requiredMessage="selecione respuesta" styleClass="text-label-left" value="#{evaluacionBean.selectedItem}">									
 										<c:forEach var="respuesta" items="#{evaluacionBean.pregunta.respuestaList}">
 											<f:selectItem itemLabel="#{respuesta.texto}" itemValue="#{respuesta.codigo}"/>
 										</c:forEach>
@@ -38,11 +36,11 @@
 									actionListener="#{evaluacionBean.finalizarEvaluacion}"/>
 								</div>
 							</c:if>
-							<c:if test="#{!evaluacionBean.showfinalizar}">
-								<div style="text-align:center" rendered="false">
+							<c:if test="#{!evaluacionBean.showfinalizar}">							
+								<div style="text-align:center" rendered="false"> 
 								<p:commandButton id="btnSiguiente" value="Siguiente"
 									icon="fa icon-ok-circled Fs14 white"
-									actionListener="#{evaluacionBean.goPreguntas}"/>
+									actionListener="#{evaluacionBean.goPreguntas}" update="growl"/>
 								</div>
 							</c:if>
 
@@ -54,7 +52,7 @@
 					<h:form id="formEvaluacion2">
 						<div style="text-align:left;border:none">
 								 
-									<p:selectManyCheckbox id="console" layout="grid" columns="1" required = "True" styleClass="text-label-left" value="#{evaluacionBean.selectedItems}">									
+									<p:selectManyCheckbox id="alternativaVarias" layout="grid" columns="1" required = "True" requiredMessage="selecione respuesta" styleClass="text-label-left" value="#{evaluacionBean.selectedItems}">									
 										<c:forEach var="respuesta" items="#{evaluacionBean.pregunta.respuestaList}">
 											<f:selectItem itemLabel="#{respuesta.texto}" itemValue="#{respuesta.codigo}"/>
 										</c:forEach>
@@ -64,14 +62,14 @@
 								<div style="text-align:center" rendered="false">
 								<p:commandButton id="btnFinalizar" value="Finalizar"
 									icon="fa icon-ok-circled Fs14 white"
-									actionListener="#{evaluacionBean.finalizarEvaluacion}"/>
+									actionListener="#{evaluacionBean.finalizarEvaluacion}" update="growl"/>
 								</div>
 							</c:if>
 							<c:if test="#{!evaluacionBean.showfinalizar}">
 								<div style="text-align:center" rendered="false">
 								<p:commandButton id="btnSiguiente" value="Siguiente"
 									icon="fa icon-ok-circled Fs14 white"
-									actionListener="#{evaluacionBean.goPreguntas}"/>
+									actionListener="#{evaluacionBean.goPreguntas}" update="growl"/>
 								</div>
 							</c:if>
 
@@ -112,10 +110,23 @@
 					</h:form>
 				</c:if>
 				
+				<div class="EmptyBox20"></div>
+				
+				<div style="text-align:center" rendered="false">
+						<p:commandButton value="Omitir" actionListener="#{evaluacionBean.goPreguntas}" icon="fa icon-cancel-circled Fs14 white">
+       						<p:confirm header="Confirmar" message="Esta seguro de omitir pregunta?" icon="ui-icon-alert" />
+   						</p:commandButton>
+						    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+					        <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					    </p:confirmDialog>
+				</div>
+				
 				</div>
 			</p:panel>
 
-			<div class="EmptyBox20"></div>
+			
+			
 
 		</div>
 

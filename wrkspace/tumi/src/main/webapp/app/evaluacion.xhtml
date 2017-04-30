@@ -3,6 +3,7 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:pe="http://primefaces.org/ui">
 
 	<ui:define name="content">
@@ -11,47 +12,81 @@
 		<h:outputScript name="jquery/jquery.js" library="primefaces"
 			target="head" />
 
-		<h3 class="hardblue TexAlCenter">Examen Inicial para : #{evaluacionBean.selectedEvaluacion.usuarioRegistro}</h3>
+		<h3 class="hardblue TexAlCenter">Resolver Examen Inicial</h3>
 
 		<div class="ContainerIndent">
 			<p:panel>
 				<div class="ContainerIndent">
 
 					<h:form id="formEvaluacion">
-						<p:panel style="text-align:right;border:none">
-
-							<div class="ui-g">
-								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
-									<p:outputLabel value="Bienvenido: " styleClass="text-label-left" />
-								</div>
-								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
-									<p:outputLabel value="#{evaluacionBean.selectedEvaluacion.usuarioRegistro}" styleClass="text-label-left" />
-								</div>
-							</div>
+						<p:panel style="border:none">
+						
 							
-							<div class="ui-g">
-								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
-									<p:outputLabel value="Tiempo de duración de la prueba: " styleClass="text-label-left" />
-								</div>
-								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
-									<p:outputLabel value="#{evaluacionBean.selectedTiempo.segundosTiempoPregunta} minutos" styleClass="text-label-left" />
-								</div>
-							</div>
+							<c:if test="#{evaluacionBean.selectedEvaluacion.codigoEstado.codigo!=3}">
+									<div class="ui-g">
+										<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+											<p:outputLabel value="Usted no tiene Evaluacion Inicial asignado" styleClass="text-label-left" />
+										</div>
+									</div>
+							</c:if>
 							
-							<div class="ui-g">
-								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
-									<p:outputLabel value="Indicaciones Generales " styleClass="text-label-left" />
-								</div>
-								<div class="ui-g-12 ui-md-6 ui-lg-6 ">
-									<p:outputLabel value="XX " styleClass="text-label-left" />
-								</div>
-							</div>
-							
-							<div style="text-align:center" columnClasses="no-border, no-border">
-								<p:commandButton id="btnIniciar" value="Iniciar"
-									icon="fa icon-ok-circled Fs14 white"
-									actionListener="#{evaluacionBean.goPreguntas}" />
-							</div>
+							<c:if test="#{evaluacionBean.selectedEvaluacion.codigoEstado.codigo==3}">
+									<div class="ui-g">
+										<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+											<p:outputLabel value="Nombre: " styleClass="text-label-left" />
+										</div>
+										<div class="ui-g-12 ui-md-6 ui-lg-6 " >
+											<p:outputLabel value="#{evaluacionBean.selectedEvaluacion.codigoSolicitudCapacitacion.codigoPersonal.nombre} #{evaluacionBean.selectedEvaluacion.codigoSolicitudCapacitacion.codigoPersonal.apellidoPaterno}" styleClass="text-label-right" />
+										</div>
+									</div>
+									
+									<div class="ui-g">
+										<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+											<p:outputLabel value="Cargo: " styleClass="text-label-left" />
+										</div>
+										<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+											<p:outputLabel value="#{evaluacionBean.selectedEvaluacion.codigoSolicitudCapacitacion.codigoPersonal.codigoCargo.nombre}" styleClass="text-label-right" />
+										</div>
+									</div>
+									
+									<div class="ui-g">
+										<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+											<p:outputLabel value="Tiempo de duración de la prueba: " styleClass="text-label-right" />
+										</div>
+										<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+											<p:outputLabel value="10 minutos" styleClass="text-label-left" />
+										</div>
+									</div>
+									
+									<div class="ui-g">
+										<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+											<p:outputLabel value="Cursos a evaluar: " styleClass="text-label-right" />
+										</div>
+										<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+										
+											<c:forEach var="cursoaEvaluar" items="#{evaluacionBean.cursoEvaluacionList}">
+												<p:outputLabel value="#{cursoaEvaluar.codigoCursoNivel.codigoCurso.nombre}" styleClass="text-label-left" /> - 
+												<p:outputLabel value="#{cursoaEvaluar.codigoCursoNivel.codigoNivel.nombre}" styleClass="text-label-left" /> 
+											</c:forEach>
+											
+										</div>
+									</div>
+									
+									<div class="ui-g">
+										<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+											<p:outputLabel value="Indicaciones Generales " styleClass="text-label-left" />
+										</div>
+										<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+											<p:outputLabel value="El examen inicial permitira conocer el conocimiento actual de los cursos" styleClass="text-label-right" />
+										</div>
+									</div>
+									
+									<div style="text-align:center" columnClasses="no-border, no-border">
+										<p:commandButton id="btnIniciar" value="Iniciar"
+											icon="fa icon-ok-circled Fs14 white"
+											actionListener="#{evaluacionBean.goPreguntas}" />
+									</div>
+							</c:if>
 
 						</p:panel>
 					</h:form>

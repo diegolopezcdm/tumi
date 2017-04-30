@@ -54,6 +54,7 @@
 		<mapping class="com.sv.tumi.db.entity.Tiempodesarrollo" />
 		<mapping class="com.sv.tumi.db.entity.Tipoevaluacion" />
 		<mapping class="com.sv.tumi.db.entity.Tipopregunta" />
+		<mapping class="com.sv.tumi.db.entity.ParametroGeneracionCapacitacion" />
 
 	</session-factory>
 </hibernate-configuration>

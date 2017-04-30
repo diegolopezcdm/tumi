@@ -1,0 +1,43 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/plantilla.xhtml"
+	xmlns:pe="http://primefaces.org/ui">
+
+	<ui:define name="content">
+
+		<h:outputStylesheet library="css" name="main.css" />
+		<h:outputScript name="jquery/jquery.js" library="primefaces"
+			target="head" />
+
+		<h3 class="hardblue TexAlCenter">Examen Inicial</h3>
+
+		<div class="ContainerIndent">
+			<p:panel>
+				<div class="ContainerIndent">
+					
+					<div style="text-align:left;border:none">
+					<h3 class="hardblue TexAlCenter">Se ha registrado el examen inicial Satisfactoriamente</h3>
+					</div>
+					
+					<div/>
+					
+					<div style="text-align:center;border:none">
+						<p>¿Desea generar su capacitación ahora mismo?</p>
+					</div>
+					
+					<div style="text-align:center;border:none">
+							<p:commandButton id="btnAceptar" value="Aceptar"
+									icon="fa icon-ok-circled Fs14 white"
+									actionListener="#{evaluacionBean.goPreguntas}"/>
+					</div>
+				</div>
+			</p:panel>
+
+
+		</div>
+
+	</ui:define>
+
+</ui:composition>
