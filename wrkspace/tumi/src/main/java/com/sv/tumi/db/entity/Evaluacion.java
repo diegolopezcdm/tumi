@@ -7,8 +7,10 @@
 package com.sv.tumi.db.entity;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -69,6 +71,8 @@ public class Evaluacion implements Serializable {
     private Estado codigoEstado;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "codigoEvaluacion")
     private List<Cursoevaluacion> cursoevaluacionList;
+    @Column(name = "minutosDuracion")
+    private Integer minutosDuracion;
 
     public Evaluacion() {
     }
@@ -173,7 +177,23 @@ public class Evaluacion implements Serializable {
         this.cursoevaluacionList = cursoevaluacionList;
     }
 
-    @Override
+    public Integer getMinutosDuracion() {
+		return minutosDuracion;
+	}
+
+	public void setMinutosDuracion(Integer minutosDuracion) {
+		this.minutosDuracion = minutosDuracion;
+	}
+	
+	public String getMinutosDuracionFormarted() {
+		return getDateFromMillis(minutosDuracion);
+	}
+	
+	public static String getDateFromMillis(long millis) {
+        return new SimpleDateFormat("mm:ss").format(new Date(millis));
+    }
+
+	@Override
     public int hashCode() {
         int hash = 0;
         hash += (codigo != null ? codigo.hashCode() : 0);

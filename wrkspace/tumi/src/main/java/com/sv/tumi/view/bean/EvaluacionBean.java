@@ -65,6 +65,7 @@ public class EvaluacionBean implements Serializable {
 	@ManagedProperty(name = "preguntaIndex", value = "0")
 	private Integer preguntaIndex = 0;
 	private Boolean showfinalizar = false;
+	private int number = 10000;
 
 	List<Cursoevaluacion> cursoEvaluacionList = new ArrayList<Cursoevaluacion>();
 	List<Cursoevaluacionpregunta> preguntasEvaluacion = new ArrayList<Cursoevaluacionpregunta>();
@@ -98,7 +99,8 @@ public class EvaluacionBean implements Serializable {
 	public void cargaEvaluacion() {
 		selectedEvaluacion = evaluacionDAO.find(1);
 		selectedEvaluacion.setFechaInicio(new Date());
-
+		number= selectedEvaluacion.getMinutosDuracion();
+		
 		filter.clear();
 		filter.put("codigoEvaluacion.codigo", selectedEvaluacion.getCodigo());
 		cursoEvaluacionList = cursoEvaluacionDAO.findByProperty(filter);
@@ -173,39 +175,49 @@ public class EvaluacionBean implements Serializable {
 	public void finalizarEvaluacion() throws IOException {
 		agregarPregunta();
 
-		Double puntajeObtenido = 0.0;
-		Double maximoPuntaje = 0.0;
-		Double porcentajeAprobacion = 0.0;
-		for (Cursoevaluacionpregunta cursoevaluacionpregunta : preguntasEvaluacion) {
-			maximoPuntaje = maximoPuntaje
-					+ cursoevaluacionpregunta.getCodigoPregunta().getValor();
-
-			if (cursoevaluacionpregunta.getPuntajeObtenido() != null
-					&& cursoevaluacionpregunta.getPuntajeObtenido().compareTo(
-							new Double(0.0)) != 0) {
-				puntajeObtenido = puntajeObtenido
-						+ cursoevaluacionpregunta.getPuntajeObtenido();
-			}
-		}
-
-		System.out.println(puntajeObtenido);
-		System.out.println(maximoPuntaje);
-		porcentajeAprobacion = (puntajeObtenido * 100) / maximoPuntaje;
-
-		Nivel bajo = nivelDAO.find(1);
-		Nivel intermedio = nivelDAO.find(2);
-		Nivel alto = nivelDAO.find(3);
-
-		for (Cursoevaluacionpregunta cursoevaluacionpregunta : preguntasEvaluacion) {
-			cursoevaluacionpreguntaDAO.edit(cursoevaluacionpregunta);
-		}
-
-		for (Cursoevaluacionpreguntarespuesta cursoevaluacionpreguntarespuestas : cursoevaluacionpreguntarespuestas) {
-			cursoevaluacionPreguntaRespuestaDAO
-					.create(cursoevaluacionpreguntarespuestas);
-		}
-
 		for (Cursoevaluacion cursoevaluacion : cursoEvaluacionList) {
+
+			Double puntajeObtenido = 0.0;
+			Double maximoPuntaje = 0.0;
+			Double porcentajeAprobacion = 0.0;
+			for (Cursoevaluacionpregunta cursoevaluacionpregunta : preguntasEvaluacion) {
+
+				if (cursoevaluacionpregunta.getCodigoCursoEvaluacion()
+						.getCodigo().compareTo(cursoevaluacion.getCodigo()) != 0) {
+					continue;
+				}
+
+				maximoPuntaje = maximoPuntaje
+						+ cursoevaluacionpregunta.getCodigoPregunta()
+								.getValor();
+
+				if (cursoevaluacionpregunta.getPuntajeObtenido() != null
+						&& cursoevaluacionpregunta.getPuntajeObtenido()
+								.compareTo(new Double(0.0)) != 0) {
+					puntajeObtenido = puntajeObtenido
+							+ cursoevaluacionpregunta.getPuntajeObtenido();
+				}
+				cursoevaluacionpreguntaDAO.edit(cursoevaluacionpregunta);
+			}
+
+			System.out.println(puntajeObtenido);
+			System.out.println(maximoPuntaje);
+			porcentajeAprobacion = (puntajeObtenido * 100) / maximoPuntaje;
+
+			Nivel bajo = nivelDAO.find(1);
+			Nivel intermedio = nivelDAO.find(2);
+			Nivel alto = nivelDAO.find(3);
+
+			for (Cursoevaluacionpreguntarespuesta cursoevaluacionpreguntarespuesta : cursoevaluacionpreguntarespuestas) {
+				
+				if(cursoevaluacionpreguntarespuesta.getCodigoCursoEvaluacionPregunta().getCodigoCursoEvaluacion().getCodigo().
+						compareTo(cursoevaluacion.getCodigo())!=0)
+					continue;
+				
+				cursoevaluacionPreguntaRespuestaDAO
+						.create(cursoevaluacionpreguntarespuesta);
+			}
+
 			Resultadoevaluacion resultadoevaluacion = new Resultadoevaluacion();
 			resultadoevaluacion.setCodigoCursoEvaluacion(cursoevaluacion);
 			resultadoevaluacion.setFechaRegistro(new Date());
@@ -222,11 +234,14 @@ public class EvaluacionBean implements Serializable {
 				resultadoevaluacion.setCodigoNivel(alto);
 			}
 			resultadoEvaluacionDAO.create(resultadoevaluacion);
+
 		}
 
 		Estado estado = estadoDAO.find(4);
 		selectedEvaluacion.setCodigoEstado(estado);
 		selectedEvaluacion.setFechaFin(new Date());
+		selectedEvaluacion.setFechaModificacion(new Date());
+		selectedEvaluacion.setUsuarioModificacion("1");
 		evaluacionDAO.edit(selectedEvaluacion);
 
 		FacesContext.getCurrentInstance().getExternalContext()
@@ -237,9 +252,9 @@ public class EvaluacionBean implements Serializable {
 		// selectedEvaluacion
 		System.out.println(cursoEvaluacionList);
 		cursosGenerados = new ArrayList<Cursonivel>();
-		
+
 		for (Cursoevaluacion cursoevaluacion : cursoEvaluacionList) {
-			
+
 			filter.clear();
 			filter.put("codigoCursoEvaluacion.codigo",
 					cursoevaluacion.getCodigo());
@@ -295,15 +310,18 @@ public class EvaluacionBean implements Serializable {
 
 			cursosGenerados.add(cursonivelSeleccionado);
 			System.out.println(cursocapacitacion);
-			FacesContext.getCurrentInstance().getExternalContext()
-					.redirect("generarCapacitacion.xhtml");
+			
 		}
-		
+
 		Estado estado = estadoDAO.find(5);
-		Solicitudcapacitacion solicitudcapacitacion = selectedEvaluacion.getCodigoSolicitudCapacitacion();
+		Solicitudcapacitacion solicitudcapacitacion = selectedEvaluacion
+				.getCodigoSolicitudCapacitacion();
 		solicitudcapacitacion.setCodigoEstado(estado);
-		
+
 		solicitudCapacitacionDAO.edit(solicitudcapacitacion);
+		
+		FacesContext.getCurrentInstance().getExternalContext()
+		.redirect("generarCapacitacion.xhtml");
 
 	}
 
@@ -477,25 +495,23 @@ public class EvaluacionBean implements Serializable {
 	public List<Cursoevaluacion> getCursoEvaluacionList() {
 		return cursoEvaluacionList;
 	}
-	
-	private int number = 10000;
-	 
+
 	public int getNumber() throws IOException {
-        return number;
-    }
-    
-    public String getNumberFormat() {
-        return getDateFromMillis(number);
-    }
- 
-    public void increment() throws IOException {
-    	if(number==0){
-    		finalizarEvaluacion();
-    	} 
-        number=number-1000;
-    }
-    
-    public static String getDateFromMillis(long millis) {
-        return new SimpleDateFormat("mm:ss:SSS").format(new Date(millis));
-    }
+		return number;
+	}
+
+	public String getNumberFormat() {
+		return getDateFromMillis(number);
+	}
+
+	public void increment() throws IOException {
+		if (number == 0) {
+			finalizarEvaluacion();
+		}
+		number = number - 1000;
+	}
+
+	public static String getDateFromMillis(long millis) {
+		return new SimpleDateFormat("mm:ss").format(new Date(millis));
+	}
 }

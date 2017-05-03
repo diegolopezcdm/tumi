@@ -11,26 +11,25 @@
 		<h:outputScript name="jquery/jquery.js" library="primefaces"
 			target="head" />
 
-		<h3 class="hardblue TexAlCenter">Examen Inicial</h3>
+		<h3 class="hardblue TexAlCenter">Finalización Evaluación Inicial</h3>
 
 		<div class="ContainerIndent">
 			<p:panel>
 				<div class="ContainerIndent">
 					
 					<div style="text-align:left;border:none">
-					<h3 class="hardblue TexAlCenter">Se ha registrado el examen inicial Satisfactoriamente</h3>
+					<h3 class="hardblue TexAlCenter">Se ha registrado la evaluación inicial exitosamente</h3>
 					</div>
 					
 					<div/>
 					
 					<div style="text-align:center;border:none">
-						<p>¿Desea generar su capacitación ahora mismo?</p>
+						<p>¿A continuación desea generar su capacitación?</p>
 					</div>
 					
 					<div style="text-align:center;border:none">
 							<p:commandButton id="btnAceptar" value="Aceptar"
-									icon="fa icon-ok-circled Fs14 white"
-									actionListener="#{evaluacionBean.goPreguntas}"/>
+									icon="fa icon-ok-circled Fs14 white" action="/app/generarCapacitacion.xhtml?faces-redirect=true"/>
 					</div>
 				</div>
 			</p:panel>

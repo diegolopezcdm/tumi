@@ -54,7 +54,7 @@
 											<p:outputLabel value="Tiempo de duración de la prueba: " styleClass="text-label-right" />
 										</div>
 										<div class="ui-g-12 ui-md-6 ui-lg-6 ">
-											<p:outputLabel value="10 minutos" styleClass="text-label-left" />
+											<p:outputLabel value="#{evaluacionBean.selectedEvaluacion.minutosDuracionFormarted}" styleClass="text-label-left" />
 										</div>
 									</div>
 									
@@ -67,6 +67,7 @@
 											<c:forEach var="cursoaEvaluar" items="#{evaluacionBean.cursoEvaluacionList}">
 												<p:outputLabel value="#{cursoaEvaluar.codigoCursoNivel.codigoCurso.nombre}" styleClass="text-label-left" /> - 
 												<p:outputLabel value="#{cursoaEvaluar.codigoCursoNivel.codigoNivel.nombre}" styleClass="text-label-left" /> 
+												<br/>
 											</c:forEach>
 											
 										</div>

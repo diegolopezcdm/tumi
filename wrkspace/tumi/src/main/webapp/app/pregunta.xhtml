@@ -10,19 +10,19 @@
 		<h:outputScript name="jquery/jquery.js" library="primefaces"
 			target="head" />
 
-		<h3 class="hardblue TexAlCenter">Examen Inicial para : #{evaluacionBean.selectedEvaluacion.usuarioRegistro}</h3>
+		<h3 class="hardblue TexAlCenter">Resolver Pregunta</h3>
 
 		<div class="ContainerIndent">
 			<p:panel>
 				<div class="ContainerIndent">
 					<div style="text-align:left;border:none">
 						<h:form>
-						    <h:outputText id="txt_count" value="El examen finalzara en #{evaluacionBean.numberFormat}" />
+						    <h:outputText id="txt_count" value="La evaluacion finalizara en #{evaluacionBean.numberFormat}" />
 						    <p:poll interval="1" listener="#{evaluacionBean.increment}" update="txt_count" />
 						</h:form>
 					</div>
 				
-				<h3 class="hardblue TexAlCenter">#{evaluacionBean.pregunta.texto}</h3>
+				<h3 class="hardblue TexAlCenter"> Pregunta: #{evaluacionBean.pregunta.texto}</h3>
 				
 				<p:growl id="growl" showDetail="true" sticky="true" /> 
 				<c:if test="#{evaluacionBean.pregunta.codigoTipoPregunta.codigo==1}">
