@@ -248,7 +248,7 @@ public class EvaluacionBean implements Serializable {
 				.redirect("evaluacionFinal.xhtml");
 	}
 
-	public void generarCapacitacion() throws IOException {
+	/*public void generarCapacitacion() throws IOException {
 		// selectedEvaluacion
 		System.out.println(cursoEvaluacionList);
 		cursosGenerados = new ArrayList<Cursonivel>();
@@ -323,7 +323,7 @@ public class EvaluacionBean implements Serializable {
 		FacesContext.getCurrentInstance().getExternalContext()
 		.redirect("generarCapacitacion.xhtml");
 
-	}
+	}*/
 
 	private void valorarPregunta(String codigoRespuesta) {
 

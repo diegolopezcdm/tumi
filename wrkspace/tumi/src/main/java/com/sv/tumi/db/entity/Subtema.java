@@ -9,6 +9,7 @@ package com.sv.tumi.db.entity;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,13 +43,6 @@ public class Subtema implements Serializable {
     private Integer codigo;
     @Column(name = "nombre")
     private String nombre;
-    @Column(name = "alcance")
-    private String alcance;
-    @Column(name = "formatoContenido")
-    private String formatoContenido;
-    @Lob
-    @Column(name = "contenido")
-    private byte[] contenido;
     @Column(name = "orden")
     private Integer orden;
     @Column(name = "fechaRegistro")
@@ -64,8 +58,8 @@ public class Subtema implements Serializable {
     @JoinColumn(name = "codigoTema", referencedColumnName = "codigo")
     @ManyToOne
     private Tema codigoTema;
-    @OneToMany(mappedBy = "codigoSubTema")
-    private List<Pregunta> preguntaList;
+    @OneToMany(mappedBy = "codigoSubtema")
+    private List<Cursonivel> cursonivelList;
 
     public Subtema() {
     }
@@ -88,30 +82,6 @@ public class Subtema implements Serializable {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
-    }
-
-    public String getAlcance() {
-        return alcance;
-    }
-
-    public void setAlcance(String alcance) {
-        this.alcance = alcance;
-    }
-
-    public String getFormatoContenido() {
-        return formatoContenido;
-    }
-
-    public void setFormatoContenido(String formatoContenido) {
-        this.formatoContenido = formatoContenido;
-    }
-
-    public byte[] getContenido() {
-        return contenido;
-    }
-
-    public void setContenido(byte[] contenido) {
-        this.contenido = contenido;
     }
 
     public Integer getOrden() {
@@ -162,15 +132,15 @@ public class Subtema implements Serializable {
         this.codigoTema = codigoTema;
     }
 
-    public List<Pregunta> getPreguntaList() {
-        return preguntaList;
-    }
+    public List<Cursonivel> getCursonivelList() {
+		return cursonivelList;
+	}
 
-    public void setPreguntaList(List<Pregunta> preguntaList) {
-        this.preguntaList = preguntaList;
-    }
+	public void setCursonivelList(List<Cursonivel> cursonivelList) {
+		this.cursonivelList = cursonivelList;
+	}
 
-    @Override
+	@Override
     public int hashCode() {
         int hash = 0;
         hash += (codigo != null ? codigo.hashCode() : 0);

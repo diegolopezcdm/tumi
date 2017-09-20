@@ -9,6 +9,7 @@ package com.sv.tumi.db.entity;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,6 +18,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -40,6 +42,13 @@ public class Cursonivel implements Serializable {
     @Basic(optional = false)
     @Column(name = "codigo")
     private Integer codigo;
+    @Column(name = "formatoContenido")
+    private String formatoContenido;
+    @Lob
+    @Column(name = "contenido")
+    private byte[] contenido;
+    @Column(name = "alcance")
+    private String alcance;
     @Column(name = "fechaRegistro")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaRegistro;
@@ -56,25 +65,31 @@ public class Cursonivel implements Serializable {
     private List<Cursoevaluacion> cursoevaluacionList;
     @OneToMany(mappedBy = "codigoCursoNivel")
     private List<Cursocapacitacion> cursocapacitacionList;
-    @JoinColumn(name = "codigoCurso", referencedColumnName = "codigo")
+    @JoinColumn(name = "codigoSubtema", referencedColumnName = "codigo")
     @ManyToOne
-    private Curso codigoCurso;
+    private Subtema codigoSubtema;
     @JoinColumn(name = "codigoNivel", referencedColumnName = "codigo")
     @ManyToOne
     private Nivel codigoNivel;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "codigoCursoNivel")
-    private List<Retroalimentacion> retroalimentacionList;
-    @OneToMany(mappedBy = "codigoCursoNivel")
-    private List<Tema> temaList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "codigoRequisito")
     private List<Cursoprerequisito> cursoprerequisitoList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "codigoCursoNivel")
     private List<Cursoprerequisito> cursoprerequisitoList1;
+    @OneToMany(mappedBy = "codigoCursoNivel")
+    private List<Pregunta> preguntaList;
 
     public Cursonivel() {
     }
 
-    public Cursonivel(Integer codigo) {
+    public List<Pregunta> getPreguntaList() {
+		return preguntaList;
+	}
+
+	public void setPreguntaList(List<Pregunta> preguntaList) {
+		this.preguntaList = preguntaList;
+	}
+
+	public Cursonivel(Integer codigo) {
         this.codigo = codigo;
     }
 
@@ -142,36 +157,36 @@ public class Cursonivel implements Serializable {
         this.cursocapacitacionList = cursocapacitacionList;
     }
 
-    public Curso getCodigoCurso() {
-        return codigoCurso;
-    }
+    public String getFormatoContenido() {
+		return formatoContenido;
+	}
 
-    public void setCodigoCurso(Curso codigoCurso) {
-        this.codigoCurso = codigoCurso;
-    }
+	public void setFormatoContenido(String formatoContenido) {
+		this.formatoContenido = formatoContenido;
+	}
 
-    public Nivel getCodigoNivel() {
+	public byte[] getContenido() {
+		return contenido;
+	}
+
+	public void setContenido(byte[] contenido) {
+		this.contenido = contenido;
+	}
+
+	public Subtema getCodigoSubtema() {
+		return codigoSubtema;
+	}
+
+	public void setCodigoSubtema(Subtema codigoSubtema) {
+		this.codigoSubtema = codigoSubtema;
+	}
+
+	public Nivel getCodigoNivel() {
         return codigoNivel;
     }
 
     public void setCodigoNivel(Nivel codigoNivel) {
         this.codigoNivel = codigoNivel;
-    }
-
-    public List<Retroalimentacion> getRetroalimentacionList() {
-        return retroalimentacionList;
-    }
-
-    public void setRetroalimentacionList(List<Retroalimentacion> retroalimentacionList) {
-        this.retroalimentacionList = retroalimentacionList;
-    }
-
-    public List<Tema> getTemaList() {
-        return temaList;
-    }
-
-    public void setTemaList(List<Tema> temaList) {
-        this.temaList = temaList;
     }
 
     public List<Cursoprerequisito> getCursoprerequisitoList() {
@@ -210,12 +225,20 @@ public class Cursonivel implements Serializable {
         return true;
     }
 
-    @Override
+    public String getAlcance() {
+		return alcance;
+	}
+
+	public void setAlcance(String alcance) {
+		this.alcance = alcance;
+	}
+
+	@Override
     public String toString() {
         return "com.sv.tumi.db.entity.Cursonivel[ codigo=" + codigo + " ]";
     }
     
-    public int getRows(){
+    /*public int getRows(){
     	int count=1;
     	for (Tema tema : temaList) {
     		count++;
@@ -225,6 +248,6 @@ public class Cursonivel implements Serializable {
 			
 		}
     	return count;
-    }
+    }*/
     
 }

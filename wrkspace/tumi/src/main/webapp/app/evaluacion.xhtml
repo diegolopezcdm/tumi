@@ -36,7 +36,7 @@
 											<p:outputLabel value="Nombre: " styleClass="text-label-left" />
 										</div>
 										<div class="ui-g-12 ui-md-6 ui-lg-6 " >
-											<p:outputLabel value="#{evaluacionBean.selectedEvaluacion.codigoSolicitudCapacitacion.codigoPersonal.nombre} #{evaluacionBean.selectedEvaluacion.codigoSolicitudCapacitacion.codigoPersonal.apellidoPaterno}" styleClass="text-label-right" />
+											<p:outputLabel value="#{evaluacionBean.selectedEvaluacion.codigoPersonalCapacitacion.codigoPersonal.nombre} #{evaluacionBean.selectedEvaluacion.codigoPersonalCapacitacion.codigoPersonal.apellidoPaterno}" styleClass="text-label-right" />
 										</div>
 									</div>
 									
@@ -45,7 +45,7 @@
 											<p:outputLabel value="Cargo: " styleClass="text-label-left" />
 										</div>
 										<div class="ui-g-12 ui-md-6 ui-lg-6 ">
-											<p:outputLabel value="#{evaluacionBean.selectedEvaluacion.codigoSolicitudCapacitacion.codigoPersonal.codigoCargo.nombre}" styleClass="text-label-right" />
+											<p:outputLabel value="#{evaluacionBean.selectedEvaluacion.codigoPersonalCapacitacion.codigoPersonal.codigoCargo.nombre}" styleClass="text-label-right" />
 										</div>
 									</div>
 									
@@ -65,7 +65,9 @@
 										<div class="ui-g-12 ui-md-6 ui-lg-6 ">
 										
 											<c:forEach var="cursoaEvaluar" items="#{evaluacionBean.cursoEvaluacionList}">
-												<p:outputLabel value="#{cursoaEvaluar.codigoCursoNivel.codigoCurso.nombre}" styleClass="text-label-left" /> - 
+											    <p:outputLabel value="#{cursoaEvaluar.codigoCursoNivel.codigoSubtema.codigoTema.codigoCurso.nombre}" styleClass="text-label-left" /> -
+												<p:outputLabel value="#{cursoaEvaluar.codigoCursoNivel.codigoSubtema.codigoTema.nombre}" styleClass="text-label-left" /> -
+												<p:outputLabel value="#{cursoaEvaluar.codigoCursoNivel.codigoSubtema.nombre}" styleClass="text-label-left" /> - 
 												<p:outputLabel value="#{cursoaEvaluar.codigoCursoNivel.codigoNivel.nombre}" styleClass="text-label-left" /> 
 												<br/>
 											</c:forEach>

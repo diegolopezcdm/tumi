@@ -73,10 +73,8 @@ public class Personal implements Serializable {
     @OneToMany(mappedBy = "codigoCapacitador")
     private List<Especialidadcapacitador> especialidadcapacitadorList;
     @OneToMany(mappedBy = "codigoPersonal")
-    private List<Solicitudcapacitacion> solicitudcapacitacionList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "codigoPersona")
-    private List<Retroalimentacion> retroalimentacionList;
-
+    private List<PersonalCapacitacion> personalCapacitacion;
+  
     public Personal() {
     }
 
@@ -204,23 +202,16 @@ public class Personal implements Serializable {
         this.especialidadcapacitadorList = especialidadcapacitadorList;
     }
 
-    public List<Solicitudcapacitacion> getSolicitudcapacitacionList() {
-        return solicitudcapacitacionList;
-    }
+	public List<PersonalCapacitacion> getPersonalCapacitacion() {
+		return personalCapacitacion;
+	}
 
-    public void setSolicitudcapacitacionList(List<Solicitudcapacitacion> solicitudcapacitacionList) {
-        this.solicitudcapacitacionList = solicitudcapacitacionList;
-    }
+	public void setPersonalCapacitacion(
+			List<PersonalCapacitacion> personalCapacitacion) {
+		this.personalCapacitacion = personalCapacitacion;
+	}
 
-    public List<Retroalimentacion> getRetroalimentacionList() {
-        return retroalimentacionList;
-    }
-
-    public void setRetroalimentacionList(List<Retroalimentacion> retroalimentacionList) {
-        this.retroalimentacionList = retroalimentacionList;
-    }
-
-    @Override
+	@Override
     public int hashCode() {
         int hash = 0;
         hash += (codigo != null ? codigo.hashCode() : 0);

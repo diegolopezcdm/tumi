@@ -57,9 +57,9 @@ public class Tema implements Serializable {
     private String usuarioModificacion;
     @OneToMany(mappedBy = "codigoTema")
     private List<Subtema> subtemaList;
-    @JoinColumn(name = "codigoCursoNivel", referencedColumnName = "codigo")
+    @JoinColumn(name = "codigoCurso", referencedColumnName = "codigo")
     @ManyToOne
-    private Cursonivel codigoCursoNivel;
+    private Curso codigoCurso;
 
     public Tema() {
     }
@@ -140,15 +140,15 @@ public class Tema implements Serializable {
         this.subtemaList = subtemaList;
     }
 
-    public Cursonivel getCodigoCursoNivel() {
-        return codigoCursoNivel;
-    }
+    public Curso getCodigoCurso() {
+		return codigoCurso;
+	}
 
-    public void setCodigoCursoNivel(Cursonivel codigoCursoNivel) {
-        this.codigoCursoNivel = codigoCursoNivel;
-    }
+	public void setCodigoCurso(Curso codigoCurso) {
+		this.codigoCurso = codigoCurso;
+	}
 
-    @Override
+	@Override
     public int hashCode() {
         int hash = 0;
         hash += (codigo != null ? codigo.hashCode() : 0);

@@ -62,9 +62,9 @@ public class Pregunta implements Serializable {
     private String usuarioModificacion;
     @OneToMany(mappedBy = "codigoPregunta")
     private List<Cursoevaluacionpregunta> cursoevaluacionpreguntaList;
-    @JoinColumn(name = "codigoSubTema", referencedColumnName = "codigo")
+    @JoinColumn(name = "codigoCursoNivel", referencedColumnName = "codigo")
     @ManyToOne
-    private Subtema codigoSubTema;
+    private Cursonivel codigoCursoNivel;
     @JoinColumn(name = "codigoTipoPregunta", referencedColumnName = "codigo")
     @ManyToOne
     private Tipopregunta codigoTipoPregunta;
@@ -142,15 +142,15 @@ public class Pregunta implements Serializable {
         this.cursoevaluacionpreguntaList = cursoevaluacionpreguntaList;
     }
 
-    public Subtema getCodigoSubTema() {
-        return codigoSubTema;
-    }
+    public Cursonivel getCodigoCursoNivel() {
+		return codigoCursoNivel;
+	}
 
-    public void setCodigoSubTema(Subtema codigoSubTema) {
-        this.codigoSubTema = codigoSubTema;
-    }
+	public void setCodigoCursoNivel(Cursonivel codigoCursoNivel) {
+		this.codigoCursoNivel = codigoCursoNivel;
+	}
 
-    public Tipopregunta getCodigoTipoPregunta() {
+	public Tipopregunta getCodigoTipoPregunta() {
         return codigoTipoPregunta;
     }
 

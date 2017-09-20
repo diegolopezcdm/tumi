@@ -60,9 +60,6 @@ public class Evaluacion implements Serializable {
     private Date fechaModificacion;
     @Column(name = "usuarioModificacion")
     private String usuarioModificacion;
-    @JoinColumn(name = "codigoSolicitudCapacitacion", referencedColumnName = "codigo")
-    @ManyToOne
-    private Solicitudcapacitacion codigoSolicitudCapacitacion;
     @JoinColumn(name = "codigoTipo", referencedColumnName = "codigo")
     @ManyToOne
     private Tipoevaluacion codigoTipo;
@@ -73,6 +70,9 @@ public class Evaluacion implements Serializable {
     private List<Cursoevaluacion> cursoevaluacionList;
     @Column(name = "minutosDuracion")
     private Integer minutosDuracion;
+    @JoinColumn(name = "codigoPersonalCapacitacion", referencedColumnName = "codigo")
+    @ManyToOne
+    private PersonalCapacitacion codigoPersonalCapacitacion;
 
     public Evaluacion() {
     }
@@ -145,14 +145,6 @@ public class Evaluacion implements Serializable {
         this.usuarioModificacion = usuarioModificacion;
     }
 
-    public Solicitudcapacitacion getCodigoSolicitudCapacitacion() {
-        return codigoSolicitudCapacitacion;
-    }
-
-    public void setCodigoSolicitudCapacitacion(Solicitudcapacitacion codigoSolicitudCapacitacion) {
-        this.codigoSolicitudCapacitacion = codigoSolicitudCapacitacion;
-    }
-
     public Tipoevaluacion getCodigoTipo() {
         return codigoTipo;
     }
@@ -192,6 +184,15 @@ public class Evaluacion implements Serializable {
 	public static String getDateFromMillis(long millis) {
         return new SimpleDateFormat("mm:ss").format(new Date(millis));
     }
+
+	public PersonalCapacitacion getCodigoPersonalCapacitacion() {
+		return codigoPersonalCapacitacion;
+	}
+
+	public void setCodigoPersonalCapacitacion(
+			PersonalCapacitacion codigoPersonalCapacitacion) {
+		this.codigoPersonalCapacitacion = codigoPersonalCapacitacion;
+	}
 
 	@Override
     public int hashCode() {

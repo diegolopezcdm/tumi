@@ -9,6 +9,7 @@ package com.sv.tumi.db.entity;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -61,16 +62,12 @@ public class Solicitudcapacitacion implements Serializable {
     private Date fechaModificacion;
     @Column(name = "usuarioModificacion")
     private String usuarioModificacion;
-    @OneToMany(mappedBy = "codigoSolicitudCapacitacion")
-    private List<Evaluacion> evaluacionList;
-    @OneToMany(mappedBy = "codigoCapacitacion")
-    private List<Cursocapacitacion> cursocapacitacionList;
-    @JoinColumn(name = "codigoPersonal", referencedColumnName = "codigo")
-    @ManyToOne
-    private Personal codigoPersonal;
     @JoinColumn(name = "codigoEstado", referencedColumnName = "codigo")
     @ManyToOne
     private Estado codigoEstado;
+    @OneToMany(mappedBy = "codigoSolicitudCapacitacion")
+    private List<PersonalCapacitacion> personalCapacitacion;
+  
 
     public Solicitudcapacitacion() {
     }
@@ -159,30 +156,6 @@ public class Solicitudcapacitacion implements Serializable {
         this.usuarioModificacion = usuarioModificacion;
     }
 
-    public List<Evaluacion> getEvaluacionList() {
-        return evaluacionList;
-    }
-
-    public void setEvaluacionList(List<Evaluacion> evaluacionList) {
-        this.evaluacionList = evaluacionList;
-    }
-
-    public List<Cursocapacitacion> getCursocapacitacionList() {
-        return cursocapacitacionList;
-    }
-
-    public void setCursocapacitacionList(List<Cursocapacitacion> cursocapacitacionList) {
-        this.cursocapacitacionList = cursocapacitacionList;
-    }
-
-    public Personal getCodigoPersonal() {
-        return codigoPersonal;
-    }
-
-    public void setCodigoPersonal(Personal codigoPersonal) {
-        this.codigoPersonal = codigoPersonal;
-    }
-
     public Estado getCodigoEstado() {
         return codigoEstado;
     }
@@ -191,7 +164,16 @@ public class Solicitudcapacitacion implements Serializable {
         this.codigoEstado = codigoEstado;
     }
 
-    @Override
+    public List<PersonalCapacitacion> getPersonalCapacitacion() {
+		return personalCapacitacion;
+	}
+
+	public void setPersonalCapacitacion(
+			List<PersonalCapacitacion> personalCapacitacion) {
+		this.personalCapacitacion = personalCapacitacion;
+	}
+
+	@Override
     public int hashCode() {
         int hash = 0;
         hash += (codigo != null ? codigo.hashCode() : 0);

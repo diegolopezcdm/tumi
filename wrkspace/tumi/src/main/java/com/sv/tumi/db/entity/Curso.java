@@ -55,8 +55,6 @@ public class Curso implements Serializable {
     private String usuarioModificacion;
     @OneToMany(mappedBy = "codigoCurso")
     private List<Solicitudcurso> solicitudcursoList;
-    @OneToMany(mappedBy = "codigoCurso")
-    private List<Cursonivel> cursonivelList;
     @JoinColumn(name = "codigoEspecialidad", referencedColumnName = "codigo")
     @ManyToOne(optional = false)
     private Especialidad codigoEspecialidad;
@@ -130,14 +128,6 @@ public class Curso implements Serializable {
 
     public void setSolicitudcursoList(List<Solicitudcurso> solicitudcursoList) {
         this.solicitudcursoList = solicitudcursoList;
-    }
-
-    public List<Cursonivel> getCursonivelList() {
-        return cursonivelList;
-    }
-
-    public void setCursonivelList(List<Cursonivel> cursonivelList) {
-        this.cursonivelList = cursonivelList;
     }
 
     public Especialidad getCodigoEspecialidad() {

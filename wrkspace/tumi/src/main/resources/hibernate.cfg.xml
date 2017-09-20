@@ -45,8 +45,8 @@
 		<mapping class="com.sv.tumi.db.entity.Personal" />
 		<mapping class="com.sv.tumi.db.entity.Pregunta" />
 		<mapping class="com.sv.tumi.db.entity.Respuesta" />
+		<mapping class="com.sv.tumi.db.entity.PersonalCapacitacion" />
 		<mapping class="com.sv.tumi.db.entity.Resultadoevaluacion" />
-		<mapping class="com.sv.tumi.db.entity.Retroalimentacion" />
 		<mapping class="com.sv.tumi.db.entity.Solicitudcapacitacion" />
 		<mapping class="com.sv.tumi.db.entity.Solicitudcurso" />
 		<mapping class="com.sv.tumi.db.entity.Subtema" />

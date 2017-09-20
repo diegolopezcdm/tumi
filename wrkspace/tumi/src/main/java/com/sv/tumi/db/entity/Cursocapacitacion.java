@@ -50,9 +50,9 @@ public class Cursocapacitacion implements Serializable {
     @JoinColumn(name = "codigoCursoNivel", referencedColumnName = "codigo")
     @ManyToOne
     private Cursonivel codigoCursoNivel;
-    @JoinColumn(name = "codigoCapacitacion", referencedColumnName = "codigo")
+    @JoinColumn(name = "codigoPersonalCapacitacion", referencedColumnName = "codigo")
     @ManyToOne
-    private Solicitudcapacitacion codigoCapacitacion;
+    private PersonalCapacitacion codigoPersonalCapacitacion;
 
     public Cursocapacitacion() {
     }
@@ -107,17 +107,18 @@ public class Cursocapacitacion implements Serializable {
 
     public void setCodigoCursoNivel(Cursonivel codigoCursoNivel) {
         this.codigoCursoNivel = codigoCursoNivel;
-    }
+    }   
 
-    public Solicitudcapacitacion getCodigoCapacitacion() {
-        return codigoCapacitacion;
-    }
+    public PersonalCapacitacion getCodigoPersonalCapacitacion() {
+		return codigoPersonalCapacitacion;
+	}
 
-    public void setCodigoCapacitacion(Solicitudcapacitacion codigoCapacitacion) {
-        this.codigoCapacitacion = codigoCapacitacion;
-    }
+	public void setCodigoPersonalCapacitacion(
+			PersonalCapacitacion codigoPersonalCapacitacion) {
+		this.codigoPersonalCapacitacion = codigoPersonalCapacitacion;
+	}
 
-    @Override
+	@Override
     public int hashCode() {
         int hash = 0;
         hash += (codigo != null ? codigo.hashCode() : 0);
