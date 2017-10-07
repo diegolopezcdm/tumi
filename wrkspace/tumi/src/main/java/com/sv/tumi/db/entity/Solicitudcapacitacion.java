@@ -62,9 +62,6 @@ public class Solicitudcapacitacion implements Serializable {
     private Date fechaModificacion;
     @Column(name = "usuarioModificacion")
     private String usuarioModificacion;
-    @JoinColumn(name = "codigoEstado", referencedColumnName = "codigo")
-    @ManyToOne
-    private Estado codigoEstado;
     @OneToMany(mappedBy = "codigoSolicitudCapacitacion")
     private List<PersonalCapacitacion> personalCapacitacion;
   
@@ -154,14 +151,6 @@ public class Solicitudcapacitacion implements Serializable {
 
     public void setUsuarioModificacion(String usuarioModificacion) {
         this.usuarioModificacion = usuarioModificacion;
-    }
-
-    public Estado getCodigoEstado() {
-        return codigoEstado;
-    }
-
-    public void setCodigoEstado(Estado codigoEstado) {
-        this.codigoEstado = codigoEstado;
     }
 
     public List<PersonalCapacitacion> getPersonalCapacitacion() {

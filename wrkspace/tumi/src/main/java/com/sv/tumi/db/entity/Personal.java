@@ -74,7 +74,13 @@ public class Personal implements Serializable {
     private List<Especialidadcapacitador> especialidadcapacitadorList;
     @OneToMany(mappedBy = "codigoPersonal")
     private List<PersonalCapacitacion> personalCapacitacion;
-  
+    @JoinColumn(name = "codigoNivelDesempeño", referencedColumnName = "codigo")
+    @ManyToOne
+    private NivelDesempeño codigoNivelDesempeño;
+    @JoinColumn(name = "codigoNivelPersonal", referencedColumnName = "codigo")
+    @ManyToOne
+    private NivelPersonal codigoNivelPersonal;
+    
     public Personal() {
     }
 
@@ -210,7 +216,23 @@ public class Personal implements Serializable {
 			List<PersonalCapacitacion> personalCapacitacion) {
 		this.personalCapacitacion = personalCapacitacion;
 	}
+	
+	public NivelDesempeño getCodigoNivelDesempeño() {
+		return codigoNivelDesempeño;
+	}
+	
+	public void setCodigoNivelDesempeño(NivelDesempeño codigoNivelDesempeño) {
+		this.codigoNivelDesempeño = codigoNivelDesempeño;
+	}
+	
+	public void setCodigoNivelPersonal(NivelPersonal codigoNivelPersonal) {
+		this.codigoNivelPersonal = codigoNivelPersonal;
+	}
 
+	public NivelPersonal getCodigoNivelPersonal() {
+		return codigoNivelPersonal;
+	}
+	
 	@Override
     public int hashCode() {
         int hash = 0;

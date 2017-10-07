@@ -4,15 +4,17 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
+import javax.faces.bean.RequestScoped;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.context.Flash;
@@ -20,6 +22,8 @@ import javax.faces.context.Flash;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.faces.util.CollectionsUtils;
+import com.sun.org.glassfish.gmbal.ManagedAttribute;
 import com.sv.tumi.db.dao.CursoCapacitacionDAO;
 import com.sv.tumi.db.dao.CursoEvaluacionDAO;
 import com.sv.tumi.db.dao.CursoNivelDAO;
@@ -29,11 +33,13 @@ import com.sv.tumi.db.dao.EstadoDAO;
 import com.sv.tumi.db.dao.EvaluacionDAO;
 import com.sv.tumi.db.dao.NivelDAO;
 import com.sv.tumi.db.dao.ParametroGeneracionCapacitacionDAO;
+import com.sv.tumi.db.dao.PersonalCapacitacionDAO;
 import com.sv.tumi.db.dao.RespuestaDAO;
 import com.sv.tumi.db.dao.ResultadoEvaluacionDAO;
 import com.sv.tumi.db.dao.SolicitudCapacitacionDAO;
 import com.sv.tumi.db.dao.SubtemaDAO;
 import com.sv.tumi.db.dao.TemaDAO;
+import com.sv.tumi.db.entity.Curso;
 import com.sv.tumi.db.entity.Cursocapacitacion;
 import com.sv.tumi.db.entity.Cursoevaluacion;
 import com.sv.tumi.db.entity.Cursoevaluacionpregunta;
@@ -43,6 +49,8 @@ import com.sv.tumi.db.entity.Estado;
 import com.sv.tumi.db.entity.Evaluacion;
 import com.sv.tumi.db.entity.Nivel;
 import com.sv.tumi.db.entity.ParametroGeneracionCapacitacion;
+import com.sv.tumi.db.entity.Personal;
+import com.sv.tumi.db.entity.PersonalCapacitacion;
 import com.sv.tumi.db.entity.Pregunta;
 import com.sv.tumi.db.entity.Respuesta;
 import com.sv.tumi.db.entity.Resultadoevaluacion;
@@ -50,6 +58,11 @@ import com.sv.tumi.db.entity.Solicitudcapacitacion;
 import com.sv.tumi.db.entity.Subtema;
 import com.sv.tumi.db.entity.Tema;
 import com.sv.tumi.db.entity.Tiempodesarrollo;
+import com.sv.tumi.neuroph.TumiMultiLayerPerceptron;
+import com.sv.tumi.neuroph.util.NormalizacionUtil;
+import com.sv.tumi.view.CursoView;
+import com.sv.tumi.view.SubtemaView;
+import com.sv.tumi.view.TemaView;
 
 @ManagedBean(name = "evaluacionBean", eager = true)
 @SessionScoped
@@ -68,6 +81,7 @@ public class EvaluacionBean implements Serializable {
 	private int number = 10000;
 
 	List<Cursoevaluacion> cursoEvaluacionList = new ArrayList<Cursoevaluacion>();
+	List<Cursocapacitacion> cursoCapacitacion = new ArrayList<Cursocapacitacion>();
 	List<Cursoevaluacionpregunta> preguntasEvaluacion = new ArrayList<Cursoevaluacionpregunta>();
 	List<Cursoevaluacionpreguntarespuesta> cursoevaluacionpreguntarespuestas = new ArrayList<Cursoevaluacionpreguntarespuesta>();
 	List<Cursonivel> cursosGenerados = new ArrayList<Cursonivel>();
@@ -83,6 +97,7 @@ public class EvaluacionBean implements Serializable {
 	CursoevaluacionPreguntaRespuestaDAO cursoevaluacionPreguntaRespuestaDAO = new CursoevaluacionPreguntaRespuestaDAO();
 	EstadoDAO estadoDAO = new EstadoDAO();
 	EvaluacionDAO evaluacionDAO = new EvaluacionDAO();
+	PersonalCapacitacionDAO personalCapacitacionDAO = new PersonalCapacitacionDAO();
 	ParametroGeneracionCapacitacionDAO parametroGeneracionCapacitacionDAO = new ParametroGeneracionCapacitacionDAO();
 	NivelDAO nivelDAO = new NivelDAO();
 	CursoNivelDAO cursoNivelDAO = new CursoNivelDAO();
@@ -90,6 +105,10 @@ public class EvaluacionBean implements Serializable {
 	TemaDAO temaDAO = new TemaDAO();
 	SubtemaDAO subtemaDAO = new SubtemaDAO();
 	SolicitudCapacitacionDAO solicitudCapacitacionDAO = new SolicitudCapacitacionDAO();
+	List<CursoView> cursosTemario = new ArrayList<CursoView>();
+	List<CursoView> cursosGeneradosCapacitacion = new ArrayList<CursoView>();
+	
+	private static Integer EVALUACION_ID = 1;
 
 	@PostConstruct
 	public void inicializar() {
@@ -97,27 +116,47 @@ public class EvaluacionBean implements Serializable {
 	}
 
 	public void cargaEvaluacion() {
-		selectedEvaluacion = evaluacionDAO.find(1);
-		selectedEvaluacion.setFechaInicio(new Date());
-		number= selectedEvaluacion.getMinutosDuracion();
+		filter.put("codigo", EVALUACION_ID);
+		filter.put("codigoEstado.codigo", 3);//registrado
+		List<Evaluacion> evaluaciones = evaluacionDAO.findByProperty(filter);
 		
-		filter.clear();
-		filter.put("codigoEvaluacion.codigo", selectedEvaluacion.getCodigo());
-		cursoEvaluacionList = cursoEvaluacionDAO.findByProperty(filter);
+		if(evaluaciones!=null && evaluaciones.size()==1){
+			selectedEvaluacion = evaluaciones.get(0);
+			
+			if(selectedEvaluacion.getCodigoPersonalCapacitacion().getCodigoEstado().getCodigo() == 1){//aprobado
+				
+				selectedEvaluacion.setFechaInicio(new Date());
+				number= selectedEvaluacion.getMinutosDuracion();
+				
+				filter.clear();
+				filter.put("codigoEvaluacion.codigo", selectedEvaluacion.getCodigo());
+				cursoEvaluacionList = cursoEvaluacionDAO.findByProperty(filter);
 
-		filter.clear();
-		for (Cursoevaluacion cursoevaluacion : cursoEvaluacionList) {
+				filter.clear();
+				for (Cursoevaluacion cursoevaluacion : cursoEvaluacionList) {
 
-			filter.put("codigoCursoEvaluacion.codigo",
-					cursoevaluacion.getCodigo());
-			List<Cursoevaluacionpregunta> preguntasCursos = cursoevaluacionpreguntaDAO
-					.findByProperty(filter);
+					filter.put("codigoCursoEvaluacion.codigo",
+							cursoevaluacion.getCodigo());
+					List<Cursoevaluacionpregunta> preguntasCursos = cursoevaluacionpreguntaDAO
+							.findByProperty(filter);
 
-			for (Cursoevaluacionpregunta preguntasCurso : preguntasCursos) {
-				preguntasEvaluacion.add(preguntasCurso);
+					for (Cursoevaluacionpregunta preguntasCurso : preguntasCursos) {
+						preguntasEvaluacion.add(preguntasCurso);
+					}
+
+				}
+				
+				cursosTemario = new ArrayList<CursoView>();
+				getCursosEvaluacion(cursosTemario, true);
+				
+			} else {
+				selectedEvaluacion = null;
 			}
-
+			
+			
 		}
+		
+		
 
 	}
 
@@ -237,21 +276,175 @@ public class EvaluacionBean implements Serializable {
 
 		}
 
-		Estado estado = estadoDAO.find(4);
-		selectedEvaluacion.setCodigoEstado(estado);
+		Estado estadoEvaluacion = estadoDAO.find(4);
+		selectedEvaluacion.setCodigoEstado(estadoEvaluacion);
 		selectedEvaluacion.setFechaFin(new Date());
 		selectedEvaluacion.setFechaModificacion(new Date());
 		selectedEvaluacion.setUsuarioModificacion("1");
 		evaluacionDAO.edit(selectedEvaluacion);
+		
+		Estado estadoPersonalCapacitacion = estadoDAO.find(6);
+		PersonalCapacitacion personalCapacitacion =selectedEvaluacion.getCodigoPersonalCapacitacion();
+		personalCapacitacion.setFechaModificacion(new Date());
+		personalCapacitacion.setUsuarioModificacion("1");
+		personalCapacitacion.setCodigoEstado(estadoPersonalCapacitacion);
+		personalCapacitacionDAO.edit(personalCapacitacion);
 
 		FacesContext.getCurrentInstance().getExternalContext()
 				.redirect("evaluacionFinal.xhtml");
 	}
+	
+	private PersonalCapacitacion personalCapacitacion;
+	
+	public PersonalCapacitacion getPersonalCapacitacion() {
+		return personalCapacitacion;
+	}
+	
+	public void setPersonalCapacitacion(
+			PersonalCapacitacion personalCapacitacion) {
+		this.personalCapacitacion = personalCapacitacion;
+	}
+	
+	public String gogenerarcapacitacion() {
+		personalCapacitacion = personalCapacitacionDAO.find(1);
+		
+		//if(cursoEvaluacionList.isEmpty()){
+			filter.clear();
+			filter.put("codigoEvaluacion.codigo", EVALUACION_ID);
+			cursoEvaluacionList = cursoEvaluacionDAO.findByProperty(filter);
+			
+		//}
+		
+		if (personalCapacitacion.getCodigoEstado().getCodigo() == 6
+				|| personalCapacitacion.getCodigoEstado().getCodigo() == 5) {
+			cursosTemario = new ArrayList<CursoView>();
+			getCursosEvaluacion(cursosTemario, false);
+		}
+				
+		
+		return "/app/generarCapacitacion";
+	}
 
-	/*public void generarCapacitacion() throws IOException {
-		// selectedEvaluacion
-		System.out.println(cursoEvaluacionList);
+	private void getCursosEvaluacion(List<CursoView> cursos, boolean evaluacionInicial) {
+		for (Cursoevaluacion cursoevaluacion : cursoEvaluacionList) {
+
+			Curso curso = cursoevaluacion.getCodigoCursoNivel()
+					.getCodigoSubtema().getCodigoTema().getCodigoCurso();
+			Tema tema = cursoevaluacion.getCodigoCursoNivel()
+					.getCodigoSubtema().getCodigoTema();
+			Subtema subtema = cursoevaluacion.getCodigoCursoNivel()
+					.getCodigoSubtema();
+			
+			String nivel = null;
+			Double puntaje= null;
+			
+			if(evaluacionInicial){
+				nivel = cursoevaluacion.getCodigoCursoNivel()
+				.getCodigoNivel().getNombre();
+				puntaje=0.0;
+			} else {
+				
+				if(cursoevaluacion.getResultadoevaluacion()!=null){
+					nivel = cursoevaluacion.getResultadoevaluacion().getCodigoNivel().getNombre();
+					puntaje=cursoevaluacion
+							.getResultadoevaluacion().getPuntaje();
+				} else {
+					nivel = "";
+					puntaje=0.0;
+				}
+			
+			}
+
+			getCurso(cursos, curso, tema, subtema, nivel, puntaje);
+
+		}
+
+	}
+
+	private void getCursosCapacitacion(List<CursoView> cursos) {
+		for (Cursocapacitacion cursoevaluacion : cursoCapacitacion) {
+
+			Curso curso = cursoevaluacion.getCodigoCursoNivel()
+					.getCodigoSubtema().getCodigoTema().getCodigoCurso();
+			Tema tema = cursoevaluacion.getCodigoCursoNivel()
+					.getCodigoSubtema().getCodigoTema();
+			Subtema subtema = cursoevaluacion.getCodigoCursoNivel()
+					.getCodigoSubtema();
+
+			getCurso(cursos, curso, tema, subtema, cursoevaluacion.getCodigoCursoNivel()
+					.getCodigoNivel().getNombre(), 0.0);
+
+		}
+
+	}
+
+	private void getCurso(List<CursoView> cursos, Curso curso, Tema tema, Subtema subtema, String nombreNivel, double puntaje) {
+		CursoView cursoView = null;
+		TemaView temaView = null;
+		SubtemaView subtemaView = null;
+		
+		//CURSO
+		
+		for (CursoView cursoViewItem : cursos) {
+			
+			if(curso.getNombre().equalsIgnoreCase(cursoViewItem.getNombre())){
+				cursoView = cursoViewItem;
+			}
+			
+		}
+		
+		if(cursoView == null){
+			cursoView = new CursoView();
+			cursoView.setNombre(curso.getNombre());
+			cursoView.setAlcance(curso.getAlcance());
+			cursos.add(cursoView);
+		}
+		
+		//TEMA
+		
+		for (TemaView temaViewItem : cursoView.getTema()) {
+			
+			if(tema.getNombre().equalsIgnoreCase(temaViewItem.getNombre())){
+				temaView = temaViewItem;
+			}
+			
+		}
+		
+		if(temaView == null){
+			temaView = new TemaView();
+			temaView.setNombre(tema.getNombre());
+			temaView.setAlcance(tema.getAlcance());
+			temaView.setOrden(tema.getOrden());
+			cursoView.getTema().add(temaView);
+		}
+		
+		//SUB TEMA
+		
+		for (SubtemaView subtemaViewItem : temaView.getSubtemas()) {
+			
+			if(subtema.getNombre().equalsIgnoreCase(subtemaViewItem.getNombre()) && 
+					nombreNivel.equalsIgnoreCase(subtemaViewItem.getNivel())){
+				subtemaView = subtemaViewItem;
+			}
+			
+		}
+		
+		if(subtemaView == null){
+			subtemaView = new SubtemaView();
+			subtemaView.setNombre(subtema.getNombre());
+			subtemaView.setNivel(nombreNivel);
+			subtemaView.setOrder(subtema.getOrden());
+			subtemaView.setPorcentajeAprobacion(puntaje);
+			temaView.getSubtemas().add(subtemaView);
+		}
+	}
+
+	public void generarCapacitacion() throws IOException {
 		cursosGenerados = new ArrayList<Cursonivel>();
+		
+		Personal personal = personalCapacitacion.getCodigoPersonal();
+		int nivelDesempeñoId = personal.getCodigoNivelDesempeño().getCodigo();
+		int nivelPersonalId = personal.getCodigoNivelPersonal().getCodigo();
 
 		for (Cursoevaluacion cursoevaluacion : cursoEvaluacionList) {
 
@@ -261,69 +454,78 @@ public class EvaluacionBean implements Serializable {
 			Resultadoevaluacion resultadoEvalacion = resultadoEvaluacionDAO
 					.findByProperty(filter).get(0);
 
-			System.out.println("nivel esperado "
-					+ cursoevaluacion.getCodigoCursoNivel().getCodigoNivel()
-							.getNombre());
-			System.out.println("nivel esperado "
-					+ resultadoEvalacion.getCodigoNivel().getNombre());
+			System.out.println("cargo "
+					+ personalCapacitacion.getCodigoPersonal().getCodigoCargo()
+							.getCodigo());
 
-			filter.clear();
-			filter.put("codigoNivelEsperado", cursoevaluacion
-					.getCodigoCursoNivel().getCodigoNivel().getCodigo());
-			filter.put("codigoNivelReal", resultadoEvalacion.getCodigoNivel()
-					.getCodigo());
-			ParametroGeneracionCapacitacion parametroGeneracionCapacitacion = parametroGeneracionCapacitacionDAO
-					.findByProperty(filter).get(0);
-			Nivel nivelSeleccionado = nivelDAO
-					.find(parametroGeneracionCapacitacion
-							.getCodigoNivelSeleccionado());
-			System.out.println("nivel selecionado: "
-					+ nivelSeleccionado.getNombre());
+			System.out.println("sub tema "
+					+ cursoevaluacion.getCodigoCursoNivel().getCodigoSubtema()
+							.getCodigo());
 
-			filter.clear();
-			filter.put("codigoNivel.codigo", nivelSeleccionado.getCodigo());
-			filter.put("codigoCurso.codigo", cursoevaluacion
-					.getCodigoCursoNivel().getCodigoCurso().getCodigo());
-			Cursonivel cursonivelSeleccionado = cursoNivelDAO.findByProperty(
-					filter).get(0);
+			System.out.println("resultado nivel (nivel actual) "
+					+ resultadoEvalacion.getCodigoNivel().getCodigo());
 
-			Cursocapacitacion cursocapacitacion = new Cursocapacitacion();
-			cursocapacitacion.setCodigoCapacitacion(cursoevaluacion
-					.getCodigoEvaluacion().getCodigoSolicitudCapacitacion());
-			cursocapacitacion.setCodigoCursoNivel(cursonivelSeleccionado);
-			cursocapacitacion.setFechaRegistro(new Date());
-			cursocapacitacion.setUsuarioRegistro("1");
-			cursoCapacitacionDAO.create(cursocapacitacion);
+			System.out.println("nivel depemseño " + nivelDesempeñoId);
 
-			filter.clear();
-			filter.put("codigoCursoNivel.codigo",
-					cursonivelSeleccionado.getCodigo());
-			List<Tema> temas = temaDAO.findByProperty(filter);
-			for (Tema tema : temas) {
+			System.out.println("nivel personal " + nivelPersonalId);
+
+			TumiMultiLayerPerceptron rn = new TumiMultiLayerPerceptron();
+			//usar red neuronal. input cargo, area, curso, nivel actual. output nivel selecionado
+			double[] nivelSelecionadoArray = rn.getPrediction(NormalizacionUtil
+					.getCargoValue(personalCapacitacion.getCodigoPersonal()
+							.getCodigoCargo().getCodigo()), NormalizacionUtil
+					.getSubtemaValue(cursoevaluacion.getCodigoCursoNivel()
+							.getCodigoSubtema().getCodigo()), NormalizacionUtil
+					.getNivelValue(resultadoEvalacion.getCodigoNivel()
+							.getCodigo()), NormalizacionUtil.getNivelDesempeñoValue(nivelDesempeñoId),
+							NormalizacionUtil.getNivelPersonalValue(nivelPersonalId));
+			
+			int nivelSelecionadoId = getNivelId(nivelSelecionadoArray);
+			System.out.println("nivel selecionado "+ nivelSelecionadoId);
+			
+			//for (int i = nivelSelecionadoId; i <= cursoevaluacion.getCodigoCursoNivel()
+				//	.getCodigoNivel().getCodigo(); i++) {
+				
 				filter.clear();
-				filter.put("codigoTema.codigo", tema.getCodigo());
-				List<Subtema> subtemas = subtemaDAO.findByProperty(filter);
-				tema.setSubtemaList(subtemas);
-			}
+				filter.put("codigoNivel.codigo", nivelSelecionadoId);
+				filter.put("codigoSubtema.codigo", cursoevaluacion
+						.getCodigoCursoNivel().getCodigoSubtema().getCodigo());
+				
+				Cursonivel cursonivelSeleccionado = cursoNivelDAO.findByProperty(
+						filter).get(0);
 
-			cursonivelSeleccionado.setTemaList(temas);
-
-			cursosGenerados.add(cursonivelSeleccionado);
-			System.out.println(cursocapacitacion);
+				Cursocapacitacion cursocapacitacion = new Cursocapacitacion();
+				cursocapacitacion.setCodigoPersonalCapacitacion(personalCapacitacion);
+				cursocapacitacion.setCodigoCursoNivel(cursonivelSeleccionado);
+				cursocapacitacion.setFechaRegistro(new Date());
+				cursocapacitacion.setUsuarioRegistro("1");
+				cursoCapacitacionDAO.create(cursocapacitacion);
+				cursoCapacitacion.add(cursocapacitacion);
+				
+			//}
 			
 		}
 
-		Estado estado = estadoDAO.find(5);
-		Solicitudcapacitacion solicitudcapacitacion = selectedEvaluacion
-				.getCodigoSolicitudCapacitacion();
-		solicitudcapacitacion.setCodigoEstado(estado);
-
-		solicitudCapacitacionDAO.edit(solicitudcapacitacion);
+		Estado estado = estadoDAO.find(5);//generado caacitacion
+		personalCapacitacion.setCodigoEstado(estado);
+		personalCapacitacionDAO.edit(personalCapacitacion);
 		
+		getCursosCapacitacion(cursosGeneradosCapacitacion);
+		//return "/app/generarCapacitacion?faces-redirect=true";
 		FacesContext.getCurrentInstance().getExternalContext()
-		.redirect("generarCapacitacion.xhtml");
+		.redirect("/tumi/app/generarCapacitacion.xhtml");
 
-	}*/
+	}
+
+	private int getNivelId(double[] nivelSelecionado) {
+		int maxAt = 0;
+
+		for (int i = 0; i < nivelSelecionado.length; i++) {
+		    maxAt = nivelSelecionado[i] > nivelSelecionado[maxAt] ? i : maxAt;
+		}
+		
+		return maxAt+1;
+	}
 
 	private void valorarPregunta(String codigoRespuesta) {
 
@@ -509,6 +711,23 @@ public class EvaluacionBean implements Serializable {
 			finalizarEvaluacion();
 		}
 		number = number - 1000;
+	}
+
+	public List<CursoView> getCursosTemario() {
+		return cursosTemario;
+	}
+
+	public void setCursosTemario(List<CursoView> cursosTemario) {
+		this.cursosTemario = cursosTemario;
+	}
+
+	public List<CursoView> getCursosGeneradosCapacitacion() {
+		return cursosGeneradosCapacitacion;
+	}
+
+	public void setCursosGeneradosCapacitacion(
+			List<CursoView> cursosGeneradosCapacitacion) {
+		this.cursosGeneradosCapacitacion = cursosGeneradosCapacitacion;
 	}
 
 	public static String getDateFromMillis(long millis) {

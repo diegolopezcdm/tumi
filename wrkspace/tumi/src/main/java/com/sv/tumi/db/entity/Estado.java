@@ -53,8 +53,6 @@ public class Estado implements Serializable {
     private List<Solicitudcurso> solicitudcursoList;
     @OneToMany(mappedBy = "codigoEstado")
     private List<Evaluacion> evaluacionList;
-    @OneToMany(mappedBy = "codigoEstado")
-    private List<Solicitudcapacitacion> solicitudcapacitacionList;
 
     public Estado() {
     }
@@ -127,13 +125,6 @@ public class Estado implements Serializable {
         this.evaluacionList = evaluacionList;
     }
 
-    public List<Solicitudcapacitacion> getSolicitudcapacitacionList() {
-        return solicitudcapacitacionList;
-    }
-
-    public void setSolicitudcapacitacionList(List<Solicitudcapacitacion> solicitudcapacitacionList) {
-        this.solicitudcapacitacionList = solicitudcapacitacionList;
-    }
 
     @Override
     public int hashCode() {

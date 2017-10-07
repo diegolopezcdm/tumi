@@ -8,18 +8,16 @@ package com.sv.tumi.db.entity;
 
 import java.io.Serializable;
 import java.util.Date;
-
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -29,21 +27,18 @@ import javax.persistence.TemporalType;
  * @author Hector Santos
  */
 @Entity
-@Table(name = "resultadoEvaluacion")
+@Table(name = "nivelPersonal")
 @NamedQueries({
-    @NamedQuery(name = "Resultadoevaluacion.findAll", query = "SELECT r FROM Resultadoevaluacion r")})
-public class Resultadoevaluacion implements Serializable {
+    @NamedQuery(name = "NivelPersonal.findAll", query = "SELECT n FROM NivelPersonal n")})
+public class NivelPersonal implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "codigo")
     private Integer codigo;
-    @Column(name = "recomendacion")
-    private String recomendacion;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "puntaje")
-    private Double puntaje;
+    @Column(name = "nombre")
+    private String nombre;
     @Column(name = "fechaRegistro")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaRegistro;
@@ -54,17 +49,13 @@ public class Resultadoevaluacion implements Serializable {
     private Date fechaModificacion;
     @Column(name = "usuarioModificacion")
     private String usuarioModificacion;
-    @JoinColumn(name = "codigoNivel", referencedColumnName = "codigo")
-    @ManyToOne
-    private Nivel codigoNivel;
-    @JoinColumn(name = "codigoCursoEvaluacion", referencedColumnName = "codigo")
-    @OneToOne
-    private Cursoevaluacion codigoCursoEvaluacion;
+    @OneToMany(mappedBy = "codigoNivelPersonal")
+    private List<Personal> personalList;
 
-    public Resultadoevaluacion() {
+    public NivelPersonal() {
     }
 
-    public Resultadoevaluacion(Integer codigo) {
+    public NivelPersonal(Integer codigo) {
         this.codigo = codigo;
     }
 
@@ -76,20 +67,12 @@ public class Resultadoevaluacion implements Serializable {
         this.codigo = codigo;
     }
 
-    public String getRecomendacion() {
-        return recomendacion;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setRecomendacion(String recomendacion) {
-        this.recomendacion = recomendacion;
-    }
-
-    public Double getPuntaje() {
-        return puntaje;
-    }
-
-    public void setPuntaje(Double puntaje) {
-        this.puntaje = puntaje;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public Date getFechaRegistro() {
@@ -120,26 +103,14 @@ public class Resultadoevaluacion implements Serializable {
         return usuarioModificacion;
     }
 
-    public void setUsuarioModificacion(String usuarioModificacion) {
-        this.usuarioModificacion = usuarioModificacion;
-    }
-
-    public Nivel getCodigoNivel() {
-        return codigoNivel;
-    }
-
-    public void setCodigoNivel(Nivel codigoNivel) {
-        this.codigoNivel = codigoNivel;
-    }
-
-    public Cursoevaluacion getCodigoCursoEvaluacion() {
-        return codigoCursoEvaluacion;
-    }
-
-    public void setCodigoCursoEvaluacion(Cursoevaluacion codigoCursoEvaluacion) {
-        this.codigoCursoEvaluacion = codigoCursoEvaluacion;
-    }
-
+	public List<Personal> getPersonalList() {
+		return personalList;
+	}
+	
+	  public void setPersonalList(List<Personal> personalList) {
+		this.personalList = personalList;
+	}
+	  
     @Override
     public int hashCode() {
         int hash = 0;
@@ -150,10 +121,10 @@ public class Resultadoevaluacion implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Resultadoevaluacion)) {
+        if (!(object instanceof NivelPersonal)) {
             return false;
         }
-        Resultadoevaluacion other = (Resultadoevaluacion) object;
+        NivelPersonal other = (NivelPersonal) object;
         if ((this.codigo == null && other.codigo != null) || (this.codigo != null && !this.codigo.equals(other.codigo))) {
             return false;
         }
@@ -162,7 +133,7 @@ public class Resultadoevaluacion implements Serializable {
 
     @Override
     public String toString() {
-        return "com.sv.tumi.db.entity.Resultadoevaluacion[ codigo=" + codigo + " ]";
+        return "com.sv.tumi.db.entity.Nivel[ codigo=" + codigo + " ]";
     }
     
 }

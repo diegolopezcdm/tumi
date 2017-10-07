@@ -19,23 +19,86 @@
 				<div class="ContainerIndent">
 
 					<h:form id="formEvaluacion">
-						<p:panel style="border:none">
+						<p:panel style="border:none">								
+						<c:if test="#{evaluacionBean.personalCapacitacion.codigoEstado.codigo==6 || evaluacionBean.personalCapacitacion.codigoEstado.codigo==5}">
+						
+						<div class="ui-g">
+							<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+								<p:outputLabel value="Nivel Personal: " styleClass="text-label-left" />
+							</div>
+							<div class="ui-g-12 ui-md-6 ui-lg-6 " >
+								<p:outputLabel value="#{evaluacionBean.personalCapacitacion.codigoPersonal.codigoNivelPersonal.nombre}" styleClass="text-label-right" />
+							</div>
+						</div>
+						
+						<div class="ui-g">
+							<div class="ui-g-12 ui-md-6 ui-lg-6 ">
+								<p:outputLabel value="Nivel Desempeño: " styleClass="text-label-left" />
+							</div>
+							<div class="ui-g-12 ui-md-6 ui-lg-6 " >
+								<p:outputLabel value="#{evaluacionBean.personalCapacitacion.codigoPersonal.codigoNivelDesempeño.nombre}" styleClass="text-label-right" />
+							</div>
+						</div>
+									
+						
+						<h3>Resultado Evaluacion Inicial</h3>
+						
+						<div class="ui-g">
+								
+								<p:panelGrid style="margin-top:20px">
+									<f:facet name="header">
+								        <p:row>
+								            <p:column colspan="1">Nombre de Curso</p:column>
+								            <p:column colspan="1">Nombre Tema</p:column>
+								            <p:column colspan="1">Nombre Sub Tema</p:column>
+								            <p:column colspan="1">Porcentaje Aprobación</p:column>
+								        </p:row>
+								 
+								    </f:facet>
+								    
+								    <c:forEach var="cursoGenerado" items="#{evaluacionBean.cursosTemario}">
+										<p:row>
+									        <p:column style="font-weight: bold;" rowspan="${cursoGenerado.rows}">#{cursoGenerado.nombre}</p:column>									     									    						        	
+								   		</p:row>
+								   					<c:forEach var="temaGenerado" items="#{cursoGenerado.tema}">
+														<p:row>										        		
+											        		<p:column colspan="1" rowspan="${fn:length(temaGenerado.subtemas)+1}">#{temaGenerado.nombre}</p:column>
+														</p:row> 
+														
+															<c:forEach var="temaGenerado" items="#{temaGenerado.subtemas}">
+																<p:row>										        		
+													        		<p:column colspan="1" rowspan="1">#{temaGenerado.nombre}</p:column>
+													        		<p:column colspan="1" rowspan="1">#{temaGenerado.porcentajeAprobacion}</p:column>
+																</p:row>        	
+															</c:forEach>	
+														       	
+													</c:forEach>						        
+									</c:forEach>
+									
+								</p:panelGrid>
+							</div>
 							
-							<c:if test="#{evaluacionBean.selectedEvaluacion.codigoSolicitudCapacitacion.codigoEstado.codigo==1}">
+							<h3> </h3>
+							
+							</c:if>
+							
+							<c:if test="#{evaluacionBean.personalCapacitacion.codigoEstado.codigo==6}">
 									<div style="text-align:center" columnClasses="no-border, no-border">
 										<p:commandButton id="btnGenerar" value="Generar"
 											icon="fa icon-ok-circled Fs14 white" disabled="false"
 											actionListener="#{evaluacionBean.generarCapacitacion}" />
 									</div>
 							</c:if>
-							<c:if test="#{evaluacionBean.selectedEvaluacion.codigoSolicitudCapacitacion.codigoEstado.codigo!=1}">
+							<c:if test="#{evaluacionBean.personalCapacitacion.codigoEstado.codigo!=6}">
 									<div style="text-align:center" columnClasses="no-border, no-border">
 										<p:commandButton id="btnGenerar" value="Generar"
 											icon="fa icon-ok-circled Fs14 white" disabled="true"
 											actionListener="#{evaluacionBean.generarCapacitacion}" />
 									</div>
 							</c:if>
-
+							
+							
+						
 							<h3>Cursos generados a Capacitar</h3>
 							<div class="ui-g">
 								
@@ -44,30 +107,30 @@
 								        <p:row>
 								            <p:column colspan="1">Nombre de Curso</p:column>
 								            <p:column colspan="1">Alcance de Curso</p:column>
-								            <p:column colspan="1">Nivel de Curso</p:column>
 								            <p:column colspan="1">Nombre Tema</p:column>
 								            <p:column colspan="1">Alcance Tema</p:column>
 								            <p:column colspan="1">Nombre Sub Tema</p:column>
+								            <p:column colspan="1">Nivel de Curso</p:column>
 								        </p:row>
 								 
 								    </f:facet>
 								    
-								    <c:forEach var="cursoGenerado" items="#{evaluacionBean.cursosGenerados}">
+								    <c:forEach var="cursoGenerado" items="#{evaluacionBean.cursosGeneradosCapacitacion}">
 										<p:row>
-									        <p:column style="font-weight: bold;" rowspan="${cursoGenerado.rows}">#{cursoGenerado.codigoCurso.nombre}</p:column>
-									        <p:column style="font-weight: bold;" rowspan="${cursoGenerado.rows}">#{cursoGenerado.codigoCurso.alcance}</p:column>
-									        <p:column style="font-weight: bold;" rowspan="${cursoGenerado.rows}">#{cursoGenerado.codigoNivel.nombre}</p:column>
+									        <p:column style="font-weight: bold;" rowspan="${cursoGenerado.rows}">#{cursoGenerado.nombre}</p:column>
+									        <p:column style="font-weight: bold;" rowspan="${cursoGenerado.rows}">#{cursoGenerado.alcance}</p:column>
 									     									    						        	
 								   		</p:row>
-								   					<c:forEach var="temaGenerado" items="#{cursoGenerado.temaList}">
+								   					<c:forEach var="temaGenerado" items="#{cursoGenerado.tema}">
 														<p:row>										        		
-											        		<p:column colspan="1" rowspan="${fn:length(temaGenerado.subtemaList)+1}">#{temaGenerado.nombre}</p:column>
-											        		<p:column colspan="1" rowspan="${fn:length(temaGenerado.subtemaList)+1}">#{temaGenerado.alcance}</p:column>
+											        		<p:column colspan="1" rowspan="${fn:length(temaGenerado.subtemas)+1}">#{temaGenerado.nombre}</p:column>
+											        		<p:column colspan="1" rowspan="${fn:length(temaGenerado.subtemas)+1}">#{temaGenerado.alcance}</p:column>
 														</p:row> 
 														
-															<c:forEach var="temaGenerado" items="#{temaGenerado.subtemaList}">
+															<c:forEach var="temaGenerado" items="#{temaGenerado.subtemas}">
 																<p:row>										        		
 													        		<p:column colspan="1" rowspan="1">#{temaGenerado.nombre}</p:column>
+													        		<p:column colspan="1" rowspan="1">#{temaGenerado.nivel}</p:column>
 																</p:row>        	
 															</c:forEach>	
 														       	

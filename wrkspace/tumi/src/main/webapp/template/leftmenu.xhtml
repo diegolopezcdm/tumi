@@ -22,7 +22,8 @@
 						<p:separator/>
 						<p:menuitem value="Resolver Examen Inicial" icon="icon-globe-outline" class="hardblue" outcome="/app/evaluacion.xhtml"></p:menuitem>
 						<p:separator/>
-						<p:menuitem value="Generar Capacitación" icon="icon-globe-outline" class="hardblue" outcome="/app/generarCapacitacion.xhtml"></p:menuitem>
+						<p:menuitem value="Generar Capacitación" icon="icon-globe-outline" class="hardblue" action="#{evaluacionBean.gogenerarcapacitacion}"></p:menuitem>
+						
 					</p:submenu>
 					<p:submenu label="Ayuda" icon="icon-sitemap" class="hardblue">
 						<p:menuitem value="Acerca de Tumi" icon="icon-globe-outline" class="hardblue"></p:menuitem>

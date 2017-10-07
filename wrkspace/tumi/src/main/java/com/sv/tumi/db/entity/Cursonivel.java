@@ -238,16 +238,4 @@ public class Cursonivel implements Serializable {
         return "com.sv.tumi.db.entity.Cursonivel[ codigo=" + codigo + " ]";
     }
     
-    /*public int getRows(){
-    	int count=1;
-    	for (Tema tema : temaList) {
-    		count++;
-    		for (Subtema subtema : tema.getSubtemaList()) {
-				count++;
-			}
-			
-		}
-    	return count;
-    }*/
-    
 }

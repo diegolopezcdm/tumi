@@ -9,6 +9,7 @@ package com.sv.tumi.db.entity;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,6 +21,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -51,8 +53,8 @@ public class Cursoevaluacion implements Serializable {
     private String usuarioModificacion;
     @OneToMany(mappedBy = "codigoCursoEvaluacion")
     private List<Cursoevaluacionpregunta> cursoevaluacionpreguntaList;
-    @OneToMany(mappedBy = "codigoCursoEvaluacion")
-    private List<Resultadoevaluacion> resultadoevaluacionList;
+    @OneToOne(mappedBy = "codigoCursoEvaluacion")
+    private Resultadoevaluacion resultadoevaluacion;
     @JoinColumn(name = "codigoCursoNivel", referencedColumnName = "codigo")
     @ManyToOne(optional = false)
     private Cursonivel codigoCursoNivel;
@@ -115,15 +117,15 @@ public class Cursoevaluacion implements Serializable {
         this.cursoevaluacionpreguntaList = cursoevaluacionpreguntaList;
     }
 
-    public List<Resultadoevaluacion> getResultadoevaluacionList() {
-        return resultadoevaluacionList;
-    }
+	public Resultadoevaluacion getResultadoevaluacion() {
+		return resultadoevaluacion;
+	}
 
-    public void setResultadoevaluacionList(List<Resultadoevaluacion> resultadoevaluacionList) {
-        this.resultadoevaluacionList = resultadoevaluacionList;
-    }
+	public void setResultadoevaluacion(Resultadoevaluacion resultadoevaluacion) {
+		this.resultadoevaluacion = resultadoevaluacion;
+	}
 
-    public Cursonivel getCodigoCursoNivel() {
+	public Cursonivel getCodigoCursoNivel() {
         return codigoCursoNivel;
     }
 

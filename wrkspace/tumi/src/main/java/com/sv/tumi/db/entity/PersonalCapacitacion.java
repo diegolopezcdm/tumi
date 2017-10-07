@@ -50,6 +50,10 @@ public class PersonalCapacitacion implements Serializable{
     @JoinColumn(name = "codigoSolicitudCapacitacion", referencedColumnName = "codigo")
     @ManyToOne
     private Solicitudcapacitacion codigoSolicitudCapacitacion;
+    @JoinColumn(name = "codigoEstado", referencedColumnName = "codigo")
+    @ManyToOne
+    private Estado codigoEstado;
+    
 	public Integer getCodigo() {
 		return codigo;
 	}
@@ -92,6 +96,14 @@ public class PersonalCapacitacion implements Serializable{
 	public void setCodigoSolicitudCapacitacion(
 			Solicitudcapacitacion codigoSolicitudCapacitacion) {
 		this.codigoSolicitudCapacitacion = codigoSolicitudCapacitacion;
+	}
+	
+	public Estado getCodigoEstado() {
+		return codigoEstado;
+	}
+	
+	public void setCodigoEstado(Estado codigoEstado) {
+		this.codigoEstado = codigoEstado;
 	}
 
 }
